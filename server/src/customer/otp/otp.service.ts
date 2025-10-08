@@ -7,12 +7,10 @@ class OtpService {
   private otps: Record<string, { otp: string; expireAt: number }> = {};
 
   async generateOtp(email: string): Promise<string> {
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expireAt = Date.now() + 5 * 60 * 1000;
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    const expireAt = Date.now() + 3 * 60 * 1000;
 
-    if (this.otps[email]) {
-      this.otps[email] = { otp, expireAt };
-    }
+    this.otps[email] = { otp, expireAt };
 
     return otp;
   }
@@ -22,11 +20,9 @@ class OtpService {
 
     if (!record) return { isExpired: true, isValid: false };
     if (record?.expireAt < Date.now()) {
-      delete this.otps[email];
       return { isExpired: true, isValid: false };
     }
     if (parseInt(otp) !== parseInt(record.otp)) {
-      delete this.otps[email];
       return { isExpired: false, isValid: false };
     }
 

@@ -24,18 +24,21 @@ class OtpController {
       const validatedResult = await otpService.validateOtp(email, otp);
 
       if (validatedResult.isExpired == true && validatedResult.isValid == false)
-        return res
-          .status(400)
-          .json({ message: "otp already expired. generate a new otp" });
+        return res.status(400).json({
+          message: "otp already expired. generate a new otp",
+          isValidOtp: false,
+        });
       else if (
         validatedResult.isExpired == false &&
         validatedResult.isValid == false
       )
-        return res.status(400).json({ message: "incorrect otp" });
+        return res
+          .status(400)
+          .json({ message: "incorrect otp", isValidOtp: false });
 
       return res
         .status(200)
-        .json({ message: "correct otp, welcome to my application" });
+        .json({ message: "otp successfully", isValidOtp: true });
     } catch (error: any) {
       return res.status(400).json({
         message: error.message || "can't perforrm otp validations",
