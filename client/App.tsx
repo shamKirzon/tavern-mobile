@@ -1,12 +1,12 @@
 import { View, Text, Dimensions } from "react-native";
 import React from "react";
-import EmailAuth from "./screens/EmailAuth";
-import Reservation from "./screens/Reservation";
-import ReservationPayment from "./screens/ReservationPayment";
-import ReservationReview from "./screens/ReservationReview";
-import Otp from "./screens/Otp";
+import EmailAuthScreen from "./src/screens/HomeScreen";
+import Reservation from "./src/screens/ReservationScreen";
+import ReservationPaymentScreen from "./src/screens/ReservationPaymentScreen";
+import ReservationReviewScreen from "./src/screens/ReservationReviewScreen";
+import Otp from "./src/screens/OtpScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { RootStackParamLists } from "./types/type";
+import { RootStackParamLists } from "./src/types/type";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { navigationRef } from "./navigationRef";
@@ -27,7 +27,7 @@ const App = () => {
             animation: "none",
           }}
         >
-          <Stack.Screen name="EmailAuth" component={EmailAuth} />
+          <Stack.Screen name="EmailAuth" component={EmailAuthScreen} />
           <Stack.Screen name="Otp" component={Otp} />
           <Stack.Screen name="Reservation" component={Reservation} />
         </Stack.Navigator>

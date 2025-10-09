@@ -11,7 +11,7 @@ import {
 
 import { width } from "../utils/dimensions";
 
-const EmailAuth = () => {
+const HomeScreen = () => {
   const [email, setEmail] = useState("");
 
   const handleContinue = () => {
@@ -77,4 +77,4 @@ const EmailAuth = () => {
   );
 };
 
-export default EmailAuth;
+export default HomeScreen;
