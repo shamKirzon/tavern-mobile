@@ -1,6 +1,6 @@
 import { View, Text, Dimensions } from "react-native";
-import React from "react";
-import EmailAuthScreen from "./src/screens/HomeScreen";
+import React, { useEffect, useState } from "react";
+import HomeScreen from "./src/screens/HomeScreen";
 import Reservation from "./src/screens/ReservationScreen";
 import ReservationPaymentScreen from "./src/screens/ReservationPaymentScreen";
 import ReservationReviewScreen from "./src/screens/ReservationReviewScreen";
@@ -10,26 +10,51 @@ import { RootStackParamLists } from "./src/types/type";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { navigationRef } from "./navigationRef";
+import { deleteToken, getToken, isTokenExpired } from "./src/utils/tokenUtils";
+import WelcomeScreen from "./src/screens/WelcomeScreen";
+import { width } from "./src/utils/dimensions";
 
 const App = () => {
-  const Stack = createNativeStackNavigator<RootStackParamLists>();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-  // fonts:
-  // const [fontsLoaded] = useFonts
+  useEffect(() => {
+    const checkToken = async () => {
+      const token = await getToken();
+      if (!token || isTokenExpired(token)) {
+        setIsAuthenticated(false);
+        deleteToken();
+      } else setIsAuthenticated(true);
+    };
+    checkToken();
+  }, []);
+
+  const Stack = createNativeStackNavigator<RootStackParamLists>();
 
   return (
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
-          initialRouteName="EmailAuth"
-          screenOptions={{
-            headerShown: false,
-            animation: "none",
-          }}
+          initialRouteName="WelcomeScreen"
+          screenOptions={{ headerShown: false, animation: "none" }}
         >
-          <Stack.Screen name="EmailAuth" component={EmailAuthScreen} />
+          <Stack.Screen
+            name="HomeScreen"
+            component={HomeScreen}
+            initialParams={{ isAuthenticated }}
+          />
           <Stack.Screen name="Otp" component={Otp} />
+
           <Stack.Screen name="Reservation" component={Reservation} />
+          <Stack.Screen
+            name="ReservationPayment"
+            component={ReservationPaymentScreen}
+          />
+          <Stack.Screen
+            name="ReservationReview"
+            component={ReservationReviewScreen}
+          />
+
+          <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

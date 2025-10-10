@@ -3,4 +3,5 @@
   "compilerOptions": {
     "strict": true
   }
+  // "include": ["types", "src", "app", "components"]
 }
