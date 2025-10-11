@@ -5,5 +5,5 @@ export type RootStackParamLists = {
   WelcomeScreen: undefined;
   ReservationPayment: undefined;
   Reservation: undefined;
-  HomeScreen: { isAuthenticated: boolean };
+  HomeScreen: undefined;
 };

@@ -13,9 +13,10 @@ import { navigationRef } from "./navigationRef";
 import { deleteToken, getToken, isTokenExpired } from "./src/utils/tokenUtils";
 import WelcomeScreen from "./src/screens/WelcomeScreen";
 import { width } from "./src/utils/dimensions";
+import { useAuthStore } from "./src/services/useAuthStore";
 
 const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const { isAuthenticated, setIsAuthenticated } = useAuthStore();
 
   useEffect(() => {
     const checkToken = async () => {
@@ -37,11 +38,7 @@ const App = () => {
           initialRouteName="WelcomeScreen"
           screenOptions={{ headerShown: false, animation: "none" }}
         >
-          <Stack.Screen
-            name="HomeScreen"
-            component={HomeScreen}
-            initialParams={{ isAuthenticated }}
-          />
+          <Stack.Screen name="HomeScreen" component={HomeScreen} />
           <Stack.Screen name="Otp" component={Otp} />
 
           <Stack.Screen name="Reservation" component={Reservation} />

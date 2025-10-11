@@ -13,6 +13,7 @@ import { width, height } from "../utils/dimensions";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamLists } from "../types/type";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useAuthStore } from "../services/useAuthStore";
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamLists,
@@ -26,8 +27,7 @@ interface Props {
 }
 
 const HomeScreen: React.FC<Props> = ({ navigation, route }) => {
-  const { isAuthenticated } = route.params;
-
+  const { isAuthenticated } = useAuthStore();
   const [email, setEmail] = useState("");
 
   const handleContinue = () => {

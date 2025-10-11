@@ -12,9 +12,14 @@ import {
 } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
+type WelcomeSceenRouteProps = RouteProp<RootStackParamLists, "WelcomeScreen">;
+type WelcomeScreenNavigationProps = NativeStackNavigationProp<
+  RootStackParamLists,
+  "WelcomeScreen"
+>;
 interface Props {
-  route: RouteProp<RootStackParamLists, "WelcomeScreen">;
-  navigation: NativeStackNavigationProp<RootStackParamLists, "WelcomeScreen">;
+  route: WelcomeSceenRouteProps;
+  navigation: WelcomeScreenNavigationProps;
 }
 
 const WelcomeScreen: React.FC<Props> = ({ navigation, route }) => {
