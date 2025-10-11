@@ -3,11 +3,17 @@ import { customerRepository } from "./customer.repository";
 
 class CustomerService {
   async registerCustomer(email: string) {
-    let customer = await customerRepository.getCustomerByEmail(email);
+    try {
+      let emailExists = await customerRepository.getCustomerByEmail(email);
 
-    if (!email) customer = await customerRepository.addCustomer(email);
+      if (!emailExists)
+        emailExists = await customerRepository.addCustomer(email);
 
-    // return generateToken({ email: email, id: customer.id });
+      const token = generateToken({ tokenId: emailExists.customer_id, email });
+      return token;
+    } catch (error: any) {
+      console.log(error.message || "Unable to register the customer ", error);
+    }
   }
 }
 
