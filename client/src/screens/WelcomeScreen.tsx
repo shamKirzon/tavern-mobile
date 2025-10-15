@@ -12,11 +12,14 @@ import {
 } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
+// start kayo dito ng pagkopya ng format
+
 type WelcomeSceenRouteProps = RouteProp<RootStackParamLists, "WelcomeScreen">;
 type WelcomeScreenNavigationProps = NativeStackNavigationProp<
   RootStackParamLists,
   "WelcomeScreen"
 >;
+
 interface Props {
   route: WelcomeSceenRouteProps;
   navigation: WelcomeScreenNavigationProps;
@@ -61,7 +64,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation, route }) => {
         <Text
           style={{
             color: "#1C0404",
-            fontSize: width * 0.06,
+            fontSize: width * 0.06, // para maachive natin yung responsiveness
             fontWeight: "bold",
           }}
         >
