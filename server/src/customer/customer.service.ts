@@ -1,5 +1,6 @@
 import { generateToken } from "../utils/token";
 import { customerRepository } from "./customer.repository";
+import { formatDateFromSeconds } from "../utils/formatDateFromSeconds";
 
 class CustomerService {
   async registerCustomer(email: string) {
@@ -9,8 +10,9 @@ class CustomerService {
       if (!emailExists)
         emailExists = await customerRepository.addCustomer(email);
 
-      const token = generateToken({ tokenId: emailExists.customer_id, email });
-      return token;
+      return generateToken({
+        email,
+      });
     } catch (error: any) {
       console.log(error.message || "Unable to register the customer ", error);
     }
