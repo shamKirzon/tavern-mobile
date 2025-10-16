@@ -10,21 +10,36 @@ import { RootStackParamLists } from "./src/types/type";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { navigationRef } from "./navigationRef";
-import { deleteToken, getToken, isTokenExpired } from "./src/utils/tokenUtils";
+import {
+  deleteToken,
+  getToken,
+  getTokenInformation,
+  isTokenExpired,
+} from "./src/utils/tokenUtils";
 import WelcomeScreen from "./src/screens/WelcomeScreen";
 import { width } from "./src/utils/dimensions";
 import { useAuthStore } from "./src/services/useAuthStore";
+import { registerEmail } from "./src/services/authService";
+import HomeScreenTesting from "./src/screens/shams-testing/HomeScreenTesting";
 
 const App = () => {
   const { isAuthenticated, setIsAuthenticated } = useAuthStore();
 
   useEffect(() => {
+    // deleteToken();
     const checkToken = async () => {
       const token = await getToken();
+      const tokenPayload = await getTokenInformation(token);
+
       if (!token || isTokenExpired(token)) {
         setIsAuthenticated(false);
-        deleteToken();
-      } else setIsAuthenticated(true);
+        console.log("no token || the token is expired", token);
+        await deleteToken();
+      } else {
+        console.log("token fetched successfully: ");
+        console.log(tokenPayload);
+        setIsAuthenticated(true);
+      }
     };
     checkToken();
   }, []);
@@ -50,8 +65,13 @@ const App = () => {
             name="ReservationReview"
             component={ReservationReviewScreen}
           />
-
           <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
+
+          {/* shams testing - ignore niyo lang ito  */}
+          <Stack.Screen
+            name="HomeScreenTesting"
+            component={HomeScreenTesting}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

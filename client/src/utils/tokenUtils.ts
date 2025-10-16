@@ -5,15 +5,15 @@ import { jwtDecode } from "jwt-decode";
 import { TOKEN_SECRET_KEY } from "@env";
 
 type TokenPayLoad = {
-  id: string;
   email: string;
   iat: number;
   exp: number;
+  jti: string;
 };
 
-export const saveToken = async (token: string) => {
+export const saveToken = async (token: any) => {
   try {
-    await AsyncStorage.setItem(TOKEN_SECRET_KEY, token);
+    await AsyncStorage.setItem(TOKEN_SECRET_KEY, token.token);
   } catch (error) {
     console.error("Error saving token", error);
   }
@@ -28,6 +28,16 @@ export const getToken = async () => {
   }
 };
 
+export const getTokenInformation = async (token: any) => {
+  const decodedToken = jwtDecode<TokenPayLoad>(token);
+  return {
+    exp: decodedToken.exp,
+    iat: decodedToken.iat,
+    email: decodedToken.email,
+    id: decodedToken.jti,
+  };
+};
+
 export const deleteToken = async () => {
   try {
     await AsyncStorage.removeItem(TOKEN_SECRET_KEY);
@@ -36,11 +46,13 @@ export const deleteToken = async () => {
   }
 };
 
-export const isTokenExpired = (token: string): boolean => {
+export const isTokenExpired = (token: any): boolean => {
   try {
     const decodedToken = jwtDecode<TokenPayLoad>(token);
+    console.log(decodedToken.exp * 1000 < Date.now());
     return decodedToken.exp * 1000 < Date.now();
-  } catch (error) {
+  } catch (error: any) {
+    console.error("isTokenExpired: decoding of token part ", error);
     return true;
   }
 };

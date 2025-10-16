@@ -1,4 +1,3 @@
-// authStore.ts (using Zustand)
 import { create } from "zustand";
 
 interface AuthState {

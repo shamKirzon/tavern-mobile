@@ -12,8 +12,6 @@ import {
 } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-// start kayo dito ng pagkopya ng format
-
 type WelcomeSceenRouteProps = RouteProp<RootStackParamLists, "WelcomeScreen">;
 type WelcomeScreenNavigationProps = NativeStackNavigationProp<
   RootStackParamLists,
@@ -25,7 +23,7 @@ interface Props {
   navigation: WelcomeScreenNavigationProps;
 }
 
-const WelcomeScreen: React.FC<Props> = ({ navigation, route }) => {
+const testingTokenScreen: React.FC<Props> = ({ navigation, route }) => {
   return (
     <ImageBackground
       source={require("../assets/backgrounds/main-background.png")}
@@ -52,7 +50,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation, route }) => {
 
       {/* Button at the bottom */}
       <TouchableOpacity
-        onPress={() => navigation.navigate("HomeScreenTesting")}
+        onPress={() => navigation.navigate("HomeScreen")}
         style={{
           backgroundColor: "#FFFFFF",
           paddingVertical: width * 0.05,
@@ -75,4 +73,4 @@ const WelcomeScreen: React.FC<Props> = ({ navigation, route }) => {
   );
 };
 
-export default WelcomeScreen;
+export default testingTokenScreen;
