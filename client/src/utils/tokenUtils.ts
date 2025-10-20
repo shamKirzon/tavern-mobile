@@ -3,6 +3,7 @@ import AsyncStorage, {
 } from "@react-native-async-storage/async-storage";
 import { jwtDecode } from "jwt-decode";
 import { TOKEN_SECRET_KEY } from "@env";
+import { axiosInstance } from "../api/axiosInstance";
 
 type TokenPayLoad = {
   email: string;
@@ -49,10 +50,32 @@ export const deleteToken = async () => {
 export const isTokenExpired = (token: any): boolean => {
   try {
     const decodedToken = jwtDecode<TokenPayLoad>(token);
-    console.log(decodedToken.exp * 1000 < Date.now());
     return decodedToken.exp * 1000 < Date.now();
   } catch (error: any) {
     console.error("isTokenExpired: decoding of token part ", error);
     return true;
+  }
+};
+
+// use this function inside the statement if there is an authenticated account fetched.
+export const refreshToken = async (token: any) => {
+  try {
+    const decodedToken = jwtDecode<TokenPayLoad>(token);
+    const email = decodedToken.email;
+
+    console.info("Current Email:", email);
+
+    const res = await axiosInstance.post("/customer/register-email", { email });
+
+    if (!res) return console.log("no created token");
+
+    const refreshedToken = jwtDecode<TokenPayLoad>(res.data.token);
+
+    deleteToken();
+    await saveToken(res.data);
+
+    return refreshedToken.iat;
+  } catch (error: any) {
+    console.error("registerEmail error: ", error);
   }
 };
