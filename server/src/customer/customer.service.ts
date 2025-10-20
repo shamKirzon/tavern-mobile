@@ -17,6 +17,18 @@ class CustomerService {
       console.log(error.message || "Unable to register the customer ", error);
     }
   }
+
+  async setStatus(email: string, isActive: boolean): Promise<any> {
+    try {
+      let getCustomerByEmail = await customerRepository.getCustomerByEmail(
+        email
+      );
+
+      if (!getCustomerByEmail) return;
+
+      return await customerRepository.setStatus(email, isActive);
+    } catch (error) {}
+  }
 }
 
 export const customerService = new CustomerService();

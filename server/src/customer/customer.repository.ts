@@ -40,6 +40,37 @@ class CustomerRepository {
   }
 
   async deleteCustomer() {}
+
+  async setStatus(email: string, isActive: boolean) {
+    try {
+      const customerId = await supabase
+        .from("customers")
+        .select("customer_id")
+        .eq("email", email)
+        .single();
+
+      console.log("customerId: ", customerId.data?.customer_id);
+
+      const { data, error } = await supabase
+        .from("customers")
+        .update({ is_active: isActive })
+        .eq("customer_id", customerId.data?.customer_id)
+        .select()
+        .single();
+
+      if (error) {
+        console.log(
+          "data query failed setting customer status to inactive ",
+          error
+        );
+        return null;
+      }
+
+      return data;
+    } catch (error: any) {
+      console.error("Error from addCustomer(): ", error.message);
+    }
+  }
 }
 
 export const customerRepository = new CustomerRepository();
