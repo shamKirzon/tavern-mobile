@@ -83,7 +83,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation, route }) => {
 
         {/* Button */}
         <TouchableOpacity
-          onPress={() => navigation.navigate("HomeScreenTesting")}
+          onPress={() => navigation.navigate("HomeScreen")}
           style={{
             backgroundColor: "#8A1717",
             paddingVertical: width * 0.055,
