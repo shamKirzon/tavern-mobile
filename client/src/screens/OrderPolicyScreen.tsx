@@ -1,14 +1,8 @@
 import React, { useState } from "react";
 import { RouteProp } from "@react-navigation/native";
-import { RootStackParamLists } from "../types/type";
+import { RootStackParamLists } from "../types/rootStackParamLists";
 import { height, width } from "../utils/dimensions";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  Alert,
-} from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import MainBackground from "../assets/backgrounds/main-background.svg";
 
@@ -54,9 +48,7 @@ const OrderPolicyScreen: React.FC<Props> = ({ navigation }) => {
   return (
     // ✅ Updated wrapper starts here
     <View style={{ width, height, flex: 1 }}>
-      <MainBackground
-        style={{ position: "absolute", height: "100%" }}
-      />
+      <MainBackground style={{ position: "absolute", height: "100%" }} />
       {/* ✅ Keeps all content layered above background */}
       <View
         style={{
@@ -75,8 +67,13 @@ const OrderPolicyScreen: React.FC<Props> = ({ navigation }) => {
             width: "100%",
           }}
         >
-          <TouchableOpacity onPress={handleBack} style={{ marginRight: width * 0.04 }}>
-            <Text style={{ color: "#FFFFFF", fontSize: 28, fontWeight: "300" }}>‹</Text>
+          <TouchableOpacity
+            onPress={handleBack}
+            style={{ marginRight: width * 0.04 }}
+          >
+            <Text style={{ color: "#FFFFFF", fontSize: 28, fontWeight: "300" }}>
+              ‹
+            </Text>
           </TouchableOpacity>
           <Text
             style={{
@@ -123,9 +120,13 @@ const OrderPolicyScreen: React.FC<Props> = ({ navigation }) => {
                 }}
               >
                 <Text style={{ color: "#FFFFFF", fontSize: width * 0.037 }}>
-                  {key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, " $1")}:
+                  {key.charAt(0).toUpperCase() +
+                    key.slice(1).replace(/([A-Z])/g, " $1")}
+                  :
                 </Text>
-                <Text style={{ color: "#FFFFFF", fontSize: width * 0.037 }}>{value}</Text>
+                <Text style={{ color: "#FFFFFF", fontSize: width * 0.037 }}>
+                  {value}
+                </Text>
               </View>
             ))}
           </View>
@@ -141,7 +142,9 @@ const OrderPolicyScreen: React.FC<Props> = ({ navigation }) => {
               marginBottom: height * 0.02,
             }}
           >
-            <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
               <Text style={{ color: "#FFFFFF", fontSize: width * 0.04 }}>
                 Order Spend Limit is :
               </Text>
@@ -263,7 +266,11 @@ const OrderPolicyScreen: React.FC<Props> = ({ navigation }) => {
             }}
           >
             {agreed && (
-              <Text style={{ color: "#000000", fontSize: 12, fontWeight: "bold" }}>✓</Text>
+              <Text
+                style={{ color: "#000000", fontSize: 12, fontWeight: "bold" }}
+              >
+                ✓
+              </Text>
             )}
           </View>
           <Text style={{ color: "#FFFFFF", fontSize: width * 0.032, flex: 1 }}>

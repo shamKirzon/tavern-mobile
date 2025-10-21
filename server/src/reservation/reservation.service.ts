@@ -1,7 +1,13 @@
+import { ReservationData } from "../types/Reservation";
+import { reservationRepository } from "./reservation.repository";
+
 class ReservationService {
-  async createReservation(email: string) {
+  async createReservation(data: ReservationData): Promise<any> {
     try {
-    } catch (error: any) {}
+      return await reservationRepository.createReservation(data);
+    } catch (error) {
+      console.error("Error in createReservation(): ", error);
+    }
   }
 }
 

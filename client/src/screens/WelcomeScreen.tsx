@@ -7,16 +7,8 @@ import MainBackground from "../assets/backgrounds/main-background.svg";
 import ScheduleIcon from "../assets/icons/schedule-icon.svg";
 import LocationIcon from "../assets/icons/location-icon.svg";
 
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ImageBackground,
-  Dimensions,
-} from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-
-// start kayo dito ng pagkopya ng format
 
 type WelcomeSceenRouteProps = RouteProp<RootStackParamLists, "WelcomeScreen">;
 type WelcomeScreenNavigationProps = NativeStackNavigationProp<
