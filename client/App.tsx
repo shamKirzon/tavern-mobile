@@ -25,6 +25,7 @@ import { registerEmail } from "./src/services/authService";
 import HomeScreenTesting from "./src/screens/shams-testing/HomeScreenTesting";
 
 const App = () => {
+  // testing helloworld
   const { isAuthenticated, setIsAuthenticated } = useAuthStore();
 
   // token fetching (if there is an existing token)
