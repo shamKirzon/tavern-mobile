@@ -22,7 +22,7 @@ import WelcomeScreen from "./src/screens/WelcomeScreen";
 import { width } from "./src/utils/dimensions";
 import { useAuthStore } from "./src/services/useAuthStore";
 import { registerEmail } from "./src/services/authService";
-import HomeScreenTesting from "./src/screens/shams-testing/HomeScreenTesting";
+// import HomeScreenTesting from "./src/screens/shams-testing/HomeScreenTesting";
 
 const App = () => {
   // testing helloworld
@@ -72,10 +72,10 @@ const App = () => {
           <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
 
           {/* shams testing - ignore niyo lang ito  */}
-          <Stack.Screen
+          {/*<Stack.Screen
             name="HomeScreenTesting"
             component={HomeScreenTesting}
-          />
+          />*/}
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

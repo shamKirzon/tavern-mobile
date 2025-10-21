@@ -4,6 +4,9 @@ import { RouteProp } from "@react-navigation/native";
 import { RootStackParamLists } from "../types/type";
 import { height, width } from "../utils/dimensions";
 import MainBackground from "../assets/backgrounds/main-background.svg";
+import ScheduleIcon from "../assets/icons/schedule-icon.svg";
+import LocationIcon from "../assets/icons/location-icon.svg";
+
 import {
   View,
   Text,
@@ -47,25 +50,56 @@ const WelcomeScreen: React.FC<Props> = ({ navigation, route }) => {
           <Logo />
         </View>
 
+        {/* Info Lines */}
+        <View style={{ marginTop: height * 0.2 }}>
+          {/* Open Hours */}
+          <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 10 }}>
+            <ScheduleIcon width={20} height={20} />
+            <Text
+              style={{
+                color: "#FFFFFF",
+                fontSize: width * 0.035,
+                marginLeft: 8,
+              }}
+            >
+              Open Hours: 05:00 PM - 02:00 AM
+            </Text>
+          </View>
+
+          {/* Address */}
+          <View style={{ flexDirection: "row", alignItems: "flex-start", width: width * 0.8 }}>
+            <LocationIcon width={20} height={20} />
+            <Text
+              style={{
+                color: "#FFFFFF",
+                fontSize: width * 0.035,
+                marginLeft: 8,
+              }}
+            >
+              #197 Aguirre Avenue, B.F. Homes, Parañaque, Philippines
+            </Text>
+          </View>
+        </View>
+
         {/* Button */}
         <TouchableOpacity
           onPress={() => navigation.navigate("HomeScreenTesting")}
           style={{
-            backgroundColor: "#FFFFFF",
-            paddingVertical: width * 0.05,
-            paddingHorizontal: 40,
-            borderRadius: 30,
-            marginTop: height * 0.3,
+            backgroundColor: "#8A1717",
+            paddingVertical: width * 0.055,
+            paddingHorizontal: 80,
+            borderRadius: 16,
+            marginTop: height * 0.15,
           }}
         >
           <Text
             style={{
-              color: "#1C0404",
-              fontSize: width * 0.06,
+              color: "#FFFF",
+              fontSize: width * 0.05,
               fontWeight: "bold",
             }}
           >
-            Get Started na Gar
+            Get Started
           </Text>
         </TouchableOpacity>
       </View>
