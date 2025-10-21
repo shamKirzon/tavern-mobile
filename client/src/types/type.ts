@@ -5,6 +5,8 @@ export type RootStackParamLists = {
   WelcomeScreen: undefined;
   ReservationPayment: undefined;
   Reservation: undefined;
+  EmailVerificationScreen: undefined;
+  OrderPolicyScreen: undefined;
   HomeScreen: undefined;
 
   // shams testing, ignore niyo lang ito:

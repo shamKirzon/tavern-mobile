@@ -24,6 +24,10 @@ import { useAuthStore } from "./src/services/useAuthStore";
 import { registerEmail } from "./src/services/authService";
 // import HomeScreenTesting from "./src/screens/shams-testing/HomeScreenTesting";
 
+// ✅ Added imports
+import EmailVerificationScreen from "./src/screens/EmailVerificationScreen";
+import OrderPolicyScreen from "./src/screens/OrderPolicyScreen";
+
 const App = () => {
   // testing helloworld
   const { isAuthenticated, setIsAuthenticated } = useAuthStore();
@@ -54,7 +58,7 @@ const App = () => {
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
-          initialRouteName="WelcomeScreen"
+          initialRouteName="OrderPolicyScreen"
           screenOptions={{ headerShown: false, animation: "none" }}
         >
           <Stack.Screen name="HomeScreen" component={HomeScreen} />
@@ -70,6 +74,16 @@ const App = () => {
             component={ReservationReviewScreen}
           />
           <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
+
+          {/* ✅ Added new screens below */}
+          <Stack.Screen
+            name="EmailVerificationScreen"
+            component={EmailVerificationScreen}
+          />
+          <Stack.Screen
+            name="OrderPolicyScreen"
+            component={OrderPolicyScreen}
+          />
 
           {/* shams testing - ignore niyo lang ito  */}
           {/*<Stack.Screen
