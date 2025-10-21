@@ -8,5 +8,5 @@ export type RootStackParamLists = {
   HomeScreen: undefined;
 
   // shams testing, ignore niyo lang ito:
-  HomeScreenTesting: undefined;
+  // HomeScreenTesting: undefined;
 };
