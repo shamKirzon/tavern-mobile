@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { RouteProp } from "@react-navigation/native";
-import { RootStackParamLists } from "../types/type";
+import { RootStackParamLists } from "../types/rootStackParamLists";
 import { height, width } from "../utils/dimensions";
 import {
   View,
@@ -91,9 +91,7 @@ const EmailVerificationScreen: React.FC<Props> = ({ navigation }) => {
   return (
     // ✅ Updated section starts here
     <View style={{ width, height, flex: 1 }}>
-      <MainBackground
-        style={{ position: "absolute", height: "100%" }}
-      />
+      <MainBackground style={{ position: "absolute", height: "100%" }} />
       {/* ✅ Keeps all screen content inside */}
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -161,7 +159,9 @@ const EmailVerificationScreen: React.FC<Props> = ({ navigation }) => {
               maxLength={1}
               value={otp[index]}
               onChangeText={(value) => handleOtpChange(index, value)}
-              onKeyPress={({ nativeEvent }) => handleKeyPress(index, nativeEvent.key)}
+              onKeyPress={({ nativeEvent }) =>
+                handleKeyPress(index, nativeEvent.key)
+              }
               style={{
                 width: width * 0.17,
                 height: width * 0.17,
