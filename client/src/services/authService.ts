@@ -2,6 +2,18 @@ import { AxiosInstance } from "axios";
 import { axiosInstance } from "../api/axiosInstance";
 import { saveToken } from "../utils/tokenUtils";
 
+type ReservationProperties = {
+  email: string;
+  firstName: string;
+  lastName: string;
+  mobileNumber: string;
+  validIdUrl: string;
+  paymentUrl: string;
+  reservationType: "exclusive" | "inclusive";
+  date: string;
+  pax: number;
+};
+
 export const registerEmail = async (email: string) => {
   try {
     const res = await axiosInstance.post("/customer/register-email", { email });
@@ -23,5 +35,18 @@ export const setInactiveCustomer = async (email: string) => {
     console.log("setInactiveCustomer() - res: ", res.data);
   } catch (error: any) {
     console.error("setInactiveCustomer error:", error);
+  }
+};
+
+export const createReservation = async (data: ReservationProperties) => {
+  try {
+    const res = await axiosInstance.post("/reservation/create-reservation", {
+      data,
+    });
+    if (!res) return console.error("can't create a reservation");
+
+    console.info("Reservation Created:", data);
+  } catch (error) {
+    console.error("error in createReservation(). Error: ", error);
   }
 };
