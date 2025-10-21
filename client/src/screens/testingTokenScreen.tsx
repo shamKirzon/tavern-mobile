@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Logo from "../assets/icons/neon-logo.svg";
 import { RouteProp } from "@react-navigation/native";
-import { RootStackParamLists } from "../types/type";
+import { RootStackParamLists } from "../types/rootStackParamLists";
 import { height, width } from "../utils/dimensions";
 import {
   View,

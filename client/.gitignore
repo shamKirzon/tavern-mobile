@@ -44,5 +44,3 @@ yarn-error.*
 .env
 
 src/screens/shams-testing
-App.tsx
-src/types/type.ts

@@ -4,13 +4,7 @@ import AsyncStorage, {
 import { jwtDecode } from "jwt-decode";
 import { TOKEN_SECRET_KEY } from "@env";
 import { axiosInstance } from "../api/axiosInstance";
-
-type TokenPayLoad = {
-  email: string;
-  iat: number;
-  exp: number;
-  jti: string;
-};
+import { TokenPayLoad } from "../types/token";
 
 export const saveToken = async (token: any) => {
   try {
@@ -57,7 +51,6 @@ export const isTokenExpired = (token: any): boolean => {
   }
 };
 
-// use this function inside the statement if there is an authenticated account fetched.
 export const refreshToken = async (token: any) => {
   try {
     const decodedToken = jwtDecode<TokenPayLoad>(token);

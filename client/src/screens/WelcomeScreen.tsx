@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Logo from "../assets/icons/neon-logo.svg";
 import { RouteProp } from "@react-navigation/native";
-import { RootStackParamLists } from "../types/type";
+import { RootStackParamLists } from "../types/rootStackParamLists";
 import { height, width } from "../utils/dimensions";
 import MainBackground from "../assets/backgrounds/main-background.svg";
 import ScheduleIcon from "../assets/icons/schedule-icon.svg";
@@ -53,7 +53,13 @@ const WelcomeScreen: React.FC<Props> = ({ navigation, route }) => {
         {/* Info Lines */}
         <View style={{ marginTop: height * 0.2 }}>
           {/* Open Hours */}
-          <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 10 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginBottom: 10,
+            }}
+          >
             <ScheduleIcon width={20} height={20} />
             <Text
               style={{
@@ -67,7 +73,13 @@ const WelcomeScreen: React.FC<Props> = ({ navigation, route }) => {
           </View>
 
           {/* Address */}
-          <View style={{ flexDirection: "row", alignItems: "flex-start", width: width * 0.8 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "flex-start",
+              width: width * 0.8,
+            }}
+          >
             <LocationIcon width={20} height={20} />
             <Text
               style={{

@@ -10,9 +10,9 @@ import {
 } from "react-native";
 import { width, height } from "../utils/dimensions";
 import { RouteProp } from "@react-navigation/native";
-import { RootStackParamLists } from "../types/type";
+import { RootStackParamLists } from "../types/rootStackParamLists";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useAuthStore } from "../services/useAuthStore";
+import { useAuthStore } from "../stores/useAuthStore";
 import MainBackground from "../assets/backgrounds/main-background.svg";
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<

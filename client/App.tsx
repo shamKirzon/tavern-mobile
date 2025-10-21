@@ -6,7 +6,7 @@ import ReservationPaymentScreen from "./src/screens/ReservationPaymentScreen";
 import ReservationReviewScreen from "./src/screens/ReservationReviewScreen";
 import Otp from "./src/screens/OtpScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { RootStackParamLists } from "./src/types/type";
+import { RootStackParamLists } from "./src/types/rootStackParamLists";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { navigationRef } from "./navigationRef";
@@ -17,34 +17,16 @@ import {
   isTokenExpired,
   refreshToken,
   saveToken,
-} from "./src/utils/tokenUtils";
+} from "./src/utils/token";
 import WelcomeScreen from "./src/screens/WelcomeScreen";
 import { width } from "./src/utils/dimensions";
-import { useAuthStore } from "./src/services/useAuthStore";
-import { registerEmail } from "./src/services/authService";
+import { useAuthStore } from "./src/stores/useAuthStore";
+import { registerEmail } from "./src/services/auth";
+import { checkToken } from "./src/services/token";
 // import HomeScreenTesting from "./src/screens/shams-testing/HomeScreenTesting";
 
 const App = () => {
-  // testing helloworld
-  const { isAuthenticated, setIsAuthenticated } = useAuthStore();
-
-  // token fetching (if there is an existing token)
   useEffect(() => {
-    const checkToken = async () => {
-      const token = await getToken();
-      const tokenPayload = await getTokenInformation(token);
-
-      if (!token || isTokenExpired(token)) {
-        setIsAuthenticated(false);
-        console.error("no token || the token is expired", token);
-        await deleteToken();
-      } else {
-        console.log("Token Refreshed Successfully!");
-        const afterRefresh = await refreshToken(token);
-        console.info("new issued at:", afterRefresh);
-        setIsAuthenticated(true);
-      }
-    };
     checkToken();
   }, []);
 
