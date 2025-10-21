@@ -27,8 +27,3 @@ export const useReservationStore = create<ReservationStore>((set) => ({
     })),
   clearReservationData: () => set({ customerReservationData: {} }),
 }));
-
-// last touch: then aralin mo yung sinabi ni chatgpt kung anong purpose niyan
-// sa part ng "state"
-
-//
