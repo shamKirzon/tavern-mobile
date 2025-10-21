@@ -17,6 +17,49 @@ class CustomerController {
       console.error(error.message || `Error registering email `);
     }
   }
+
+  // for future purposes
+  async setInactive(req: Request, res: Response) {
+    try {
+      const { email } = req.body;
+      if (!email)
+        return res.status(400).json({ message: "it must have an email" });
+
+      const customerStatus = await customerService.setStatus(email, false);
+      if (!customerStatus)
+        return res.status(404).json({ message: "email can't find." });
+
+      return res.status(200).json({
+        message: "customer status set as inactive",
+        customerStatus,
+      });
+    } catch (error: any) {
+      console.error(
+        error.message || "Can't perform setting status to inactive. "
+      );
+    }
+  }
+  // for future purposes
+  async setActive(req: Request, res: Response) {
+    try {
+      const { email } = req.body;
+      if (!email)
+        return res.status(400).json({ message: "it must have an email" });
+
+      const customerStatus = await customerService.setStatus(email, true);
+      if (!customerStatus)
+        return res.status(404).json({ message: "email can't find." });
+
+      return res.status(200).json({
+        message: "customer status set as active",
+        customerStatus,
+      });
+    } catch (error: any) {
+      console.error(
+        error.message || "Can't perform setting status to inactive. "
+      );
+    }
+  }
 }
 
 export const customerController = new CustomerController();

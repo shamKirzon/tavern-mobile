@@ -30,12 +30,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation, route }) => {
   return (
     <View style={{ width, height, flex: 1 }}>
       <MainBackground
-        preserveAspectRatio="none" // allows the SVG to stretch and fill the entire screen
-        style={{
-          position: "absolute",
-          width: "100%",
-          height: "100%", // ensures full coverage
-        }}
+        style={{ position: "absolute", height: "100%" }} // ⬅️ Makes it a background layer
       />
 
       {/* Foreground content */}
@@ -54,7 +49,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation, route }) => {
 
         {/* Button */}
         <TouchableOpacity
-          onPress={() => navigation.navigate("HomeScreen")}
+          onPress={() => navigation.navigate("HomeScreenTesting")}
           style={{
             backgroundColor: "#FFFFFF",
             paddingVertical: width * 0.05,

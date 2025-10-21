@@ -15,6 +15,8 @@ import {
   getToken,
   getTokenInformation,
   isTokenExpired,
+  refreshToken,
+  saveToken,
 } from "./src/utils/tokenUtils";
 import WelcomeScreen from "./src/screens/WelcomeScreen";
 import { width } from "./src/utils/dimensions";
@@ -25,19 +27,20 @@ import { registerEmail } from "./src/services/authService";
 const App = () => {
   const { isAuthenticated, setIsAuthenticated } = useAuthStore();
 
+  // token fetching (if there is an existing token)
   useEffect(() => {
-    // deleteToken();
     const checkToken = async () => {
       const token = await getToken();
       const tokenPayload = await getTokenInformation(token);
 
       if (!token || isTokenExpired(token)) {
         setIsAuthenticated(false);
-        console.log("no token || the token is expired", token);
+        console.error("no token || the token is expired", token);
         await deleteToken();
       } else {
-        console.log("token fetched successfully: ");
-        console.log(tokenPayload);
+        console.log("Token Refreshed Successfully!");
+        const afterRefresh = await refreshToken(token);
+        console.info("new issued at:", afterRefresh);
         setIsAuthenticated(true);
       }
     };
