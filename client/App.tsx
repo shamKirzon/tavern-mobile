@@ -27,6 +27,7 @@ import { checkToken } from "./src/services/token";
 // import ReservationScreenTesting from "./src/screens/shams-testing/ReservationScreenTesting";
 import EmailVerificationScreen from "./src/screens/EmailVerificationScreen";
 import OrderPolicyScreen from "./src/screens/OrderPolicyScreen";
+import ReservationScreenTesting from "./src/screens/shams-testing/ReservationScreenTesting";
 
 const App = () => {
   useEffect(() => {
@@ -39,7 +40,7 @@ const App = () => {
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
-          initialRouteName="HomeScreen"
+          initialRouteName="ReservationScreenTesting"
           screenOptions={{ headerShown: false, animation: "none" }}
         >
           <Stack.Screen name="HomeScreen" component={HomeScreen} />
@@ -56,7 +57,6 @@ const App = () => {
           />
           <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
 
-          {/* ✅ Added new screens below */}
           <Stack.Screen
             name="EmailVerificationScreen"
             component={EmailVerificationScreen}
@@ -67,10 +67,10 @@ const App = () => {
           />
 
           {/* shams testing - ignore niyo lang ito  */}
-          {/* <Stack.Screen
+          <Stack.Screen
             name="ReservationScreenTesting"
             component={ReservationScreenTesting}
-          /> */}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

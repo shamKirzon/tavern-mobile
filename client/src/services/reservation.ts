@@ -1,6 +1,7 @@
 import { AxiosInstance } from "axios";
 import { axiosInstance } from "../api/axiosInstance";
-import { ReservationData } from "../types/reservation";
+import { ReservationData, ReservationImageType } from "../types/reservation";
+import { getEmailByToken } from "./token";
 
 export const createReservation = async (data: ReservationData) => {
   try {
@@ -15,16 +16,36 @@ export const createReservation = async (data: ReservationData) => {
   }
 };
 
-export const uploadImage = async (imageUri: string) => {
+export const uploadImage = async (
+  imageUri: string,
+  type: ReservationImageType
+) => {
   try {
     if (!imageUri) return console.log("must have an imageUri");
 
-    const res = await axiosInstance.post("/reservation/upload-image", {
-      imageUri,
-    });
+    const formData = new FormData();
+    const email = await getEmailByToken();
 
-    return res;
-  } catch (error) {
-    console.error("error in fe uploadImage()", error);
+    formData.append("file", {
+      uri: imageUri,
+      type: "image/jpeg",
+      name: `${email.split("@")[0]}_${type}`,
+    } as any);
+
+    const res = await axiosInstance.post(
+      "/reservation/upload-image",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    if (!res) return console.error("can't upload image");
+
+    return res.data.imageUrl;
+  } catch (error: any) {
+    console.error("error in fe uploadImage()", error.message);
   }
 };

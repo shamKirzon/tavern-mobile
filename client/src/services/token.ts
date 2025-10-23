@@ -23,3 +23,10 @@ export const checkToken = async () => {
     setIsAuthenticated(true);
   }
 };
+
+export const getEmailByToken = async (): Promise<string> => {
+  const token = await getToken();
+
+  const { email } = await getTokenInformation(token);
+  return email;
+};

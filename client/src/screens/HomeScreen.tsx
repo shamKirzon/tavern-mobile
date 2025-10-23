@@ -34,7 +34,7 @@ const HomeScreen: React.FC<Props> = ({ navigation, route }) => {
   const [showToaster, setShowToaster] = useState(false);
   const [reservationStatus, setReservationStatus] = useState<
     "none" | "pending" | "approved" | "cancelled" | "review"
-  >("cancelled");
+  >("none");
 
   const fadeAnim = new Animated.Value(0);
 
