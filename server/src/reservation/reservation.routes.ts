@@ -1,5 +1,6 @@
 import { reservationController } from "./reservation.controller";
 import { Router } from "express";
+import { uploadMiddleware } from "./reservation.controller";
 
 const reservationRoutes = Router();
 
@@ -13,6 +14,11 @@ reservationRoutes.post(
   reservationController.getReservationData
 );
 
-reservationRoutes.post("/upload-image", reservationController.uploadImage);
+// for contentType: multipart/form-data
+reservationRoutes.post(
+  "/upload-image",
+  uploadMiddleware,
+  reservationController.uploadImage
+);
 
 export default reservationRoutes;

@@ -1,6 +1,11 @@
 import { Request, Response } from "express";
 import { reservationService } from "./reservation.service";
 import { uploadImageWithUrl } from "../utils/uploadImage";
+import multer from "multer";
+
+// Temporary local storage before upload to Cloudinary
+const upload = multer({ dest: "uploads/" });
+export const uploadMiddleware = upload.single("file");
 
 class ReservationController {
   async createReservation(req: Request, res: Response) {
@@ -47,13 +52,13 @@ class ReservationController {
 
   async uploadImage(req: Request, res: Response) {
     try {
-      const { imageUri } = req.body;
+      if (!req.file)
+        return res.status(400).json({ message: "no file uploaded" });
 
-      if (!imageUri)
-        return res.status(400).json({ message: "must have an image uri" });
+      const localFile = req.file;
 
-      // return url from the utils/uploadImage
-      const imageUrl = await uploadImageWithUrl(imageUri);
+      const imageUrl = await uploadImageWithUrl(localFile);
+
       console.log("image url: ", imageUrl);
       return res
         .status(200)
