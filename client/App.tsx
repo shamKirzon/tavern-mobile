@@ -40,7 +40,7 @@ const App = () => {
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
-          initialRouteName="EmailVerificationScreen"
+          initialRouteName="HomeScreen"
           screenOptions={{ headerShown: false, animation: "none" }}
         >
           <Stack.Screen name="HomeScreen" component={HomeScreen} />
