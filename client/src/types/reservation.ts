@@ -11,6 +11,8 @@ export type ReservationData = {
   pax?: number;
 };
 
+export type ReservationImageType = "validId" | "payment";
+
 export interface ReservationStore {
   customerReservationData: ReservationData;
   setReservationData: (data: Partial<ReservationData>) => void;

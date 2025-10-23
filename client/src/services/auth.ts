@@ -9,7 +9,7 @@ export const registerEmail = async (email: string) => {
     if (!res) return console.log("no created token");
     console.log("Email Successfully Verified");
     await saveToken(res.data);
-    // return res.data;
+    return res.data;
   } catch (error: any) {
     console.error("registerEmail error: ", error);
   }
