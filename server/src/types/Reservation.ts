@@ -10,3 +10,5 @@ export type ReservationData = {
   pax?: number;
   reservationAmount: number;
 };
+
+export type ReservationImageType = "payment" | "validId";

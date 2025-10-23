@@ -51,6 +51,26 @@ class ReservationRepository {
       console.error("error in createReservation: ", error);
     }
   }
+  async getReservationData(email: string) {
+    try {
+      const customerId = await supabase
+        .from("customers")
+        .select("customer_id")
+        .eq("email", email)
+        .single();
+
+      const { data, error } = await supabase
+        .from("reservations")
+        .select("*")
+        .eq("customer_id", customerId.data?.customer_id);
+
+      if (error) throw error;
+
+      return data;
+    } catch (error) {
+      console.error("error in getting reservation information: ", error);
+    }
+  }
 }
 
 export const reservationRepository = new ReservationRepository();

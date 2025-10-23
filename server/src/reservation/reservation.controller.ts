@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { reservationService } from "./reservation.service";
+import { uploadImageWithUrl } from "../utils/uploadImage";
 
 class ReservationController {
   async createReservation(req: Request, res: Response) {
@@ -17,6 +18,49 @@ class ReservationController {
     } catch (error: any) {
       console.error("error from createReservation(): ", error);
       return res.status(400).json({ message: "can't create reservation" });
+    }
+  }
+  async getReservationData(req: Request, res: Response) {
+    try {
+      const { email } = req.body;
+
+      if (!email)
+        return res.status(400).json({ message: "must have an email" });
+
+      const result = await reservationService.getReservationData(email);
+
+      if (!result)
+        return res
+          .status(400)
+          .json({ message: "there is no returned results. " });
+
+      console.info("reservation supabase result: ", result);
+
+      return res
+        .status(200)
+        .json({ message: "Reservation Created Successfully! ", result });
+    } catch (error: any) {
+      console.error("error from createReservation(): ", error);
+      return res.status(400).json({ message: "can't create reservation" });
+    }
+  }
+
+  async uploadImage(req: Request, res: Response) {
+    try {
+      const { imageUri } = req.body;
+
+      if (!imageUri)
+        return res.status(400).json({ message: "must have an image uri" });
+
+      // return url from the utils/uploadImage
+      const imageUrl = await uploadImageWithUrl(imageUri);
+      console.log("image url: ", imageUrl);
+      return res
+        .status(200)
+        .json({ message: "image uploaded successfully", imageUrl });
+    } catch (error: any) {
+      console.error("error from uploadImage(): ", error);
+      return res.status(400).json({ message: "can't upload image" });
     }
   }
 }

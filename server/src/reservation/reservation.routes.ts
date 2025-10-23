@@ -8,4 +8,11 @@ reservationRoutes.post(
   reservationController.createReservation
 );
 
+reservationRoutes.post(
+  "/get-reservation-data",
+  reservationController.getReservationData
+);
+
+reservationRoutes.post("/upload-image", reservationController.uploadImage);
+
 export default reservationRoutes;
