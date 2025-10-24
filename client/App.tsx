@@ -11,10 +11,11 @@ import { navigationRef } from "./navigationRef";
 import WelcomeScreen from "./src/screens/WelcomeScreen";
 import { checkToken } from "./src/services/token";
 // import HomeScreenTesting from "./src/screens/shams-testing/HomeScreenTesting";
-import ReservationScreenTesting from "./src/screens/shams-testing/ReservationScreenTesting";
+// import ReservationScreenTesting from "./src/screens/shams-testing/ReservationScreenTesting";
 import EmailVerificationScreen from "./src/screens/EmailVerificationScreen";
 import OrderPolicyScreen from "./src/screens/OrderPolicyScreen";
 import MenuViewingScreen from "./src/screens/MenuViewingScreen";
+import BookingSummaryScreen from "./src/screens/BookingSummaryScreen";
 
 const App = () => {
   useEffect(() => {
@@ -51,16 +52,24 @@ const App = () => {
             name="EmailVerificationScreen"
             component={EmailVerificationScreen}
           />
+
           <Stack.Screen
             name="OrderPolicyScreen"
             component={OrderPolicyScreen}
           />
 
-          {/* shams testing - ignore niyo lang ito  */}
           <Stack.Screen
-            name="ReservationScreenTesting"
-            component={ReservationScreenTesting}
+            name="BookingSummaryScreen"
+            component={BookingSummaryScreen}
           />
+
+          {/* shams testing - ignore niyo lang ito  */}
+          {/*
+          <Stack.Screen
+            name="HomeScreen"
+            component={HomeScreen}
+          />
+          */}
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>
