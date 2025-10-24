@@ -82,12 +82,12 @@ const MenuViewingScreen: React.FC<Props> = ({ navigation, route }) => {
         ];
       case "Desserts":
         return [
-          { name: "Cheesecake Slice", price: 150.0, image: require("../assets/images/desserts-category.jpg") },
-          { name: "Chocolate Lava Cake", price: 200.0, image: require("../assets/images/desserts-category.jpg") },
-          { name: "Banoffee Pie", price: 180.0, image: require("../assets/images/desserts-category.jpg") },
-          { name: "Tiramisu Cup", price: 190.0, image: require("../assets/images/desserts-category.jpg") },
-          { name: "Brownie Fudge", price: 160.0, image: require("../assets/images/desserts-category.jpg") },
-          { name: "Caramel Pudding", price: 140.0, image: require("../assets/images/desserts-category.jpg") },
+          { name: "Cheesecake Slice", price: 150.0, image: require("../assets/images/desserts/cheesecake.jpg") },
+          { name: "Chocolate Lava Cake", price: 200.0, image: require("../assets/images/desserts/lavacake.jpg") },
+          { name: "Banoffee Pie", price: 180.0, image: require("../assets/images/desserts/banoffee.jpg") },
+          { name: "Tiramisu Cup", price: 190.0, image: require("../assets/images/desserts/tiramisu.jpg") },
+          { name: "Brownie Fudge", price: 160.0, image: require("../assets/images/desserts/brownies.jpg") },
+          { name: "Caramel Pudding", price: 140.0, image: require("../assets/images/desserts/caramel.jpg") },
         ];
       case "Drinks":
         return {
