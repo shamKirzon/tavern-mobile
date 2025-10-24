@@ -5,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   ImageBackground,
-  ScrollView,
   StyleSheet,
   Animated,
 } from "react-native";
@@ -28,7 +27,7 @@ interface Props {
   route: HomeScreenRouteProp;
 }
 
-const HomeScreen: React.FC<Props> = ({ navigation, route }) => {
+const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const { isAuthenticated } = useAuthStore();
   const [email, setEmail] = useState("");
   const [showToaster, setShowToaster] = useState(false);
@@ -67,7 +66,6 @@ const HomeScreen: React.FC<Props> = ({ navigation, route }) => {
       return;
     }
 
-    // simulate email verification
     setShowToaster(true);
 
     Animated.timing(fadeAnim, {
@@ -83,7 +81,6 @@ const HomeScreen: React.FC<Props> = ({ navigation, route }) => {
         useNativeDriver: true,
       }).start(() => {
         setShowToaster(false);
-        // once toaster disappears, show reservation section
         setReservationStatus("none");
       });
     }, 3000);
@@ -166,15 +163,20 @@ const HomeScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   const menu = (): JSX.Element => (
-    <ScrollView
-      style={{ width: "100%", marginTop: 20 }}
-      showsVerticalScrollIndicator={false}
-    >
+    <View style={{ width: "100%", marginTop: 30 }}>
       <Text style={styles.menuTitle}>Our Menu</Text>
 
       <View style={styles.menuContainer}>
         {menuList.map((item, index) => (
-          <TouchableOpacity key={index} style={styles.menuCard}>
+          <TouchableOpacity
+            key={index}
+            style={styles.menuCard}
+            onPress={() =>
+              navigation.navigate("MenuViewingScreen", {
+                category: item.category,
+              })
+            }
+          >
             <ImageBackground
               source={item.background}
               style={styles.menuImage}
@@ -187,7 +189,7 @@ const HomeScreen: React.FC<Props> = ({ navigation, route }) => {
           </TouchableOpacity>
         ))}
       </View>
-    </ScrollView>
+    </View>
   );
 
   return (
@@ -199,7 +201,7 @@ const HomeScreen: React.FC<Props> = ({ navigation, route }) => {
         style={styles.bg}
       />
 
-      <View style={{ width: "100%", alignItems: "center" }}>
+      <View style={styles.content}>
         <Text style={styles.title}>Book a Reservation.</Text>
         <Text style={styles.subtitle}>
           Great food, great drinks, top notch service and a warm inviting
@@ -226,7 +228,6 @@ const HomeScreen: React.FC<Props> = ({ navigation, route }) => {
         )}
 
         {reservationSection()}
-
         {menu()}
       </View>
     </View>
@@ -235,21 +236,25 @@ const HomeScreen: React.FC<Props> = ({ navigation, route }) => {
 
 const styles = StyleSheet.create({
   mainContainer: {
+    flex: 1,
     width,
     height,
-    flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-end",
     alignItems: "center",
-    padding: width * 0.08,
   },
   bg: {
     position: "absolute",
     top: 0,
     left: 0,
   },
+  content: {
+    width: "90%",
+    alignItems: "center",
+    marginBottom: height * 0.02, // lowers everything
+  },
   title: {
     color: "white",
-    fontSize: width * 0.065,
+    fontSize: width * 0.08,
     fontWeight: "bold",
     marginBottom: 10,
     textAlign: "left",
@@ -308,9 +313,9 @@ const styles = StyleSheet.create({
   },
   menuTitle: {
     color: "white",
-    fontSize: width * 0.08,
+    fontSize: width * 0.075,
     fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: 15,
     textAlign: "left",
     paddingHorizontal: 10,
   },
@@ -343,15 +348,15 @@ const styles = StyleSheet.create({
   },
   menuCategory: {
     color: "white",
-    fontSize: width * 0.06,
+    fontSize: width * 0.055,
     fontWeight: "bold",
     marginBottom: 8,
     zIndex: 1,
   },
   menuDescription: {
     color: "white",
-    fontSize: width * 0.038,
-    lineHeight: 20,
+    fontSize: width * 0.035,
+    lineHeight: 18,
     zIndex: 1,
   },
 });

@@ -27,7 +27,7 @@ import { checkToken } from "./src/services/token";
 // import ReservationScreenTesting from "./src/screens/shams-testing/ReservationScreenTesting";
 import EmailVerificationScreen from "./src/screens/EmailVerificationScreen";
 import OrderPolicyScreen from "./src/screens/OrderPolicyScreen";
-//import ReservationScreenTesting from "./src/screens/shams-testing/ReservationScreenTesting";
+import MenuViewingScreen from "./src/screens/MenuViewingScreen";
 
 const App = () => {
   useEffect(() => {
@@ -44,6 +44,7 @@ const App = () => {
           screenOptions={{ headerShown: false, animation: "none" }}
         >
           <Stack.Screen name="HomeScreen" component={HomeScreen} />
+          <Stack.Screen name="MenuViewingScreen" component={MenuViewingScreen} />
           <Stack.Screen name="Otp" component={Otp} />
 
           <Stack.Screen name="Reservation" component={Reservation} />
