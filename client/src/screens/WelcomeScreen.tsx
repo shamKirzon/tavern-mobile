@@ -91,7 +91,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation, route }) => {
           style={{
             backgroundColor: "#8A1717",
             paddingVertical: width * 0.055,
-            paddingHorizontal: 80,
+            paddingHorizontal: 105,
             borderRadius: 16,
             marginTop: height * 0.15,
           }}
