@@ -3,7 +3,6 @@ import { reservationService } from "./reservation.service";
 import { uploadImageWithUrl } from "../utils/uploadImage";
 import multer from "multer";
 
-// Temporary local storage before upload to Cloudinary
 const upload = multer({ dest: "uploads/" });
 export const uploadMiddleware = upload.single("file");
 

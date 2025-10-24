@@ -33,7 +33,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [showToaster, setShowToaster] = useState(false);
   const [reservationStatus, setReservationStatus] = useState<
     "none" | "pending" | "approved" | "cancelled" | "review"
-  >("pending");
+  >("approved");
 
   const fadeAnim = new Animated.Value(0);
 
@@ -126,7 +126,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       case "approved":
         return (
           <Text style={[styles.label, { backgroundColor: "#4CAF50" }]}>
-            Reservation Approved.
+            Email Verified
           </Text>
         );
       case "cancelled":
