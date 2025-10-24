@@ -5,7 +5,6 @@ export type ReservationData = {
   mobileNumber?: string;
   validIdUrl?: string;
   paymentUrl?: string;
-  customerId?: string;
   reservationType?: string;
   date?: string;
   pax?: number;

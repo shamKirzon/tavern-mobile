@@ -33,7 +33,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [showToaster, setShowToaster] = useState(false);
   const [reservationStatus, setReservationStatus] = useState<
     "none" | "pending" | "approved" | "cancelled" | "review"
-  >("none");
+  >("pending");
 
   const fadeAnim = new Animated.Value(0);
 
@@ -153,7 +153,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       <View style={{ width: "100%", alignItems: "center", marginBottom: 20 }}>
         {renderReservationLabel()}
         <TouchableOpacity
-          onPress={() => navigation.navigate("WelcomeScreen")}
+          onPress={() => navigation.navigate("EmailVerificationScreen")}
           style={styles.statusButton}
         >
           <Text style={styles.statusText}>View Status</Text>

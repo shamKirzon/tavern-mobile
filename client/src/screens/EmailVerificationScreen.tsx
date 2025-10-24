@@ -115,7 +115,7 @@ const EmailVerificationScreen: React.FC<Props> = ({ navigation }) => {
         </TouchableOpacity>
 
         {/* Title Section */}
-        <View style={{ alignItems: "center", marginBottom: height * 0.03 }}>
+        <View style={{ marginBottom: height * 0.03 }}>
           <Text
             style={{
               color: "#FFFFFF",
@@ -133,7 +133,6 @@ const EmailVerificationScreen: React.FC<Props> = ({ navigation }) => {
               fontSize: width * 0.04,
               marginTop: height * 0.015,
               fontFamily: "Poppins",
-              paddingHorizontal: width * 0.04,
             }}
           >
             We have sent a 4-digit verification code to your email address.

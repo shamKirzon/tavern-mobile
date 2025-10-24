@@ -1,30 +1,17 @@
-import { View, Text, Dimensions } from "react-native";
 import React, { useEffect, useState } from "react";
 import HomeScreen from "./src/screens/HomeScreen";
 import Reservation from "./src/screens/ReservationScreen";
 import ReservationPaymentScreen from "./src/screens/ReservationPaymentScreen";
 import ReservationReviewScreen from "./src/screens/ReservationReviewScreen";
-import Otp from "./src/screens/OtpScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { RootStackParamLists } from "./src/types/rootStackParamLists";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { navigationRef } from "./navigationRef";
-import {
-  deleteToken,
-  getToken,
-  getTokenInformation,
-  isTokenExpired,
-  refreshToken,
-  saveToken,
-} from "./src/utils/token";
 import WelcomeScreen from "./src/screens/WelcomeScreen";
-import { width } from "./src/utils/dimensions";
-import { useAuthStore } from "./src/stores/useAuthStore";
-import { registerEmail } from "./src/services/auth";
 import { checkToken } from "./src/services/token";
 // import HomeScreenTesting from "./src/screens/shams-testing/HomeScreenTesting";
-// import ReservationScreenTesting from "./src/screens/shams-testing/ReservationScreenTesting";
+import ReservationScreenTesting from "./src/screens/shams-testing/ReservationScreenTesting";
 import EmailVerificationScreen from "./src/screens/EmailVerificationScreen";
 import OrderPolicyScreen from "./src/screens/OrderPolicyScreen";
 import MenuViewingScreen from "./src/screens/MenuViewingScreen";
@@ -40,12 +27,14 @@ const App = () => {
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
-          initialRouteName="WelcomeScreen"
+          initialRouteName="ReservationScreenTesting"
           screenOptions={{ headerShown: false, animation: "none" }}
         >
           <Stack.Screen name="HomeScreen" component={HomeScreen} />
-          <Stack.Screen name="MenuViewingScreen" component={MenuViewingScreen} />
-          <Stack.Screen name="Otp" component={Otp} />
+          <Stack.Screen
+            name="MenuViewingScreen"
+            component={MenuViewingScreen}
+          />
 
           <Stack.Screen name="Reservation" component={Reservation} />
           <Stack.Screen
@@ -68,10 +57,10 @@ const App = () => {
           />
 
           {/* shams testing - ignore niyo lang ito  */}
-          {/*<Stack.Screen
+          <Stack.Screen
             name="ReservationScreenTesting"
             component={ReservationScreenTesting}
-          />*/}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>
