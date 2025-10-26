@@ -9,6 +9,7 @@ export type RootStackParamLists = {
   HomeScreen: undefined;
   MenuViewingScreen: { category: string };
   BookingSummaryScreen: undefined;
+  PaymentScreen: undefined;
 
   // shams testing, ignore niyo lang ito:
   HomeScreenTesting: undefined;

@@ -16,6 +16,7 @@ import EmailVerificationScreen from "./src/screens/EmailVerificationScreen";
 import OrderPolicyScreen from "./src/screens/OrderPolicyScreen";
 import MenuViewingScreen from "./src/screens/MenuViewingScreen";
 import BookingSummaryScreen from "./src/screens/BookingSummaryScreen";
+import PaymentScreen from "./src/screens/PaymentScreen";
 
 const App = () => {
   useEffect(() => {
@@ -28,7 +29,7 @@ const App = () => {
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
-          initialRouteName="WelcomeScreen"
+          initialRouteName="PaymentScreen"
           screenOptions={{ headerShown: false, animation: "none" }}
         >
           <Stack.Screen name="HomeScreen" component={HomeScreen} />
@@ -57,6 +58,8 @@ const App = () => {
             name="OrderPolicyScreen"
             component={OrderPolicyScreen}
           />
+
+          <Stack.Screen name="PaymentScreen" component={PaymentScreen} />
 
           <Stack.Screen
             name="BookingSummaryScreen"
