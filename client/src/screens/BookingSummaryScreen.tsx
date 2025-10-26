@@ -8,8 +8,25 @@ import {
   ScrollView,
   Pressable,
 } from "react-native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RouteProp } from "@react-navigation/native";
+import { RootStackParamLists } from "../types/rootStackParamLists";
 
-const BookingSummaryScreen = ({ navigation }: any) => {
+type BookingSummaryScreenNavigationProps = NativeStackNavigationProp<
+  RootStackParamLists,
+  "BookingSummaryScreen"
+>;
+type BookingSummaryScreenRouteProps = RouteProp<
+  RootStackParamLists,
+  "BookingSummaryScreen"
+>;
+
+type Props = {
+  navigation: BookingSummaryScreenNavigationProps;
+  route: BookingSummaryScreenRouteProps;
+};
+
+const BookingSummaryScreen: React.FC<Props> = ({ navigation }) => {
   const [isChecked, setIsChecked] = useState(false);
 
   return (
@@ -95,8 +112,8 @@ const BookingSummaryScreen = ({ navigation }: any) => {
 
               <Text style={styles.policyTitle}>Cancellation Policy</Text>
               <Text style={styles.policyText}>
-                Cancellations made within 24 hours of pickup/delivery will not be
-                refunded.
+                Cancellations made within 24 hours of pickup/delivery will not
+                be refunded.
               </Text>
 
               <Text style={styles.policyTitle}>Payment Policy</Text>
@@ -140,7 +157,7 @@ const BookingSummaryScreen = ({ navigation }: any) => {
         <TouchableOpacity
           style={[styles.button, { opacity: isChecked ? 1 : 0.5 }]}
           disabled={!isChecked}
-          onPress={() => navigation?.navigate?.("PaymentScreen")}
+          onPress={() => navigation?.navigate?.("HomeScreen")}
         >
           <Text style={styles.buttonText}>Continue to Payment</Text>
         </TouchableOpacity>
