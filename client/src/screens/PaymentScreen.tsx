@@ -5,9 +5,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  ScrollView,
+  Dimensions,
 } from "react-native";
 import MainBackground from "../assets/backgrounds/main-background.svg";
+
+const { width, height } = Dimensions.get("window");
 
 const PaymentScreen = ({ navigation }: any) => {
   return (
@@ -20,7 +22,6 @@ const PaymentScreen = ({ navigation }: any) => {
         style={StyleSheet.absoluteFillObject}
       />
 
-      {/* Main Content */}
       <View style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
@@ -30,123 +31,128 @@ const PaymentScreen = ({ navigation }: any) => {
           >
             <View style={styles.customArrow} />
           </TouchableOpacity>
-
           <Text style={styles.headerTitle}>Payment</Text>
         </View>
 
         {/* Progress Bar */}
-        <View style={styles.progressContainer}>
-          {[0, 1, 2, 3, 4].map((step) => (
-            <React.Fragment key={step}>
-              <View
-                style={[
-                  styles.circle,
-                  step <= 1 ? styles.circleActive : styles.circleInactive,
-                ]}
-              />
-              {step < 4 && (
+        <View style={styles.inlineProgressWrapper}>
+          <View style={styles.inlineProgressContainer}>
+            {[0, 1, 2, 3, 4].map((step) => (
+              <React.Fragment key={step}>
                 <View
                   style={[
-                    styles.line,
-                    step < 1 ? styles.lineActive : styles.lineInactive,
+                    styles.inlineCircle,
+                    step <= 1
+                      ? styles.inlineCircleActive
+                      : styles.inlineCircleInactive,
                   ]}
                 />
-              )}
-            </React.Fragment>
-          ))}
+                {step < 4 && <View style={styles.inlineLine} />}
+              </React.Fragment>
+            ))}
+          </View>
         </View>
 
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-          {/* Note */}
-          <View style={styles.noteBox}>
-            <Text style={styles.noteText}>
-              Note: A reservation fee is required to secure your booking. 50% of
-              this amount is consumable and can be used for food and drink
-              orders during your event.
-            </Text>
+        {/* Note Box */}
+        <View style={styles.noteBox}>
+          <View style={styles.noteHeader}>
+            <View style={styles.infoIcon}>
+              <Text style={styles.infoText}>i</Text>
+            </View>
+            <Text style={styles.noteTitle}>Note:</Text>
           </View>
 
-          {/* Payment Methods */}
-          <View style={styles.paymentContainer}>
-            <Text style={styles.paymentTitle}>Payment Method</Text>
+          <Text style={styles.noteText}>
+            A reservation fee is required to secure your booking. 50% of this
+            amount is consumable and can be used for food and drink orders during
+            your event.
+          </Text>
+        </View>
 
-            <View style={styles.qrRow}>
-              {/* GCash */}
-              <View style={styles.qrCard}>
-                {/* <Image
-                  source={require("../assets/payments/GCashLogo.png")}
-                  style={styles.logo}
-                />
-                <Image
-                  source={require("../assets/payments/GCashQR.png")}
-                  style={styles.qrImage}
-                /> */}
-                <Text style={[styles.accountText, { color: "#1F51FF" }]}>
-                  Tavern GCash
-                </Text>
-                <Text style={[styles.accountText, { color: "#1F51FF" }]}>
-                  09615124880
-                </Text>
-              </View>
+        {/* Payment Methods */}
+        <View style={styles.paymentContainer}>
+          <Text style={styles.paymentTitle}>Payment Method</Text>
 
-              {/* BPI */}
-              <View style={styles.qrCard}>
-                {/* <Image
-                  source={require("../assets/payments/BPILogo.png")}
-                  style={styles.logo}
-                />
-                <Image
-                  source={require("../assets/payments/BPIQR.png")}
-                  style={styles.qrImage}
-                /> */}
-                <Text style={[styles.accountText, { color: "#FF0000" }]}>
-                  Tavern
-                </Text>
-                <Text style={[styles.accountText, { color: "#FF0000" }]}>
-                  Account No.
-                </Text>
-              </View>
+          <View style={styles.qrRow}>
+            {/* GCash */}
+            <View style={styles.qrCard}>
+              <Image
+                source={require("../assets/payments/GCashLogo.png")}
+                style={styles.logo}
+              />
+              <Image
+                source={require("../assets/payments/GCashQR.png")}
+                style={styles.qrImage}
+              />
+              <Text style={[styles.accountText, { color: "#1F51FF" }]}>
+                Tavern GCash
+              </Text>
+              <Text style={[styles.accountText, { color: "#1F51FF" }]}>
+                09615124880
+              </Text>
+            </View>
 
-              {/* PayMaya */}
-              <View style={styles.qrCard}>
-                {/* <Image
-                  source={require("../assets/payments/MayaLogo.png")}
-                  style={styles.logo}
-                />
-                <Image
-                  source={require("../assets/payments/MayaQR.png")}
-                  style={styles.qrImage}
-                /> */}
-                <Text style={[styles.accountText, { color: "#006400" }]}>
-                  Tavern PM
-                </Text>
-                <Text style={[styles.accountText, { color: "#006400" }]}>
-                  Account No.
-                </Text>
-              </View>
+            {/* BPI */}
+            <View style={styles.qrCard}>
+              <Image
+                source={require("../assets/payments/BPILogo.png")}
+                style={styles.logo}
+              />
+              <Image
+                source={require("../assets/payments/BPIQR.png")}
+                style={styles.qrImage}
+              />
+              <Text style={[styles.accountText, { color: "#FF0000" }]}>
+                Tavern
+              </Text>
+              <Text style={[styles.accountText, { color: "#FF0000" }]}>
+                Account No.
+              </Text>
+            </View>
+
+            {/* PayMaya */}
+            <View style={styles.qrCard}>
+              <Image
+                source={require("../assets/payments/MayaLogo.png")}
+                style={styles.logo}
+              />
+              <Image
+                source={require("../assets/payments/MayaQR.png")}
+                style={styles.qrImage}
+              />
+              <Text style={[styles.accountText, { color: "#006400" }]}>
+                Tavern PM
+              </Text>
+              <Text style={[styles.accountText, { color: "#006400" }]}>
+                Account No.
+              </Text>
             </View>
           </View>
 
           {/* Total Payable */}
-          <Text style={styles.totalLabel}>Total Payable Amount is:</Text>
-          <Text style={styles.totalAmount}>₱30,000.00</Text>
-
-          {/* Upload Proof */}
-          <View style={styles.uploadContainer}>
-            <Text style={styles.uploadLabel}>Upload Proof of Payment</Text>
-            <TouchableOpacity style={styles.browseButton}>
-              <Text style={styles.browseButtonText}>Browse File</Text>
-            </TouchableOpacity>
+          <View style={styles.totalPayableBox}>
+            <Text style={styles.totalLabel}>Total Payable Amount is:</Text>
+            <Text style={styles.totalAmount}>₱30,000.00</Text>
           </View>
+        </View>
 
-          {/* Confirm Button */}
+        {/* Upload Proof */}
+        <View style={styles.uploadContainer}>
+          <Text style={styles.uploadLabel}>Upload Proof of Payment</Text>
+          <TouchableOpacity style={styles.browseButton}>
+            <Text style={styles.browseButtonText}>Browse File</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Confirm Payment Button - pushed lower */}
+        <View style={styles.fixedButtonContainer}>
           <TouchableOpacity
             style={styles.confirmButton}
             onPress={() => navigation.navigate("ConfirmationScreen")}
           >
             <Text style={styles.confirmButtonText}>Confirm Payment</Text>
           </TouchableOpacity>
-        </ScrollView>
+        </View>
       </View>
     </View>
   );
@@ -157,14 +163,12 @@ export default PaymentScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 50,
   },
-
-  /** HEADER **/
   header: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 50,
   },
   backArrowButton: {
     width: 35,
@@ -188,22 +192,31 @@ const styles = StyleSheet.create({
   },
 
   /** PROGRESS **/
-  progressContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+  inlineProgressWrapper: {
+    width: width,
+    alignSelf: "center",
     marginVertical: 25,
   },
-  circle: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
+  inlineProgressContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: width * 0.9,
+    alignSelf: "center",
   },
-  circleActive: { backgroundColor: "#D4AF37" },
-  circleInactive: { backgroundColor: "#fff" },
-  line: { height: 2, width: 28 },
-  lineActive: { backgroundColor: "#D4AF37" },
-  lineInactive: { backgroundColor: "#fff", opacity: 0.6 },
+  inlineCircle: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+  },
+  inlineCircleActive: { backgroundColor: "#FFD85A" },
+  inlineCircleInactive: { backgroundColor: "#fff", opacity: 0.9 },
+  inlineLine: {
+    flex: 1,
+    height: 2,
+    backgroundColor: "#fff",
+    opacity: 0.8,
+  },
 
   /** NOTE **/
   noteBox: {
@@ -214,13 +227,38 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 15,
   },
+  noteHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 6,
+  },
+  infoIcon: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    borderWidth: 1.5,
+    borderColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 8,
+  },
+  infoText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  noteTitle: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 14,
+  },
   noteText: {
     color: "#fff",
     fontSize: 13,
     lineHeight: 18,
   },
 
-  /** PAYMENT METHODS **/
+  /** PAYMENT **/
   paymentContainer: {
     backgroundColor: "rgba(255,255,255,0.1)",
     borderRadius: 12,
@@ -261,29 +299,28 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     textAlign: "center",
   },
-
-  /** TOTAL **/
+  totalPayableBox: {
+    marginTop: 15,
+    paddingVertical: 10,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(255,255,255,0.2)",
+    alignItems: "center",
+  },
   totalLabel: {
     color: "#fff",
-    textAlign: "center",
     fontSize: 15,
-    marginBottom: 5,
   },
   totalAmount: {
     color: "#fff",
-    textAlign: "center",
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 25,
   },
 
   /** UPLOAD **/
   uploadContainer: {
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "transparent",
-    marginBottom: 25,
+    marginBottom: 150, // ⬅️ Increased from 90 to 150 to move it lower
   },
   uploadLabel: {
     color: "#fff",
@@ -302,21 +339,22 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  /** CONFIRM BUTTON **/
+  /** CONFIRM BUTTON LOWER **/
+  fixedButtonContainer: {
+    position: "absolute",
+    bottom: 100,
+    left: 20,
+    right: 20,
+  },
   confirmButton: {
     backgroundColor: "#8B0000",
     borderRadius: 12,
     paddingVertical: 16,
     alignItems: "center",
-    marginBottom: 50,
   },
   confirmButtonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
-  },
-
-  scrollContainer: {
-    paddingBottom: 100,
   },
 });

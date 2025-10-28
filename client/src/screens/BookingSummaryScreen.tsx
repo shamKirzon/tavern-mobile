@@ -16,6 +16,7 @@ type BookingSummaryScreenNavigationProps = NativeStackNavigationProp<
   RootStackParamLists,
   "BookingSummaryScreen"
 >;
+
 type BookingSummaryScreenRouteProps = RouteProp<
   RootStackParamLists,
   "BookingSummaryScreen"
@@ -53,7 +54,7 @@ const BookingSummaryScreen: React.FC<Props> = ({ navigation }) => {
           <Text style={styles.headerTitle}>Reservation</Text>
         </View>
 
-        {/* Progress Bar (below header, above Booking Summary) */}
+        {/* Progress Bar */}
         <View style={styles.inlineProgressWrapper}>
           <View style={styles.inlineProgressContainer}>
             {[0, 1, 2, 3, 4].map((step) => (
@@ -209,7 +210,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    width: "90%", // spans across width like your reference
+    width: "90%",
   },
   inlineCircle: {
     width: 12,
@@ -217,7 +218,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   inlineCircleActive: {
-    backgroundColor: "#FFD85A", // gold like in the screenshot
+    backgroundColor: "#FFD85A",
   },
   inlineCircleInactive: {
     backgroundColor: "#FFFFFF",
