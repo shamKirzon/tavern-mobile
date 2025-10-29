@@ -29,23 +29,24 @@ const App = () => {
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
-          initialRouteName="PaymentScreen"
+          initialRouteName="HomeScreen"
           screenOptions={{ headerShown: false, animation: "none" }}
         >
-          <Stack.Screen name="HomeScreen" component={HomeScreen} />
           <Stack.Screen
             name="MenuViewingScreen"
             component={MenuViewingScreen}
+          />
+
+          <Stack.Screen name="HomeScreen" component={HomeScreen} />
+          <Stack.Screen
+            name="ReservationReview"
+            component={ReservationReviewScreen}
           />
 
           <Stack.Screen name="Reservation" component={Reservation} />
           <Stack.Screen
             name="ReservationPayment"
             component={ReservationPaymentScreen}
-          />
-          <Stack.Screen
-            name="ReservationReview"
-            component={ReservationReviewScreen}
           />
           <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
 

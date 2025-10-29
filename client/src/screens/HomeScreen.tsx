@@ -14,6 +14,7 @@ import { RootStackParamLists } from "../types/rootStackParamLists";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useAuthStore } from "../stores/useAuthStore";
 import MainBackground from "../assets/backgrounds/main-background.svg";
+import { category } from "../data/category";
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamLists,
@@ -36,29 +37,6 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   >("approved");
 
   const fadeAnim = new Animated.Value(0);
-
-  const menuList = [
-    {
-      background: require("../assets/images/appetizer-category.jpg"),
-      category: "Appetizer",
-      description: "Start your meal with something light and flavorful.",
-    },
-    {
-      background: require("../assets/images/maincourse-category.jpg"),
-      category: "Main Course",
-      description: "Hearty dishes made to satisfy your appetite.",
-    },
-    {
-      background: require("../assets/images/desserts-category.jpg"),
-      category: "Desserts",
-      description: "Sweet treats to end your meal perfectly.",
-    },
-    {
-      background: require("../assets/images/drinks-category.jpg"),
-      category: "Drinks",
-      description: "Refreshing beverages to pair with your meal.",
-    },
-  ];
 
   const handleContinue = () => {
     if (!email.trim()) {
@@ -167,23 +145,23 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       <Text style={styles.menuTitle}>Our Menu</Text>
 
       <View style={styles.menuContainer}>
-        {menuList.map((item, index) => (
+        {Object.values(category).map((item, index) => (
           <TouchableOpacity
             key={index}
             style={styles.menuCard}
             onPress={() =>
               navigation.navigate("MenuViewingScreen", {
-                category: item.category,
+                category: item.header,
               })
             }
           >
             <ImageBackground
-              source={item.background}
+              source={item.imagePath}
               style={styles.menuImage}
               imageStyle={styles.menuImageStyle}
             >
               <View style={styles.menuOverlay} />
-              <Text style={styles.menuCategory}>{item.category}</Text>
+              <Text style={styles.menuCategory}>{item.header}</Text>
               <Text style={styles.menuDescription}>{item.description}</Text>
             </ImageBackground>
           </TouchableOpacity>
