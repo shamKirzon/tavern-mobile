@@ -11,5 +11,6 @@ app.use(express.json());
 app.use("/api/otp", otpRoutes);
 app.use("/api/customer", customerRoutes);
 app.use("/api/reservation", reservationRoutes);
+app.use("/api/order", orderRoutes);
 
 export default app;

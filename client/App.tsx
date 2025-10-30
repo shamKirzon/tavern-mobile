@@ -18,7 +18,6 @@ import MenuViewingScreen from "./src/screens/MenuViewingScreen";
 import BookingSummaryScreen from "./src/screens/BookingSummaryScreen";
 import PaymentScreen from "./src/screens/PaymentScreen";
 
-
 const App = () => {
   useEffect(() => {
     checkToken();
@@ -30,7 +29,7 @@ const App = () => {
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
-          initialRouteName="HomeScreen"
+          initialRouteName="Reservation"
           screenOptions={{ headerShown: false, animation: "none" }}
         >
           <Stack.Screen
