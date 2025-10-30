@@ -18,6 +18,7 @@ import MenuViewingScreen from "./src/screens/MenuViewingScreen";
 import BookingSummaryScreen from "./src/screens/BookingSummaryScreen";
 import PaymentScreen from "./src/screens/PaymentScreen";
 
+
 const App = () => {
   useEffect(() => {
     checkToken();
