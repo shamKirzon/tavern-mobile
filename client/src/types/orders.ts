@@ -13,7 +13,12 @@ export type ordersData = {
 };
 
 export interface orderStore {
-  ordersData: ordersData;
-  setOrdersData: (data: Partial<ordersData>) => void;
-  clearOrdersData: () => void;
+  orders: ordersData;
+  addOrders: (data: Partial<ordersData>) => void;
+  removeOrders: (name: string) => void;
+  updateOrders: (
+    name: string,
+    updatedData: Partial<ordersData["orderItems"][number]>
+  ) => void;
+  clearOrders: () => void;
 }
