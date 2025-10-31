@@ -3,6 +3,7 @@ import cors from "cors";
 import otpRoutes from "./src/customer/otp/otp.routes";
 import customerRoutes from "./src/customer/customer.routes";
 import reservationRoutes from "./src/reservation/reservation.routes";
+import orderRoutes from "./src/order/order.route";
 
 const app = express();
 app.use(cors());

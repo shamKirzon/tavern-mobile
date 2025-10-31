@@ -16,6 +16,11 @@ class ReservationController {
       const result = await reservationService.createReservation(data);
       console.info("reservation supabase result: ", result);
 
+      if (!result)
+        throw new Error(
+          "Reservation creation failed: No data returned from Supabase."
+        );
+
       return res
         .status(200)
         .json({ message: "Reservation Created Successfully! ", result });

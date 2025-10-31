@@ -39,7 +39,6 @@ class ReservationRepository {
             customer_id: customerId.data?.customer_id,
           },
         ])
-        .eq("email", email)
         .select()
         .single();
 
