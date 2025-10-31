@@ -1,4 +1,3 @@
-import { AxiosInstance } from "axios";
 import { axiosInstance } from "../api/axiosInstance";
 
 export const setCustomerInactive = async (email: string) => {
