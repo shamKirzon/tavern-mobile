@@ -1,17 +1,12 @@
-// ReservationScreen.tsx
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
+  TextInput,
   StyleSheet,
-  Animated,
-  FlatList,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
   Alert,
+  ScrollView,
 } from "react-native";
 import { width, height } from "../utils/dimensions";
 import { RouteProp } from "@react-navigation/native";
@@ -31,594 +26,513 @@ interface Props {
   route: ReservationScreenRouteProp;
 }
 
-/* ---------- Constants & rules (from your spec) ---------- */
-const MAX_PAX_PER_DAY = 100;
-const INCLUSIVE_RATE = 1000;
-const EXCLUSIVE_RATE = 2000;
-const INCLUSIVE_MAX = 70;
-const EXCLUSIVE_MAX = 30;
-const EXCLUSIVE_MIN = 15;
-
-/* ---------- Helper utils ---------- */
-const formatDateKey = (d: Date) => d.toISOString().slice(0, 10); // YYYY-MM-DD
-const getTwoWeeks = (start = new Date()) => {
-  const startDay = new Date(start);
-  startDay.setHours(0, 0, 0, 0);
-  return Array.from({ length: 14 }).map((_, i) => {
-    const d = new Date(startDay);
-    d.setDate(startDay.getDate() + i);
-    return d;
-  });
-};
-
-const onlyLettersRegex = /^[A-Za-z\s'-]+$/; // allows spaces, hyphens, apostrophes
-
-/* ---------- Dummy server-state: existing reservations ---------- */
-/* In real app, fetch from backend. For demo we prepopulate some dates. */
-const prepopulatedBookings: Record<
-  string,
-  { inclusiveCount: number; exclusiveCount: number }
-> = (() => {
-  const map: Record<string, { inclusiveCount: number; exclusiveCount: number }> = {};
-  // Example: mark tomorrow as having an exclusive 10 pax already (so exclusive exists)
-  const t = new Date();
-  t.setDate(t.getDate() + 2);
-  map[formatDateKey(t)] = { inclusiveCount: 0, exclusiveCount: 10 };
-
-  // Example: one day with inclusive 30
-  const t2 = new Date();
-  t2.setDate(t2.getDate() + 4);
-  map[formatDateKey(t2)] = { inclusiveCount: 30, exclusiveCount: 0 };
-
-  return map;
-})();
-
-/* ----------------- Component ----------------- */
 const ReservationScreen: React.FC<Props> = ({ navigation }) => {
-  // Inputs
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [contact, setContact] = useState("");
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [reservationType, setReservationType] = useState<"Inclusive" | "Exclusive">(
-    "Exclusive"
+  const [reservationType, setReservationType] = useState(
+    "Inclusive (Shared Space)"
   );
-  const [pax, setPax] = useState<number>(15); // default for exclusive minimum
-  const [uploadedIdName, setUploadedIdName] = useState<string | null>(null);
+  const [guests, setGuests] = useState<string>("");
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [showDropdown, setShowDropdown] = useState(false);
 
-  // Animation for card entrance
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-
-  // Bookings state: in real app, you'd fetch/update from backend
-  const [bookings, setBookings] = useState(prepopulatedBookings);
-
-  useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 450,
-      useNativeDriver: true,
-    }).start();
-  }, []);
-
-  // Generate date list (2 weeks)
-  const dateList = useMemo(() => getTwoWeeks(new Date()), []);
-
-  // Availability checks for a date
-  const getAvailability = (date: Date) => {
-    const key = formatDateKey(date);
-    const existing = bookings[key] ?? { inclusiveCount: 0, exclusiveCount: 0 };
-    const inclusiveRemaining = Math.max(INCLUSIVE_MAX - existing.inclusiveCount, 0);
-    const exclusiveRemaining = Math.max(EXCLUSIVE_MAX - existing.exclusiveCount, 0);
-    const totalExisting = existing.inclusiveCount + existing.exclusiveCount;
-    const totalRemaining = Math.max(MAX_PAX_PER_DAY - totalExisting, 0);
-    const hasExclusiveAlready = existing.exclusiveCount > 0;
-    return { existing, inclusiveRemaining, exclusiveRemaining, totalRemaining, hasExclusiveAlready };
-  };
-
-  // Selecting a date sets pax defaults
-  const onSelectDate = (d: Date) => {
-    setSelectedDate(d);
-    // If exclusive selected and current pax out of allowed bounds, clamp
-    if (reservationType === "Exclusive") {
-      if (pax < EXCLUSIVE_MIN) setPax(EXCLUSIVE_MIN);
-      if (pax > EXCLUSIVE_MAX) setPax(EXCLUSIVE_MAX);
-    } else {
-      if (pax > INCLUSIVE_MAX) setPax(INCLUSIVE_MAX);
-      if (pax < 1) setPax(1);
+  // Generate up to 2 weeks of dates
+  const generateCalendarDates = () => {
+    const today = new Date();
+    const dates = [];
+    for (let i = 0; i < 14; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      dates.push(date);
     }
+    return dates;
   };
 
-  // Toggle reservation type but respect availability rules
-  const onSetReservationType = (type: "Inclusive" | "Exclusive") => {
-    setReservationType(type);
-    // adjust pax to fit rule ranges
-    if (type === "Exclusive" && pax < EXCLUSIVE_MIN) setPax(EXCLUSIVE_MIN);
-    if (type === "Exclusive" && pax > EXCLUSIVE_MAX) setPax(EXCLUSIVE_MAX);
-    if (type === "Inclusive" && pax > INCLUSIVE_MAX) setPax(INCLUSIVE_MAX);
-    if (type === "Inclusive" && pax < 1) setPax(1);
-  };
+  const calendarDates = generateCalendarDates();
 
-  // Compute fee
-  const fee = reservationType === "Exclusive" ? pax * EXCLUSIVE_RATE : pax * INCLUSIVE_RATE;
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
-  // Simple file picker stub (replace with real picker in production)
-  const pickFile = async () => {
-    // TODO: use react-native-document-picker or expo-document-picker
-    // This is a stub to simulate pick
-    // In production, store uri/path and upload to server
-    setUploadedIdName("mock-id.png");
-    Alert.alert("File selected (stub)", "Replace with real file picker.");
-  };
+  const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-  /* --------------- Validation --------------- */
-  const validateAll = (): boolean => {
-    // Name & surname required & letters only
+  const formatDate = (date: Date) =>
+    `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+
+  const validateInputs = () => {
+    const nameRegex = /^[A-Za-z\s]+$/;
+
     if (!firstName.trim()) {
-      Alert.alert("Validation", "Please enter your first name.");
+      Alert.alert("Invalid Input", "Please enter your first name.");
       return false;
     }
-    if (!onlyLettersRegex.test(firstName.trim())) {
-      Alert.alert("Validation", "First name may only contain letters, spaces, - or '.");
+    if (!nameRegex.test(firstName)) {
+      Alert.alert("Invalid Input", "First name should only contain letters.");
       return false;
     }
+
     if (!lastName.trim()) {
-      Alert.alert("Validation", "Please enter your last name.");
+      Alert.alert("Invalid Input", "Please enter your last name.");
       return false;
     }
-    if (!onlyLettersRegex.test(lastName.trim())) {
-      Alert.alert("Validation", "Last name may only contain letters, spaces, - or '.");
-      return false;
-    }
-
-    // Contact number: Philippines format: 11 digits, starts with 09
-    const normalized = contact.replace(/\s+/g, "");
-    if (!/^\d{11}$/.test(normalized)) {
-      Alert.alert("Validation", "Contact number must be exactly 11 digits (e.g. 09123456789).");
-      return false;
-    }
-    if (!normalized.startsWith("09")) {
-      Alert.alert("Validation", "Contact number must start with '09' for Philippines mobile numbers.");
+    if (!nameRegex.test(lastName)) {
+      Alert.alert("Invalid Input", "Last name should only contain letters.");
       return false;
     }
 
-    // Date required
-    if (!selectedDate) {
-      Alert.alert("Validation", "Please pick a schedule date.");
+    if (!contact) {
+      Alert.alert("Invalid Input", "Please enter your contact number.");
       return false;
     }
-
-    // Pax rules
-    const { existing, totalRemaining, hasExclusiveAlready } = getAvailability(selectedDate);
-    // If exclusive exists already, we treat that as blocking inclusive reservations (per assumption)
-    if (reservationType === "Inclusive" && hasExclusiveAlready) {
+    if (!/^09\d{9}$/.test(contact)) {
       Alert.alert(
-        "Validation",
-        "Selected date already has an Exclusive reservation and is not available for Inclusive bookings."
+        "Invalid Input",
+        "Contact number must be 11 digits starting with 09 (e.g., 09123456789)."
       );
       return false;
     }
 
-    if (reservationType === "Exclusive") {
-      if (pax < EXCLUSIVE_MIN) {
-        Alert.alert("Validation", `Exclusive has a minimum of ${EXCLUSIVE_MIN} pax.`);
+    if (!selectedDate) {
+      Alert.alert("Invalid Input", "Please select a date.");
+      return false;
+    }
+
+    const guestCount = parseInt(guests);
+    if (!guests || isNaN(guestCount)) {
+      Alert.alert("Invalid Input", "Please enter number of guests.");
+      return false;
+    }
+
+    if (reservationType === "Exclusive VIP (Private Space)") {
+      if (guestCount < 15) {
+        Alert.alert(
+          "Limit Reached",
+          "Exclusive VIP requires minimum 15 persons."
+        );
         return false;
       }
-      if (pax > EXCLUSIVE_MAX) {
-        Alert.alert("Validation", `Exclusive maximum is ${EXCLUSIVE_MAX} pax.`);
-        return false;
-      }
-      // check remaining capacity on that date (exclusive bucket)
-      if (existing.exclusiveCount + pax > EXCLUSIVE_MAX) {
-        Alert.alert("Validation", "Not enough exclusive capacity remaining on that date.");
+      if (guestCount > 30) {
+        Alert.alert("Limit Reached", "Exclusive VIP maximum is 30 persons.");
         return false;
       }
     } else {
-      // inclusive
-      if (pax < 1) {
-        Alert.alert("Validation", "Please set the number of guests.");
+      if (guestCount < 1) {
+        Alert.alert("Invalid Input", "Please enter at least 1 guest.");
         return false;
       }
-      if (existing.inclusiveCount + pax > INCLUSIVE_MAX) {
-        Alert.alert("Validation", "Not enough inclusive capacity remaining on that date.");
+      if (guestCount > 70) {
+        Alert.alert(
+          "Limit Reached",
+          "Inclusive (Shared Space) maximum is 70 persons."
+        );
         return false;
       }
-    }
-
-    if (pax > totalRemaining) {
-      Alert.alert("Validation", "Total daily maximum pax exceeded for selected date.");
-      return false;
-    }
-
-    // ID upload required
-    if (!uploadedIdName) {
-      Alert.alert("Validation", "Please upload one (1) valid ID.");
-      return false;
     }
 
     return true;
   };
 
-  /* --------------- Submit (book) --------------- */
-  const onBookNow = () => {
-    if (!validateAll()) return;
+  const calculateFees = () => {
+    const guestCount = parseInt(guests) || 0;
+    const isExclusive = reservationType === "Exclusive VIP (Private Space)";
+    const perPax = isExclusive ? 2000 : 1000;
+    const total = guestCount * perPax;
+    const downPayment = total * 0.5;
+    const consumable = total * 0.5;
 
-    if (!selectedDate) return;
-    const key = formatDateKey(selectedDate);
-    const existing = bookings[key] ?? { inclusiveCount: 0, exclusiveCount: 0 };
+    return { total, downPayment, consumable, perPax };
+  };
 
-    const updated = { ...bookings };
-    if (!updated[key]) updated[key] = { inclusiveCount: 0, exclusiveCount: 0 };
-
-    if (reservationType === "Exclusive") {
-      updated[key].exclusiveCount += pax;
-    } else {
-      updated[key].inclusiveCount += pax;
+  const handleBook = () => {
+    if (validateInputs()) {
+      Alert.alert("Success", "Reservation submitted successfully!");
     }
-    setBookings(updated);
-
-    // In real app: send to backend
-    Alert.alert(
-      "Reservation Confirmed",
-      `Thanks ${firstName}! Your ${reservationType} reservation for ${pax} guests on ${key} has been recorded.\nFee: ₱${fee.toLocaleString()}`
-    );
-
-    // Optionally navigate or reset form
-    navigation.goBack();
   };
 
-  /* --------------- UI render helpers --------------- */
-  const renderDateItem = (d: Date) => {
-    const key = formatDateKey(d);
-    const { hasExclusiveAlready, totalRemaining } = getAvailability(d);
-    const selected = selectedDate && formatDateKey(selectedDate) === key;
-    const disabledBecauseExclusive =
-      hasExclusiveAlready && reservationType === "Inclusive"; // per assumption
-
-    const dayLabel = d.toLocaleString(undefined, { weekday: "short" }); // Mon, Tue
-    const dateNum = d.getDate();
-
-    return (
-      <TouchableOpacity
-        key={key}
-        onPress={() => {
-          if (disabledBecauseExclusive) {
-            Alert.alert("Unavailable", "This date is reserved exclusively and cannot accept inclusive reservations.");
-            return;
-          }
-          if (totalRemaining <= 0) {
-            Alert.alert("Unavailable", "No remaining capacity on this date.");
-            return;
-          }
-          onSelectDate(d);
-        }}
-        style={[
-          styles.dateItem,
-          selected ? styles.dateItemSelected : undefined,
-          disabledBecauseExclusive ? styles.dateItemDisabled : undefined,
-        ]}
-      >
-        <Text style={[styles.dateDayText, selected ? styles.selectedText : undefined]}>
-          {dayLabel}
-        </Text>
-        <Text style={[styles.dateNumText, selected ? styles.selectedText : undefined]}>
-          {dateNum}
-        </Text>
-        {disabledBecauseExclusive && <Text style={styles.smallBadge}>Exclusive</Text>}
-      </TouchableOpacity>
-    );
-  };
+  const fees = calculateFees();
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-      <View style={styles.container}>
-        <MainBackground width={width} height={height} preserveAspectRatio="none" style={styles.bg} />
+    <View style={styles.mainContainer}>
+      <MainBackground
+        width={width}
+        height={height}
+        preserveAspectRatio="none"
+        style={styles.bg}
+      />
 
-        <Animated.ScrollView
-          contentContainerStyle={styles.content}
-          showsVerticalScrollIndicator={false}
-          style={{ opacity: fadeAnim }}
+      {/* Header */}
+      <View style={styles.header}>
+        <View style={styles.headerRow}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("HomeScreen")}
+            style={styles.backButton}
+          >
+            <Text style={styles.backText}>←</Text>
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Reservation Details</Text>
+        </View>
+      </View>
+
+      {/* Content */}
+      <View style={styles.contentContainer}>
+        {/* Names */}
+        <View style={styles.row}>
+          <TextInput
+            placeholder="First Name"
+            placeholderTextColor="#777"
+            value={firstName}
+            onChangeText={setFirstName}
+            style={[styles.input, { flex: 1, marginRight: 8 }]}
+          />
+          <TextInput
+            placeholder="Last Name"
+            placeholderTextColor="#777"
+            value={lastName}
+            onChangeText={setLastName}
+            style={[styles.input, { flex: 1 }]}
+          />
+        </View>
+
+        {/* Contact */}
+        <TextInput
+          placeholder="Contact Number"
+          placeholderTextColor="#777"
+          value={contact}
+          onChangeText={setContact}
+          keyboardType="number-pad"
+          maxLength={11}
+          style={styles.input}
+        />
+
+        {/* Calendar */}
+        <Text style={styles.sectionTitleSmall}>When to visit?</Text>
+        <View style={styles.glassCard}>
+          <View style={styles.calendarHeader}>
+            <View>
+              <Text style={styles.cardTitle}>Pick a Schedule</Text>
+              <Text style={styles.cardSubtitle}>
+                {selectedDate ? formatDate(selectedDate) : "Select a date below"}
+              </Text>
+            </View>
+            <View style={styles.monthButton}>
+              <Text style={styles.monthButtonText}>
+                {monthNames[currentMonth.getMonth()]}
+              </Text>
+            </View>
+          </View>
+
+          <ScrollView
+  horizontal
+  showsHorizontalScrollIndicator={false}
+  style={styles.calendarScroll}
+>
+  {calendarDates.map((date, index) => {
+    const isSelected =
+      selectedDate?.toDateString() === date.toDateString();
+    const dayName =
+      dayNames[date.getDay() === 0 ? 6 : date.getDay() - 1];
+    return (
+      <TouchableOpacity
+        key={index}
+        style={[styles.dateItem, isSelected && styles.dateItemSelected]}
+        onPress={() => {
+          setSelectedDate(date);
+          setCurrentMonth(date);
+        }}
+      >
+        <Text
+          style={[styles.dayName, isSelected && styles.dayNameSelected]}
         >
-          {/* Header */}
-          <View style={styles.headerRow}>
-            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-              <Text style={styles.backArrow}>←</Text>
-            </TouchableOpacity>
-            <Text style={styles.headerTitle}>Reservation</Text>
-          </View>
+          {dayName}
+        </Text>
+        <Text
+          style={[
+            styles.dateNumber,
+            isSelected && styles.dateNumberSelected,
+          ]}
+        >
+          {date.getDate()}
+        </Text>
+      </TouchableOpacity>
+    );
+  })}
+</ScrollView>
 
-          {/* Glass Card - Information */}
-          <View style={styles.glassCard}>
-            <Text style={styles.sectionTitle}>Enter Your Information</Text>
+        </View>
 
-            <View style={styles.row}>
-              <TextInput
-                placeholder="First Name"
-                placeholderTextColor="#ddd"
-                value={firstName}
-                onChangeText={setFirstName}
-                style={[styles.input, { marginRight: 10 }]}
-                autoCapitalize="words"
-                keyboardType="default"
-              />
-              <TextInput
-                placeholder="Last Name"
-                placeholderTextColor="#ddd"
-                value={lastName}
-                onChangeText={setLastName}
-                style={[styles.input, { marginLeft: 10 }]}
-                autoCapitalize="words"
-                keyboardType="default"
-              />
-            </View>
-
-            <TextInput
-              placeholder="Contact Number (09XXXXXXXXX)"
-              placeholderTextColor="#ddd"
-              value={contact}
-              onChangeText={(t) => {
-                // Keep only digits, limit to 11
-                const digits = t.replace(/\D/g, "");
-                setContact(digits.slice(0, 11));
-              }}
-              style={[styles.input, { marginTop: 12 }]}
-              keyboardType="phone-pad"
-              maxLength={11}
-            />
-          </View>
-
-          {/* Schedule - glass card */}
-          <View style={[styles.glassCard, { marginTop: 18 }]}>
-            <Text style={styles.sectionTitle}>When to visit?</Text>
-
-            <View style={styles.datePickerCard}>
-              <Text style={styles.pickerHeader}>Pick a Schedule</Text>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.datesRow}
+        {/* Type of Reservation & Guests */}
+        <View style={styles.rowBetween}>
+          <View style={{ flex: 0.65 }}>
+            <Text style={styles.label}>Type of Reservation</Text>
+            <View>
+              <TouchableOpacity
+                style={styles.dropdown}
+                onPress={() => setShowDropdown(!showDropdown)}
               >
-                {dateList.map((d) => renderDateItem(d))}
-              </ScrollView>
-            </View>
+                <Text style={styles.dropdownText}>{reservationType}</Text>
+                <Text style={styles.dropdownArrow}>{showDropdown ? "▲" : "▼"}</Text>
+              </TouchableOpacity>
 
-            {/* Type & Guests row */}
-            <View style={styles.rowBetween}>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.smallLabel}>Type of Reservation</Text>
-                <TouchableOpacity
-                  style={styles.typeDropdown}
-                  onPress={() =>
-                    onSetReservationType(reservationType === "Exclusive" ? "Inclusive" : "Exclusive")
-                  }
-                >
-                  <Text style={styles.typeText}>{reservationType}</Text>
-                  <Text style={styles.typeCaret}>▾</Text>
-                </TouchableOpacity>
-              </View>
-
-              <View style={{ width: 18 }} />
-
-              <View style={{ width: 120 }}>
-                <Text style={styles.smallLabel}>Guests</Text>
-                <View style={styles.paxRow}>
+              {showDropdown && (
+                <View style={styles.dropdownMenu}>
                   <TouchableOpacity
-                    style={styles.paxBtn}
-                    onPress={() => setPax((p) => Math.max(1, p - 1))}
-                  >
-                    <Text style={styles.paxBtnText}>-</Text>
-                  </TouchableOpacity>
-                  <Text style={styles.paxText}>{pax}</Text>
-                  <TouchableOpacity
-                    style={styles.paxBtn}
+                    style={styles.dropdownItem}
                     onPress={() => {
-                      // increment, but clamp to allowed max (and total remaining)
-                      if (!selectedDate) {
-                        // use general caps if date not selected
-                        const cap = reservationType === "Exclusive" ? EXCLUSIVE_MAX : INCLUSIVE_MAX;
-                        setPax((p) => Math.min(cap, p + 1));
-                        return;
-                      }
-                      const { existing, totalRemaining } = getAvailability(selectedDate);
-                      const dateSpecificCap =
-                        reservationType === "Exclusive"
-                          ? EXCLUSIVE_MAX - existing.exclusiveCount
-                          : INCLUSIVE_MAX - existing.inclusiveCount;
-                      const allowed = Math.min(dateSpecificCap, totalRemaining);
-                      setPax((p) => Math.min(allowed, p + 1));
+                      setReservationType("Inclusive (Shared Space)");
+                      setShowDropdown(false);
+                      setGuests("");
                     }}
                   >
-                    <Text style={styles.paxBtnText}>+</Text>
+                    <Text style={styles.dropdownItemText}>
+                      Inclusive (Shared Space)
+                    </Text>
+                    <Text style={styles.dropdownItemSubtext}>
+                      ₱1,000/pax • Max 70 pax
+                    </Text>
+                  </TouchableOpacity>
+                  <View style={styles.dropdownDivider} />
+                  <TouchableOpacity
+                    style={styles.dropdownItem}
+                    onPress={() => {
+                      setReservationType("Exclusive VIP (Private Space)");
+                      setShowDropdown(false);
+                      setGuests("");
+                    }}
+                  >
+                    <Text style={styles.dropdownItemText}>
+                      Exclusive VIP (Private Space)
+                    </Text>
+                    <Text style={styles.dropdownItemSubtext}>
+                      ₱2,000/pax • 15-30 pax
+                    </Text>
                   </TouchableOpacity>
                 </View>
-                <Text style={styles.noteText}>
-                  {reservationType === "Exclusive"
-                    ? `Min ${EXCLUSIVE_MIN}, Max ${EXCLUSIVE_MAX}`
-                    : `Per pax: ₱${INCLUSIVE_RATE.toLocaleString()}`}
-                </Text>
-              </View>
-            </View>
-
-            {reservationType === "Exclusive" && (
-              <Text style={styles.warningText}>Exclusive requires minimum {EXCLUSIVE_MIN} pax.</Text>
-            )}
-          </View>
-
-          {/* Price summary */}
-          <View style={[styles.glassCard, { marginTop: 18 }]}>
-            <View style={styles.priceRow}>
-              <Text style={styles.priceLabel}>Reservation Fee:</Text>
-              <Text style={styles.priceValue}>₱{fee.toLocaleString()}</Text>
-            </View>
-
-            <View style={styles.uploadRow}>
-              <Text style={styles.uploadLabel}>Upload One (1) Valid ID</Text>
-              <TouchableOpacity onPress={pickFile} style={styles.browseBtn}>
-                <Text style={styles.browseText}>{uploadedIdName ? "Change File" : "Browse File"}</Text>
-              </TouchableOpacity>
+              )}
             </View>
           </View>
 
-          {/* Book Button */}
-          <TouchableOpacity onPress={onBookNow} style={styles.bookBtn}>
-            <Text style={styles.bookBtnText}>Book Now</Text>
+          <View style={{ flex: 0.33 }}>
+            <Text style={styles.label}>Guests</Text>
+            <TextInput
+              placeholder="0"
+              placeholderTextColor="#777"
+              value={guests}
+              onChangeText={setGuests}
+              keyboardType="number-pad"
+              style={styles.dropdown}
+            />
+          </View>
+        </View>
+
+        {/* Fee Box */}
+        <View style={styles.feeCard}>
+          <Text style={styles.cardTitle}>
+            Reservation Fee: ₱{fees.total.toLocaleString()}
+          </Text>
+          <View style={styles.feeDivider} />
+          <Text style={styles.feeText}>
+            Down Payment (50%): ₱{fees.downPayment.toLocaleString()}
+          </Text>
+          <Text style={styles.feeText}>
+            Consumable Balance: ₱{fees.consumable.toLocaleString()}
+          </Text>
+        </View>
+
+        {/* Upload ID - simplified */}
+        <View style={styles.uploadSectionSimple}>
+          <Text style={styles.label}>Upload One (1) Valid ID</Text>
+          <TouchableOpacity style={styles.browseButtonSimple}>
+            <Text style={styles.browseButtonText}>Browse File</Text>
           </TouchableOpacity>
+        </View>
 
-          <View style={{ height: 40 }} />
-        </Animated.ScrollView>
+        {/* Book Now */}
+        <TouchableOpacity style={styles.bookButton} onPress={handleBook}>
+          <Text style={styles.bookText}>Book Now</Text>
+        </TouchableOpacity>
       </View>
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 
-export default ReservationScreen;
-
-/* ---------------- Styles (glass look emulated) ---------------- */
 const styles = StyleSheet.create({
-  container: { flex: 1, width, height },
+  mainContainer: { width, height, flex: 1 },
   bg: { position: "absolute", top: 0, left: 0 },
-  content: {
-    paddingHorizontal: width * 0.06,
+
+  // Header
+  header: {
+    width: "100%",
+    paddingHorizontal: width * 0.05,
     paddingTop: height * 0.06,
-    paddingBottom: 30,
-    alignItems: "stretch",
+    paddingBottom: height * 0.02,
+    backgroundColor: "transparent",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    zIndex: 10,
   },
-  headerRow: { flexDirection: "row", alignItems: "center", marginBottom: 18 },
-  backBtn: {
-    width: 36,
-    height: 36,
+  headerRow: { flexDirection: "row", alignItems: "center" },
+  backButton: {
+    width: 40,
+    height: 40,
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 10,
+    marginRight: 12,
   },
-  backArrow: { color: "white", fontSize: width * 0.08 },
-  headerTitle: { color: "white", fontSize: width * 0.09, fontWeight: "700" },
+  backText: { color: "white", fontSize: width * 0.08, fontWeight: "600" },
+  headerTitle: { color: "white", fontSize: width * 0.07, fontWeight: "bold" },
 
-  glassCard: {
-    backgroundColor: "rgba(255,255,255,0.06)",
-    borderRadius: 18,
-    padding: 18,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
-    shadowColor: "#000",
-    shadowOpacity: 0.4,
-    shadowRadius: 16,
-    elevation: 6,
-  },
-
-  sectionTitle: { color: "white", fontSize: width * 0.045, fontWeight: "700", marginBottom: 12 },
-
-  row: { flexDirection: "row", alignItems: "center" },
-
-  input: {
+  // Content
+  contentContainer: {
     flex: 1,
-    backgroundColor: "rgba(255,255,255,0.06)",
+    paddingHorizontal: width * 0.06,
+    paddingTop: height * 0.14,
+    paddingBottom: 20,
+  },
+
+  row: { flexDirection: "row", marginBottom: 12 },
+  rowBetween: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 16,
+    marginBottom: 8,
+  },
+
+  sectionTitleSmall: {
+    color: "white",
+    fontSize: width * 0.06, // same as labels
+    fontWeight: "bold",
+    marginTop: 20,
+    marginBottom: 12,
+  },
+
+  label: {
+    color: "white",
+    fontWeight: "600",
+    marginBottom: 8,
+    fontSize: width * 0.05,
+  },
+  input: {
+    backgroundColor: "white",
+    color: "black",
     borderRadius: 10,
     padding: 14,
-    color: "white",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.05)",
+    fontSize: width * 0.04,
   },
-
-  datePickerCard: {
-    marginTop: 8,
+  dropdown: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.15)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.3)",
+    borderRadius: 10,
+    paddingHorizontal: 14,
     paddingVertical: 12,
-    paddingHorizontal: 12,
-    borderRadius: 14,
-    backgroundColor: "rgba(0,0,0,0.25)",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.06)",
   },
-  pickerHeader: { color: "white", fontWeight: "700", marginBottom: 8, fontSize: width * 0.04 },
-  datesRow: { alignItems: "center" },
+  dropdownText: { color: "white", fontSize: width * 0.04, flex: 1 },
+  dropdownArrow: { color: "white", fontSize: 16, marginLeft: 8 },
+  dropdownMenu: {
+    position: "absolute",
+    top: "100%",
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(30,30,30,0.98)",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.3)",
+    marginTop: 4,
+    overflow: "hidden",
+    zIndex: 1000,
+  },
+  dropdownItem: { padding: 14 },
+  dropdownItemText: {
+    color: "white",
+    fontSize: width * 0.04,
+    fontWeight: "600",
+    marginBottom: 4,
+  },
+  dropdownItemSubtext: { color: "rgba(255,255,255,0.7)", fontSize: width * 0.035 },
+  dropdownDivider: { height: 1, backgroundColor: "rgba(255,255,255,0.2)" },
 
-  dateItem: {
-    width: 86,
-    height: 96,
+  glassCard: {
+    backgroundColor: "rgba(255,255,255,0.1)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.3)",
+    borderRadius: 15,
+    padding: 16,
+    marginBottom: 5,
+  },
+  feeCard: {
+    backgroundColor: "rgba(255,255,255,0.1)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.3)",
     borderRadius: 12,
-    marginRight: 12,
+    padding: 16,
+    marginBottom: 16,
+  },
+  feeDivider: {
+    height: 1,
+    backgroundColor: "rgba(255,255,255,0.3)",
+    marginVertical: 6,
+  },
+
+  cardTitle: { color: "white", fontSize: width * 0.045, fontWeight: "bold" },
+  cardSubtitle: { color: "rgba(255,255,255,0.7)", fontSize: width * 0.035, marginTop: 4 },
+  feeText: { color: "rgba(255,255,255,0.9)", fontSize: width * 0.04, marginBottom: 4 },
+
+  calendarHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 16 },
+  monthButton: { backgroundColor: "rgba(255,255,255,0.2)", paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, borderWidth: 1, borderColor: "rgba(255,255,255,0.3)" },
+  monthButtonText: { color: "white", fontSize: width * 0.038, fontWeight: "600" },
+  calendarScroll: { marginTop: 8 },
+  dateItem: {
+    backgroundColor: "rgba(255,255,255,0.1)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.3)",
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginRight: 10,
+    alignItems: "center",
+    minWidth: 65,
+  },
+  dateItemSelected: { backgroundColor: "#A4161A", borderColor: "#A4161A" },
+  dayName: { color: "rgba(255,255,255,0.7)", fontSize: width * 0.032, marginBottom: 4 },
+  dayNameSelected: { color: "white", fontWeight: "600" },
+  dateNumber: { color: "white", fontSize: width * 0.055, fontWeight: "bold" },
+  dateNumberSelected: { color: "white" },
+
+  // Simplified Upload ID
+  uploadSectionSimple: {
+    marginBottom: 16,
+  },
+  browseButtonSimple: {
+    marginTop: 8,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    paddingVertical: 14,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.3)",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(255,255,255,0.03)",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.03)",
   },
-  dateItemSelected: {
-    backgroundColor: "#8B0001",
-    borderColor: "rgba(255,255,255,0.12)",
-  },
-  dateItemDisabled: {
-    opacity: 0.35,
-  },
-  dateDayText: { color: "white", fontSize: width * 0.03, marginBottom: 6 },
-  dateNumText: { color: "white", fontSize: width * 0.06, fontWeight: "700" },
-  selectedText: { color: "white" },
-  smallBadge: {
-    position: "absolute",
-    bottom: 6,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
-    color: "white",
-    fontSize: 10,
-    overflow: "hidden",
-  },
+  browseButtonText: { color: "white", fontSize: width * 0.04, fontWeight: "600" },
 
-  rowBetween: { flexDirection: "row", alignItems: "center", marginTop: 14, justifyContent: "space-between" },
-
-  smallLabel: { color: "white", marginBottom: 8, fontSize: width * 0.033 },
-  typeDropdown: {
-    backgroundColor: "rgba(255,255,255,0.04)",
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    borderRadius: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  typeText: { color: "white", fontSize: width * 0.04 },
-  typeCaret: { color: "white", marginLeft: 6 },
-
-  paxRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  paxBtn: {
-    backgroundColor: "rgba(255,255,255,0.04)",
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
-  },
-  paxBtnText: { color: "white", fontSize: 18, fontWeight: "700" },
-  paxText: { color: "white", fontSize: width * 0.045, paddingHorizontal: 10 },
-
-  noteText: { color: "rgba(255,255,255,0.6)", marginTop: 6, fontSize: width * 0.028 },
-
-  warningText: { color: "#FFD1D1", marginTop: 8 },
-
-  priceRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  priceLabel: { color: "white", fontSize: width * 0.04 },
-  priceValue: { color: "white", fontWeight: "700", fontSize: width * 0.045 },
-
-  uploadRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 12 },
-  uploadLabel: { color: "white", fontSize: width * 0.035 },
-  browseBtn: {
-    backgroundColor: "rgba(255,255,255,0.04)",
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 10,
-  },
-  browseText: { color: "white" },
-
-  bookBtn: {
-    marginTop: 20,
-    backgroundColor: "#8B0001",
-    paddingVertical: 18,
-    borderRadius: 30,
-    alignItems: "center",
-  },
-  bookBtnText: { color: "white", fontSize: width * 0.05, fontWeight: "700" },
-
-  note: { color: "rgba(255,255,255,0.6)", marginTop: 8 },
-
+  bookButton: { backgroundColor: "#A4161A", paddingVertical: 16, borderRadius: 12, marginTop: 8 },
+  bookText: { color: "white", fontSize: width * 0.045, fontWeight: "bold", textAlign: "center" },
 });
+
+export default ReservationScreen;
