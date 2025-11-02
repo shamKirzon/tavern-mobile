@@ -1,5 +1,3 @@
-console.log("CustomizationScreen mounted!");
-
 import React, { useState } from "react";
 import {
   View,
@@ -11,8 +9,25 @@ import {
   ScrollView,
 } from "react-native";
 import MainBackground from "../assets/backgrounds/main-background.svg";
+import { RouteProp } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamLists } from "../types/rootStackParamLists";
 
-const CustomizationScreen = () => {
+type CustomizationScreenScreenRouteProps = RouteProp<
+  RootStackParamLists,
+  "CustomizationScreen"
+>;
+type CustomizationScreenNavigationProps = NativeStackNavigationProp<
+  RootStackParamLists,
+  "CustomizationScreen"
+>;
+
+interface Props {
+  route: CustomizationScreenScreenRouteProps;
+  navigation: CustomizationScreenNavigationProps;
+}
+
+const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
   const basePrice = 435;
   const [selectedServing, setSelectedServing] = useState<
     "Solo" | "Regular" | "To share"
@@ -75,13 +90,16 @@ const CustomizationScreen = () => {
           </View>
 
           <Text style={styles.description}>
-            Tortilla chips, cheese sauce, chili meat, pico de gallo, fresh salsa, sour cream
+            Tortilla chips, cheese sauce, chili meat, pico de gallo, fresh
+            salsa, sour cream
           </Text>
 
           {/* Servings Section */}
           <View style={styles.section}>
             <View style={styles.rowBetween}>
-              <Text style={styles.sectionTitle}>Chili Ballpark Nachos Servings</Text>
+              <Text style={styles.sectionTitle}>
+                Chili Ballpark Nachos Servings
+              </Text>
               <View style={styles.pickContainer}>
                 <Text style={styles.pickText}>Pick 1</Text>
               </View>
@@ -97,10 +115,13 @@ const CustomizationScreen = () => {
                   <View
                     style={[
                       styles.outerCircle,
-                      selectedServing === option.label && styles.outerCircleActive,
+                      selectedServing === option.label &&
+                        styles.outerCircleActive,
                     ]}
                   >
-                    {selectedServing === option.label && <View style={styles.innerCircle} />}
+                    {selectedServing === option.label && (
+                      <View style={styles.innerCircle} />
+                    )}
                   </View>
                   <Text style={styles.radioLabel}>{option.label}</Text>
                 </View>
@@ -129,13 +150,19 @@ const CustomizationScreen = () => {
 
           {/* Quantity Selector */}
           <View style={styles.quantityContainer}>
-            <TouchableOpacity onPress={() => handleQuantityChange(-1)} style={styles.qtyButton}>
+            <TouchableOpacity
+              onPress={() => handleQuantityChange(-1)}
+              style={styles.qtyButton}
+            >
               <Text style={styles.qtySymbol}>−</Text>
             </TouchableOpacity>
 
             <Text style={styles.qtyText}>{quantity}</Text>
 
-            <TouchableOpacity onPress={() => handleQuantityChange(1)} style={styles.qtyButton}>
+            <TouchableOpacity
+              onPress={() => handleQuantityChange(1)}
+              style={styles.qtyButton}
+            >
               <Text style={styles.qtySymbol}>+</Text>
             </TouchableOpacity>
           </View>
