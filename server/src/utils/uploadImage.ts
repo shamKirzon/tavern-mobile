@@ -1,8 +1,9 @@
 import cloudinary from "../lib/cloudinary";
 
-export const uploadImageWithUrl = async (localFile: any) => {
+export const uploadImageWithUrl = async (localFile: any, type: string) => {
   try {
     const result = await cloudinary.uploader.upload(localFile.path, {
+      folder: type === "validId" ? "tav_valid_id" : "tav_payment",
       resource_type: "image",
       public_id: localFile.originalname.split(".")[0],
     });

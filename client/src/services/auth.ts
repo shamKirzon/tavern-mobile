@@ -1,6 +1,6 @@
 import { AxiosInstance } from "axios";
 import { axiosInstance } from "../api/axiosInstance";
-import { saveToken } from "../utils/token";
+import { getToken, saveToken } from "../utils/token";
 
 export const registerEmail = async (email: string) => {
   try {
