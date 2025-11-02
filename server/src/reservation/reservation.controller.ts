@@ -60,8 +60,9 @@ class ReservationController {
         return res.status(400).json({ message: "no file uploaded" });
 
       const localFile = req.file;
+      const type = req.body.type;
 
-      const imageUrl = await uploadImageWithUrl(localFile);
+      const imageUrl = await uploadImageWithUrl(localFile, type);
 
       console.log("image url: ", imageUrl);
       return res

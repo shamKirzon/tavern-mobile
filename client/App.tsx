@@ -11,7 +11,7 @@ import { navigationRef } from "./navigationRef";
 import WelcomeScreen from "./src/screens/WelcomeScreen";
 import { checkToken } from "./src/services/token";
 // import HomeScreenTesting from "./src/screens/shams-testing/HomeScreenTesting";
-import ReservationScreenTesting from "./src/screens/shams-testing/ReservationScreenTesting";
+// import ReservationScreenTesting from "./src/screens/shams-testing/ReservationScreenTesting";
 import EmailVerificationScreen from "./src/screens/EmailVerificationScreen";
 import OrderPolicyScreen from "./src/screens/OrderPolicyScreen";
 import MenuViewingScreen from "./src/screens/MenuViewingScreen";
@@ -30,7 +30,7 @@ const App = () => {
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
-          initialRouteName="ReservationScreenTesting"
+          initialRouteName="HomeScreen"
           screenOptions={{ headerShown: false, animation: "none" }}
         >
           <Stack.Screen
@@ -77,10 +77,10 @@ const App = () => {
 
           {/* shams testing - ignore niyo lang ito  */}
 
-          <Stack.Screen
+          {/* <Stack.Screen
             name="ReservationScreenTesting"
             component={ReservationScreenTesting}
-          />
+          /> */}
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>
