@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamLists } from "../types/rootStackParamLists";
 import { height, width } from "../utils/dimensions";
-import { View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import MainBackground from "../assets/backgrounds/main-background.svg";
+
 
 type OrderPolicyScreenRouteProps = RouteProp<
   RootStackParamLists,
@@ -21,15 +22,7 @@ interface Props {
 }
 
 const OrderPolicyScreen: React.FC<Props> = ({ navigation }) => {
-  const [reservationData] = useState({
-    name: "Dannah Joyce Torres",
-    date: "October 07, 2025",
-    type: "Exclusive",
-    guests: "50",
-    reservationFee: "30,000.00",
-  });
-
-  const [orderSpendLimit] = useState("P15,000.00");
+  const [orderSpendLimit] = useState("15,000.00");
   const [agreed, setAgreed] = useState(false);
 
   const handleContinueOrdering = () => {
@@ -37,7 +30,6 @@ const OrderPolicyScreen: React.FC<Props> = ({ navigation }) => {
       Alert.alert("Error", "Please agree to the terms and conditions");
       return;
     }
-    console.log("Continue ordering clicked", reservationData);
     // navigation.navigate("NextScreen");
   };
 
@@ -46,261 +38,88 @@ const OrderPolicyScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    // ✅ Updated wrapper starts here
     <View style={{ width, height, flex: 1 }}>
+      {/* Background Layer */}
       <MainBackground style={{ position: "absolute", height: "100%" }} />
-      {/* ✅ Keeps all content layered above background */}
+      
+      {/* Main Content Container */}
       <View
         style={{
           flex: 1,
-          justifyContent: "space-between",
-          padding: width * 0.06,
-          paddingBottom: width * 0.1,
+          padding: width * 0.05,
+          paddingTop: height * 0.06,
         }}
       >
-        {/* Header */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginBottom: height * 0.04,
-            width: "100%",
-          }}
-        >
-          <TouchableOpacity
-            onPress={handleBack}
-            style={{ marginRight: width * 0.04 }}
-          >
-            <Text style={{ color: "#FFFFFF", fontSize: 28, fontWeight: "300" }}>
-              ‹
-            </Text>
-          </TouchableOpacity>
-          <Text
-            style={{
-              color: "#FFFFFF",
-              fontSize: width * 0.055,
-              fontWeight: "bold",
-              fontFamily: "Poppins",
-            }}
-          >
-            Order Policy
-          </Text>
-        </View>
-
-        {/* Reservation Details */}
         <View>
-          <Text
-            style={{
-              color: "#FFFFFF",
-              fontSize: width * 0.055,
-              fontWeight: "400",
-              marginBottom: height * 0.025,
-              fontFamily: "DMSerifText",
-            }}
-          >
-            Reservation Details
-          </Text>
+          {/* ===== HEADER WITH BACK BUTTON ===== */}
+          <View style={{ flexDirection: "row", alignItems: "center", marginBottom: height * 0.02 }}>
+            <TouchableOpacity onPress={handleBack} style={{ marginRight: width * 0.03, padding: 5 }}>
+              <Text style={{ color: "#FFF", fontSize: 30, fontWeight: "300", lineHeight: 30 }}>‹</Text>
+            </TouchableOpacity>
+            <Text style={{ color: "#FFF", fontSize: width * 0.06, fontWeight: "700", fontFamily: "Poppins" }}>Order Policy</Text>
+          </View>
 
-          <View
-            style={{
-              borderRadius: 12,
-              padding: width * 0.045,
-              marginBottom: height * 0.025,
-              borderWidth: 2,
-              borderColor: "rgba(255, 255, 255, 0.3)",
-            }}
-          >
-            {Object.entries(reservationData).map(([key, value]) => (
-              <View
-                key={key}
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  marginBottom: height * 0.012,
-                }}
-              >
-                <Text style={{ color: "#FFFFFF", fontSize: width * 0.037 }}>
-                  {key.charAt(0).toUpperCase() +
-                    key.slice(1).replace(/([A-Z])/g, " $1")}
-                  :
-                </Text>
-                <Text style={{ color: "#FFFFFF", fontSize: width * 0.037 }}>
-                  {value}
-                </Text>
-              </View>
+          {/* ===== PROGRESS INDICATOR DOTS ===== */}
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: height * 0.02, paddingHorizontal: width * 0.03 }}>
+            {[0, 1, 2, 3, 4].map((step, index) => (
+              <React.Fragment key={step}>
+                <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: index <= 1 ? "#D4AF37" : "rgba(255, 255, 255, 0.3)" }} />
+                {index < 4 && <View style={{ flex: 1, height: 2, backgroundColor: index < 1 ? "#D4AF37" : "rgba(255, 255, 255, 0.3)", marginHorizontal: 3 }} />}
+              </React.Fragment>
             ))}
           </View>
 
-          <View
-            style={{
-              borderRadius: 12,
-              paddingVertical: height * 0.02,
-              paddingHorizontal: width * 0.045,
-              borderWidth: 2,
-              borderColor: "rgba(255, 255, 255, 0.3)",
-              backgroundColor: "transparent",
-              marginBottom: height * 0.02,
-            }}
-          >
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
-            >
-              <Text style={{ color: "#FFFFFF", fontSize: width * 0.04 }}>
-                Order Spend Limit is :
-              </Text>
-              <Text
-                style={{
-                  color: "#FFFFFF",
-                  fontSize: width * 0.045,
-                  fontWeight: "600",
-                }}
-              >
-                {orderSpendLimit}
-              </Text>
+          {/* ===== ORDER SPEND LIMIT CARD ===== */}
+          <View style={{ backgroundColor: "rgba(255, 255, 255, 0.12)", borderRadius: 20, padding: width * 0.045, marginBottom: height * 0.02, borderWidth: 1, borderColor: "rgba(255, 255, 255, 0.15)", flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
+            {/* Bell Icon */}
+            <View style={{ width: 44, height: 44, justifyContent: "center", alignItems: "center", marginRight: width * 0.04 }}>
+              <View style={{ width: 28, height: 26, borderWidth: 2.5, borderColor: "#FFF", borderTopLeftRadius: 14, borderTopRightRadius: 14, borderBottomLeftRadius: 4, borderBottomRightRadius: 4, position: "relative" }}>
+                <View style={{ width: 6, height: 6, backgroundColor: "#FFF", position: "absolute", top: -10, left: 8, borderRadius: 3 }} />
+                <View style={{ width: 8, height: 3, backgroundColor: "#FFF", position: "absolute", bottom: -6, left: 8, borderRadius: 2 }} />
+              </View>
+            </View>
+            <View style={{ alignItems: "flex-start" }}>
+              <Text style={{ color: "#FFF", fontSize: width * 0.038, fontWeight: "400", marginBottom: 4, fontFamily: "Poppins" }}>Order Spend Limit is :</Text>
+              <Text style={{ color: "#FFF", fontSize: width * 0.075, fontWeight: "700", fontFamily: "Poppins" }}>₱{orderSpendLimit}</Text>
+            </View>
+          </View>
+
+          {/* ===== TERMS AND CONDITIONS CARD ===== */}
+          <View style={{ backgroundColor: "rgba(255, 255, 255, 0.12)", borderRadius: 20, padding: width * 0.045, paddingVertical: height * 0.02, borderWidth: 1, borderColor: "rgba(255, 255, 255, 0.15)", marginBottom: height * 0.015 }}>
+            <Text style={{ color: "#FFF", fontSize: width * 0.048, fontWeight: "700", marginBottom: height * 0.012, fontFamily: "Poppins" }}>Terms and Conditions</Text>
+            <View>
+              {[
+                { title: "1. Order Process", content: "All orders must be placed through this mobile app. Confirmation is issued once payment is received." },
+                { title: "2. Deposit Payment", content: "A non-refundable deposit is required to secure your order. Payments accepted via GCash, Maya, Bank Transfer, or PayPal." },
+                { title: "3. Non-Refundable Policy", content: "Deposits are strictly non-refundable, including cancellations or no-shows. Please confirm availability before ordering." },
+                { title: "4. Order Spend Limit", content: "Each order is subject to a ₱15,000 spending limit. Additional charges may apply for rush consumption." },
+                { title: "5. Modifications", content: "Changes may be requested 48 hours in advance, subject to approval and availability." },
+                { title: "6. Confirmation", content: "A QR Code and order details will be emailed after successful payment. Present this upon arrival." },
+              ].map((item, index) => (
+                <View key={index} style={{ marginBottom: height * 0.008 }}>
+                  <Text style={{ color: "#FFF", fontSize: width * 0.032, fontWeight: "700", marginBottom: 2, fontFamily: "Poppins" }}>{item.title}</Text>
+                  <Text style={{ color: "rgba(255, 255, 255, 0.9)", fontSize: width * 0.028, fontWeight: "400", lineHeight: width * 0.04, fontFamily: "Poppins" }}>{item.content}</Text>
+                </View>
+              ))}
             </View>
           </View>
         </View>
 
-        {/* Terms and Conditions (scrollable only this part) */}
-        <View style={{ flex: 1 }}>
-          <Text
-            style={{
-              color: "#FFFFFF",
-              fontSize: width * 0.055,
-              fontWeight: "400",
-              marginBottom: height * 0.015,
-              fontFamily: "DMSerifText",
-            }}
-          >
-            Terms and Conditions
-          </Text>
+        {/* Bottom Section */}
+        <View>
+          {/* ===== AGREEMENT CHECKBOX ===== */}
+          <TouchableOpacity onPress={() => setAgreed(!agreed)} style={{ flexDirection: "row", alignItems: "center", marginBottom: height * 0.012, paddingHorizontal: width * 0.01 }}>
+            <View style={{ width: 22, height: 22, borderWidth: 2, borderColor: "#FFF", borderRadius: 4, marginRight: width * 0.03, backgroundColor: agreed ? "#D4AF37" : "transparent", justifyContent: "center", alignItems: "center" }}>
+              {agreed && <Text style={{ color: "#FFF", fontSize: 16, fontWeight: "bold", lineHeight: 16 }}>✓</Text>}
+            </View>
+            <Text style={{ color: "#FFF", fontSize: width * 0.033, flex: 1, fontFamily: "Poppins" }}>I have read and agree to the ordering and payment policies.</Text>
+          </TouchableOpacity>
 
-          <ScrollView
-            showsVerticalScrollIndicator={true}
-            style={{
-              maxHeight: height * 0.35,
-              paddingRight: width * 0.02,
-            }}
-          >
-            {[
-              {
-                title: "1. Order Process",
-                content:
-                  "All orders must be placed through this mobile app. Confirmation is issued once payment is received.",
-              },
-              {
-                title: "2. Deposit Payment",
-                content:
-                  "A non-refundable deposit is required to secure your order. Payments accepted via GCash, Maya, Bank Transfer, or PayPal.",
-              },
-              {
-                title: "3. Non-Refundable Policy",
-                content:
-                  "Deposits are strictly non-refundable, including cancellations or no-shows. Please confirm availability before ordering.",
-              },
-              {
-                title: "4. Order Spend Limit",
-                content:
-                  "Each order is subject to a ₱15,000 spend limit. Additional charges apply for excess consumption.",
-              },
-              {
-                title: "5. Modifications",
-                content:
-                  "Changes may be requested 48 hours in advance, subject to approval and availability.",
-              },
-              {
-                title: "6. Confirmation",
-                content:
-                  "A QR Code and order details will be emailed after successful payment. Present this upon arrival.",
-              },
-            ].map((item, index) => (
-              <View key={index} style={{ marginBottom: height * 0.02 }}>
-                <Text
-                  style={{
-                    color: "#FFFFFF",
-                    fontSize: width * 0.035,
-                    fontWeight: "600",
-                    marginBottom: 6,
-                    fontFamily: "Poppins",
-                  }}
-                >
-                  {item.title}
-                </Text>
-                <Text
-                  style={{
-                    color: "#FFFFFF",
-                    fontSize: width * 0.032,
-                    fontWeight: "300",
-                    lineHeight: width * 0.048,
-                    fontFamily: "Poppins",
-                  }}
-                >
-                  {item.content}
-                </Text>
-              </View>
-            ))}
-          </ScrollView>
+          {/* ===== CONTINUE ORDERING BUTTON ===== */}
+          <TouchableOpacity onPress={handleContinueOrdering} style={{ backgroundColor: "#8B0000", paddingVertical: height * 0.018, borderRadius: 30, alignItems: "center", shadowColor: "#000", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 6, marginBottom: height * 0.015 }}>
+            <Text style={{ color: "#FFF", fontSize: width * 0.042, fontWeight: "700", fontFamily: "Poppins" }}>Continue Ordering</Text>
+          </TouchableOpacity>
         </View>
-
-        {/* Checkbox */}
-        <TouchableOpacity
-          onPress={() => setAgreed(!agreed)}
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginTop: height * 0.015,
-            marginBottom: height * 0.02,
-          }}
-        >
-          <View
-            style={{
-              width: 18,
-              height: 18,
-              borderWidth: 2,
-              borderColor: "#FFFFFF",
-              borderRadius: 3,
-              marginRight: width * 0.025,
-              backgroundColor: agreed ? "#FFFFFF" : "transparent",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            {agreed && (
-              <Text
-                style={{ color: "#000000", fontSize: 12, fontWeight: "bold" }}
-              >
-                ✓
-              </Text>
-            )}
-          </View>
-          <Text style={{ color: "#FFFFFF", fontSize: width * 0.032, flex: 1 }}>
-            I have read and agree to the ordering and payment policies.
-          </Text>
-        </TouchableOpacity>
-
-        {/* Continue Button */}
-        <TouchableOpacity
-          onPress={handleContinueOrdering}
-          disabled={!agreed}
-          style={{
-            backgroundColor: agreed ? "#8B0000" : "#666666",
-            paddingVertical: height * 0.022,
-            borderRadius: 12,
-            alignItems: "center",
-            opacity: agreed ? 1 : 0.5,
-          }}
-        >
-          <Text
-            style={{
-              color: "#FFFFFF",
-              fontSize: width * 0.042,
-              fontWeight: "600",
-              fontFamily: "Poppins",
-            }}
-          >
-            Continue Ordering
-          </Text>
-        </TouchableOpacity>
       </View>
     </View>
   );
