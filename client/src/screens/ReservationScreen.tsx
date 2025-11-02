@@ -16,10 +16,13 @@ import MainBackground from "../assets/backgrounds/main-background.svg";
 
 type ReservationScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamLists,
-  "Reservation"
+  "ReservationScreen"
 >;
 
-type ReservationScreenRouteProp = RouteProp<RootStackParamLists, "Reservation">;
+type ReservationScreenRouteProp = RouteProp<
+  RootStackParamLists,
+  "ReservationScreen"
+>;
 
 interface Props {
   navigation: ReservationScreenNavigationProp;
@@ -224,7 +227,9 @@ const ReservationScreen: React.FC<Props> = ({ navigation }) => {
             <View>
               <Text style={styles.cardTitle}>Pick a Schedule</Text>
               <Text style={styles.cardSubtitle}>
-                {selectedDate ? formatDate(selectedDate) : "Select a date below"}
+                {selectedDate
+                  ? formatDate(selectedDate)
+                  : "Select a date below"}
               </Text>
             </View>
             <View style={styles.monthButton}>
@@ -235,42 +240,47 @@ const ReservationScreen: React.FC<Props> = ({ navigation }) => {
           </View>
 
           <ScrollView
-  horizontal
-  showsHorizontalScrollIndicator={false}
-  style={styles.calendarScroll}
->
-  {calendarDates.map((date, index) => {
-    const isSelected =
-      selectedDate?.toDateString() === date.toDateString();
-    const dayName =
-      dayNames[date.getDay() === 0 ? 6 : date.getDay() - 1];
-    return (
-      <TouchableOpacity
-        key={index}
-        style={[styles.dateItem, isSelected && styles.dateItemSelected]}
-        onPress={() => {
-          setSelectedDate(date);
-          setCurrentMonth(date);
-        }}
-      >
-        <Text
-          style={[styles.dayName, isSelected && styles.dayNameSelected]}
-        >
-          {dayName}
-        </Text>
-        <Text
-          style={[
-            styles.dateNumber,
-            isSelected && styles.dateNumberSelected,
-          ]}
-        >
-          {date.getDate()}
-        </Text>
-      </TouchableOpacity>
-    );
-  })}
-</ScrollView>
-
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.calendarScroll}
+          >
+            {calendarDates.map((date, index) => {
+              const isSelected =
+                selectedDate?.toDateString() === date.toDateString();
+              const dayName =
+                dayNames[date.getDay() === 0 ? 6 : date.getDay() - 1];
+              return (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    styles.dateItem,
+                    isSelected && styles.dateItemSelected,
+                  ]}
+                  onPress={() => {
+                    setSelectedDate(date);
+                    setCurrentMonth(date);
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.dayName,
+                      isSelected && styles.dayNameSelected,
+                    ]}
+                  >
+                    {dayName}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.dateNumber,
+                      isSelected && styles.dateNumberSelected,
+                    ]}
+                  >
+                    {date.getDate()}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
         </View>
 
         {/* Type of Reservation & Guests */}
@@ -283,7 +293,9 @@ const ReservationScreen: React.FC<Props> = ({ navigation }) => {
                 onPress={() => setShowDropdown(!showDropdown)}
               >
                 <Text style={styles.dropdownText}>{reservationType}</Text>
-                <Text style={styles.dropdownArrow}>{showDropdown ? "▲" : "▼"}</Text>
+                <Text style={styles.dropdownArrow}>
+                  {showDropdown ? "▲" : "▼"}
+                </Text>
               </TouchableOpacity>
 
               {showDropdown && (
@@ -465,7 +477,10 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginBottom: 4,
   },
-  dropdownItemSubtext: { color: "rgba(255,255,255,0.7)", fontSize: width * 0.035 },
+  dropdownItemSubtext: {
+    color: "rgba(255,255,255,0.7)",
+    fontSize: width * 0.035,
+  },
   dropdownDivider: { height: 1, backgroundColor: "rgba(255,255,255,0.2)" },
 
   glassCard: {
@@ -491,12 +506,36 @@ const styles = StyleSheet.create({
   },
 
   cardTitle: { color: "white", fontSize: width * 0.045, fontWeight: "bold" },
-  cardSubtitle: { color: "rgba(255,255,255,0.7)", fontSize: width * 0.035, marginTop: 4 },
-  feeText: { color: "rgba(255,255,255,0.9)", fontSize: width * 0.04, marginBottom: 4 },
+  cardSubtitle: {
+    color: "rgba(255,255,255,0.7)",
+    fontSize: width * 0.035,
+    marginTop: 4,
+  },
+  feeText: {
+    color: "rgba(255,255,255,0.9)",
+    fontSize: width * 0.04,
+    marginBottom: 4,
+  },
 
-  calendarHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 16 },
-  monthButton: { backgroundColor: "rgba(255,255,255,0.2)", paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, borderWidth: 1, borderColor: "rgba(255,255,255,0.3)" },
-  monthButtonText: { color: "white", fontSize: width * 0.038, fontWeight: "600" },
+  calendarHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  monthButton: {
+    backgroundColor: "rgba(255,255,255,0.2)",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.3)",
+  },
+  monthButtonText: {
+    color: "white",
+    fontSize: width * 0.038,
+    fontWeight: "600",
+  },
   calendarScroll: { marginTop: 8 },
   dateItem: {
     backgroundColor: "rgba(255,255,255,0.1)",
@@ -510,7 +549,11 @@ const styles = StyleSheet.create({
     minWidth: 65,
   },
   dateItemSelected: { backgroundColor: "#A4161A", borderColor: "#A4161A" },
-  dayName: { color: "rgba(255,255,255,0.7)", fontSize: width * 0.032, marginBottom: 4 },
+  dayName: {
+    color: "rgba(255,255,255,0.7)",
+    fontSize: width * 0.032,
+    marginBottom: 4,
+  },
   dayNameSelected: { color: "white", fontWeight: "600" },
   dateNumber: { color: "white", fontSize: width * 0.055, fontWeight: "bold" },
   dateNumberSelected: { color: "white" },
@@ -529,10 +572,24 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  browseButtonText: { color: "white", fontSize: width * 0.04, fontWeight: "600" },
+  browseButtonText: {
+    color: "white",
+    fontSize: width * 0.04,
+    fontWeight: "600",
+  },
 
-  bookButton: { backgroundColor: "#A4161A", paddingVertical: 16, borderRadius: 12, marginTop: 8 },
-  bookText: { color: "white", fontSize: width * 0.045, fontWeight: "bold", textAlign: "center" },
+  bookButton: {
+    backgroundColor: "#A4161A",
+    paddingVertical: 16,
+    borderRadius: 12,
+    marginTop: 8,
+  },
+  bookText: {
+    color: "white",
+    fontSize: width * 0.045,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
 });
 
 export default ReservationScreen;

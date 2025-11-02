@@ -1,10 +1,13 @@
 import { axiosInstance } from "../api/axiosInstance";
 import { ordersData } from "../types/orders";
+import { getEmailByToken } from "./token";
 
 export const createOrder = async (order: ordersData) => {
   try {
+    const email = getEmailByToken();
     const res = await axiosInstance.post("/order/create-order", {
       order,
+      email,
     });
     if (!res) return console.error("can't create a reservation");
 

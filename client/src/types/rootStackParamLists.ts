@@ -3,7 +3,7 @@ export type RootStackParamLists = {
   EmailAuth: undefined;
   WelcomeScreen: undefined;
   ReservationPayment: undefined;
-  Reservation: undefined;
+  ReservationScreen: undefined;
   EmailVerificationScreen: undefined;
   OrderPolicyScreen: undefined;
   HomeScreen: undefined;

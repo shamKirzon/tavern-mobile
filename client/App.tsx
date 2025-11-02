@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import HomeScreen from "./src/screens/HomeScreen";
-import Reservation from "./src/screens/ReservationScreen";
+import ReservationScreen from "./src/screens/ReservationScreen";
 import ReservationPaymentScreen from "./src/screens/ReservationPaymentScreen";
 import ReservationReviewScreen from "./src/screens/ReservationReviewScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -11,7 +11,7 @@ import { navigationRef } from "./navigationRef";
 import WelcomeScreen from "./src/screens/WelcomeScreen";
 import { checkToken } from "./src/services/token";
 // import HomeScreenTesting from "./src/screens/shams-testing/HomeScreenTesting";
-// import ReservationScreenTesting from "./src/screens/shams-testing/ReservationScreenTesting";
+import ReservationScreenTesting from "./src/screens/shams-testing/ReservationScreenTesting";
 import EmailVerificationScreen from "./src/screens/EmailVerificationScreen";
 import OrderPolicyScreen from "./src/screens/OrderPolicyScreen";
 import MenuViewingScreen from "./src/screens/MenuViewingScreen";
@@ -30,7 +30,7 @@ const App = () => {
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
-          initialRouteName="CustomizationScreen"
+          initialRouteName="ReservationScreenTesting"
           screenOptions={{ headerShown: false, animation: "none" }}
         >
           <Stack.Screen
@@ -48,7 +48,10 @@ const App = () => {
             component={ReservationReviewScreen}
           />
 
-          <Stack.Screen name="Reservation" component={Reservation} />
+          <Stack.Screen
+            name="ReservationScreen"
+            component={ReservationScreen}
+          />
           <Stack.Screen
             name="ReservationPayment"
             component={ReservationPaymentScreen}
@@ -73,12 +76,11 @@ const App = () => {
           />
 
           {/* shams testing - ignore niyo lang ito  */}
-          {/*
+
           <Stack.Screen
-            name="HomeScreen"
-            component={HomeScreen}
+            name="ReservationScreenTesting"
+            component={ReservationScreenTesting}
           />
-          */}
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

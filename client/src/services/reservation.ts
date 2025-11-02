@@ -29,8 +29,10 @@ export const uploadImage = async (
     formData.append("file", {
       uri: imageUri,
       type: "image/jpeg",
-      name: `${email.split("@")[0]}_${type}`,
+      name: `${email.split("@")[0]}-${type}`,
     } as any);
+
+    formData.append("type", type);
 
     const res = await axiosInstance.post(
       "/reservation/upload-image",
