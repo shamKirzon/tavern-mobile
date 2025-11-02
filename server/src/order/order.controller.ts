@@ -10,6 +10,7 @@ class OrderController {
       if (!order) return res.status(400).json({ message: "no data fetched" });
 
       const result = await orderService.createOrder(order);
+
       if (!result)
         throw new Error(
           "Order creation failed: No data returned from Supabase"

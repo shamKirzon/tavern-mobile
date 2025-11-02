@@ -23,12 +23,15 @@ export const getToken = async () => {
   }
 };
 
-export const getTokenInformation = async (token: any) => {
-  const decodedToken = jwtDecode<TokenPayLoad>(token);
+export const getTokenInformation = async () => {
+  const token = await getToken();
+  const decodedToken = jwtDecode<TokenPayLoad>(token!);
   return {
     exp: decodedToken.exp,
     iat: decodedToken.iat,
     email: decodedToken.email,
+    reservationId: decodedToken.reservationId,
+    orderId: decodedToken,
     id: decodedToken.jti,
   };
 };
@@ -41,9 +44,10 @@ export const deleteToken = async () => {
   }
 };
 
-export const isTokenExpired = (token: any): boolean => {
+export const isTokenExpired = async (): Promise<boolean> => {
   try {
-    const decodedToken = jwtDecode<TokenPayLoad>(token);
+    const token = await getToken();
+    const decodedToken = jwtDecode<TokenPayLoad>(token!);
     return decodedToken.exp * 1000 < Date.now();
   } catch (error: any) {
     console.error("isTokenExpired: decoding of token part ", error);
@@ -51,12 +55,15 @@ export const isTokenExpired = (token: any): boolean => {
   }
 };
 
-export const refreshToken = async (token: any) => {
+export const refreshToken = async () => {
   try {
-    const decodedToken = jwtDecode<TokenPayLoad>(token);
-    const email = decodedToken.email;
+    const token = await getToken();
+    const decodedToken = jwtDecode<TokenPayLoad>(token!);
+    const { email, reservationId, orderId } = decodedToken;
 
     console.info("Current Email:", email);
+    console.info("Current Reservation Id:", reservationId);
+    console.info("Current Order Id:", orderId);
 
     const res = await axiosInstance.post("/customer/register-email", { email });
 
@@ -71,4 +78,20 @@ export const refreshToken = async (token: any) => {
   } catch (error: any) {
     console.error("registerEmail error: ", error);
   }
+};
+
+export const updateToken = async (update: any) => {
+  try {
+    const token = await getToken();
+    const res = await axiosInstance.post("/auth/token/update", {
+      token,
+      update,
+    });
+
+    if (!res) return console.log("auth/updateToken: can't update the token");
+
+    console.log("updated token: ", res);
+    await deleteToken();
+    saveToken(res.data.updatedToken);
+  } catch (error) {}
 };

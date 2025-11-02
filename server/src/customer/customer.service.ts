@@ -1,4 +1,4 @@
-import { generateToken } from "../utils/token";
+import { authService } from "../auth/auth.service";
 import { customerRepository } from "./customer.repository";
 import { formatDateFromSeconds } from "../utils/formatDateFromSeconds";
 
@@ -10,8 +10,10 @@ class CustomerService {
       if (!emailExists)
         emailExists = await customerRepository.addCustomer(email);
 
-      return generateToken({
+      return authService.generateToken({
         email,
+        reservationId: null,
+        orderId: null,
       });
     } catch (error: any) {
       console.log(error.message || "Unable to register the customer ", error);

@@ -10,23 +10,20 @@ import { useAuthStore } from "../stores/useAuthStore";
 export const checkToken = async () => {
   const { isAuthenticated, setIsAuthenticated } = useAuthStore();
   const token = await getToken();
-  const tokenPayload = await getTokenInformation(token);
 
-  if (!token || isTokenExpired(token)) {
+  if (!token || (await isTokenExpired())) {
     setIsAuthenticated(false);
     console.error("no token || the token is expired", token);
     await deleteToken();
   } else {
     console.log("Token Refreshed Successfully!");
-    const afterRefresh = await refreshToken(token);
+    const afterRefresh = await refreshToken();
     console.info("new issued at:", afterRefresh);
     setIsAuthenticated(true);
   }
 };
 
 export const getEmailByToken = async (): Promise<string> => {
-  const token = await getToken();
-
-  const { email } = await getTokenInformation(token);
+  const { email } = await getTokenInformation();
   return email;
 };
