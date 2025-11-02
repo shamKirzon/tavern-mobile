@@ -11,6 +11,8 @@ export type RootStackParamLists = {
   PaymentScreen: undefined;
   MenuViewingScreen: { category: string };
   CustomizationScreen: undefined;
+  OrderHomeScreen: undefined;
+  WaitingConfirmationScreen: undefined;
 
   // shams testing, ignore niyo lang ito:
   HomeScreenTesting: undefined;

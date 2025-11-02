@@ -11,13 +11,15 @@ import { navigationRef } from "./navigationRef";
 import WelcomeScreen from "./src/screens/WelcomeScreen";
 import { checkToken } from "./src/services/token";
 // import HomeScreenTesting from "./src/screens/shams-testing/HomeScreenTesting";
-import ReservationScreenTesting from "./src/screens/shams-testing/ReservationScreenTesting";
+// import ReservationScreenTesting from "./src/screens/shams-testing/ReservationScreenTesting";
 import EmailVerificationScreen from "./src/screens/EmailVerificationScreen";
 import OrderPolicyScreen from "./src/screens/OrderPolicyScreen";
 import MenuViewingScreen from "./src/screens/MenuViewingScreen";
 import BookingSummaryScreen from "./src/screens/BookingSummaryScreen";
 import PaymentScreen from "./src/screens/PaymentScreen";
 import CustomizationScreen from "./src/screens/CustomizationScreen";
+import OrderHomeScreen from "./src/screens/OrderHomeScreen";
+import WaitingConfirmationScreen from "./src/screens/WaitingConfirmationScreen";
 
 const App = () => {
   useEffect(() => {
@@ -30,7 +32,7 @@ const App = () => {
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
-          initialRouteName="ReservationScreenTesting"
+          initialRouteName="WaitingConfirmationScreen"
           screenOptions={{ headerShown: false, animation: "none" }}
         >
           <Stack.Screen
@@ -68,6 +70,12 @@ const App = () => {
             component={OrderPolicyScreen}
           />
 
+          <Stack.Screen name="OrderHomeScreen" component={OrderHomeScreen} />
+
+          <Stack.Screen
+            name="WaitingConfirmationScreen"
+            component={WaitingConfirmationScreen}
+          />
           <Stack.Screen name="PaymentScreen" component={PaymentScreen} />
 
           <Stack.Screen
@@ -77,10 +85,10 @@ const App = () => {
 
           {/* shams testing - ignore niyo lang ito  */}
 
-          <Stack.Screen
+          {/* <Stack.Screen
             name="ReservationScreenTesting"
             component={ReservationScreenTesting}
-          />
+          /> */}
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>
