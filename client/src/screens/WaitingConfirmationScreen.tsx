@@ -21,7 +21,7 @@ interface Props {
   navigation: WatingConfirmationScreenNavigationProp;
 }
 
-const WatingConfirmationScreen: React.FC<Props> = ({ navigation }) => {
+const WaitingConfirmationScreen: React.FC<Props> = ({ navigation }) => {
   const handleBackToHome = () => {
     navigation.navigate("HomeScreen");
   };
@@ -74,42 +74,6 @@ const WatingConfirmationScreen: React.FC<Props> = ({ navigation }) => {
             >
               Order Status
             </Text>
-          </View>
-
-          {/* ===== PROGRESS BAR ===== */}
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: height * 0.04,
-              paddingHorizontal: width * 0.03,
-            }}
-          >
-            {[0, 1, 2, 3, 4].map((step, index) => (
-              <React.Fragment key={step}>
-                <View
-                  style={{
-                    width: 12,
-                    height: 12,
-                    borderRadius: 6,
-                    backgroundColor:
-                      index <= 1 ? "#D4AF37" : "rgba(255, 255, 255, 0.3)",
-                  }}
-                />
-                {index < 4 && (
-                  <View
-                    style={{
-                      flex: 1,
-                      height: 2,
-                      backgroundColor:
-                        index < 1 ? "#D4AF37" : "rgba(255, 255, 255, 0.3)",
-                      marginHorizontal: 3,
-                    }}
-                  />
-                )}
-              </React.Fragment>
-            ))}
           </View>
 
           {/* ===== AWAITING CONFIRMATION ===== */}
@@ -196,4 +160,4 @@ const WatingConfirmationScreen: React.FC<Props> = ({ navigation }) => {
   );
 };
 
-export default WatingConfirmationScreen;
+export default WaitingConfirmationScreen;

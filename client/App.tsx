@@ -18,6 +18,8 @@ import MenuViewingScreen from "./src/screens/MenuViewingScreen";
 import BookingSummaryScreen from "./src/screens/BookingSummaryScreen";
 import PaymentScreen from "./src/screens/PaymentScreen";
 import CustomizationScreen from "./src/screens/CustomizationScreen";
+import OrderHomeScreen from "./src/screens/OrderHomeScreen";
+import WaitingConfirmationScreen from "./src/screens/WaitingConfirmationScreen";
 
 const App = () => {
   useEffect(() => {
@@ -30,7 +32,7 @@ const App = () => {
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
-          initialRouteName="HomeScreen"
+          initialRouteName="PaymentScreen"
           screenOptions={{ headerShown: false, animation: "none" }}
         >
           <Stack.Screen
@@ -68,6 +70,12 @@ const App = () => {
             component={OrderPolicyScreen}
           />
 
+          <Stack.Screen name="OrderHomeScreen" component={OrderHomeScreen} />
+
+          <Stack.Screen
+            name="WaitingConfirmationScreen"
+            component={WaitingConfirmationScreen}
+          />
           <Stack.Screen name="PaymentScreen" component={PaymentScreen} />
 
           <Stack.Screen

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,12 +6,21 @@ import {
   TouchableOpacity,
   Image,
   Dimensions,
+  Modal,
+  Pressable,
 } from "react-native";
 import MainBackground from "../assets/backgrounds/main-background.svg";
+import PaymentMethod from "../assets/images/payment-method.svg";
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 const PaymentScreen = ({ navigation }: any) => {
+  const [selectedQR, setSelectedQR] = useState<string | null>(null);
+
+  const handleQRPress = (qr: string) => {
+    setSelectedQR(selectedQR === qr ? null : qr);
+  };
+
   return (
     <View style={{ flex: 1 }}>
       {/* Background */}
@@ -34,48 +43,42 @@ const PaymentScreen = ({ navigation }: any) => {
           <Text style={styles.headerTitle}>Payment</Text>
         </View>
 
-        {/* Progress Bar */}
-        <View style={styles.inlineProgressWrapper}>
-          <View style={styles.inlineProgressContainer}>
-            {[0, 1, 2, 3, 4].map((step) => (
-              <React.Fragment key={step}>
-                <View
-                  style={[
-                    styles.inlineCircle,
-                    step <= 1
-                      ? styles.inlineCircleActive
-                      : styles.inlineCircleInactive,
-                  ]}
-                />
-                {step < 4 && <View style={styles.inlineLine} />}
-              </React.Fragment>
-            ))}
-          </View>
-        </View>
-
-        {/* Note Box */}
+        {/* NOTE BOX */}
         <View style={styles.noteBox}>
-          <View style={styles.noteHeader}>
-            <View style={styles.infoIcon}>
-              <Text style={styles.infoText}>i</Text>
+          <View style={styles.noteContent}>
+            <View style={styles.infoCircle}>
+              <Text style={styles.infoLetter}>i</Text>
             </View>
-            <Text style={styles.noteTitle}>Note:</Text>
+            <Text style={styles.noteText}>
+              <Text style={{ fontWeight: "bold" }}>Note:</Text> A reservation fee
+              is required to secure your booking. 50% of this amount is consumable
+              and can be used for food and drink orders during your event.
+            </Text>
           </View>
-
-          <Text style={styles.noteText}>
-            A reservation fee is required to secure your booking. 50% of this
-            amount is consumable and can be used for food and drink orders during
-            your event.
-          </Text>
         </View>
 
-        {/* Payment Methods */}
+        {/* PAYMENT METHODS */}
         <View style={styles.paymentContainer}>
-          <Text style={styles.paymentTitle}>Payment Method</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginBottom: 12,
+            }}
+          >
+            <PaymentMethod
+              style={{ width: 22, height: 22, marginRight: 8 }}
+            />
+            <Text style={styles.paymentTitle}>Payment Method</Text>
+          </View>
 
           <View style={styles.qrRow}>
             {/* GCash */}
-            <View style={styles.qrCard}>
+            <TouchableOpacity
+              style={styles.qrCard}
+              onPress={() => handleQRPress("gcash")}
+              activeOpacity={0.8}
+            >
               <Image
                 source={require("../assets/payments/GCashLogo.png")}
                 style={styles.logo}
@@ -90,10 +93,14 @@ const PaymentScreen = ({ navigation }: any) => {
               <Text style={[styles.accountText, { color: "#1F51FF" }]}>
                 09615124880
               </Text>
-            </View>
+            </TouchableOpacity>
 
             {/* BPI */}
-            <View style={styles.qrCard}>
+            <TouchableOpacity
+              style={styles.qrCard}
+              onPress={() => handleQRPress("bpi")}
+              activeOpacity={0.8}
+            >
               <Image
                 source={require("../assets/payments/BPILogo.png")}
                 style={styles.logo}
@@ -108,10 +115,14 @@ const PaymentScreen = ({ navigation }: any) => {
               <Text style={[styles.accountText, { color: "#FF0000" }]}>
                 Account No.
               </Text>
-            </View>
+            </TouchableOpacity>
 
             {/* PayMaya */}
-            <View style={styles.qrCard}>
+            <TouchableOpacity
+              style={styles.qrCard}
+              onPress={() => handleQRPress("maya")}
+              activeOpacity={0.8}
+            >
               <Image
                 source={require("../assets/payments/MayaLogo.png")}
                 style={styles.logo}
@@ -126,17 +137,17 @@ const PaymentScreen = ({ navigation }: any) => {
               <Text style={[styles.accountText, { color: "#006400" }]}>
                 Account No.
               </Text>
-            </View>
+            </TouchableOpacity>
           </View>
 
-          {/* Total Payable */}
-          <View style={styles.totalPayableBox}>
+          {/* TOTAL PAYABLE */}
+          <View style={[styles.totalPayableBox, { borderTopWidth: 0 }]}>
             <Text style={styles.totalLabel}>Total Payable Amount is:</Text>
             <Text style={styles.totalAmount}>₱30,000.00</Text>
           </View>
         </View>
 
-        {/* Upload Proof */}
+        {/* UPLOAD PROOF */}
         <View style={styles.uploadContainer}>
           <Text style={styles.uploadLabel}>Upload Proof of Payment</Text>
           <TouchableOpacity style={styles.browseButton}>
@@ -144,7 +155,7 @@ const PaymentScreen = ({ navigation }: any) => {
           </TouchableOpacity>
         </View>
 
-        {/* Confirm Payment Button - pushed lower */}
+        {/* CONFIRM PAYMENT BUTTON */}
         <View style={styles.fixedButtonContainer}>
           <TouchableOpacity
             style={styles.confirmButton}
@@ -154,6 +165,71 @@ const PaymentScreen = ({ navigation }: any) => {
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* FLOATING QR MODAL */}
+      <Modal visible={!!selectedQR} transparent animationType="fade">
+        <Pressable
+          style={styles.overlay}
+          onPress={() => setSelectedQR(null)}
+        >
+          <View style={styles.modalContent}>
+            {selectedQR === "gcash" && (
+              <>
+                <Image
+                  source={require("../assets/payments/GCashLogo.png")}
+                  style={styles.modalLogo}
+                />
+                <Image
+                  source={require("../assets/payments/GCashQR.png")}
+                  style={styles.bigQR}
+                />
+                <Text style={[styles.modalText, { color: "#1F51FF" }]}>
+                  Tavern GCash
+                </Text>
+                <Text style={[styles.modalText, { color: "#1F51FF" }]}>
+                  09615124880
+                </Text>
+              </>
+            )}
+            {selectedQR === "bpi" && (
+              <>
+                <Image
+                  source={require("../assets/payments/BPILogo.png")}
+                  style={styles.modalLogo}
+                />
+                <Image
+                  source={require("../assets/payments/BPIQR.png")}
+                  style={styles.bigQR}
+                />
+                <Text style={[styles.modalText, { color: "#FF0000" }]}>
+                  Tavern
+                </Text>
+                <Text style={[styles.modalText, { color: "#FF0000" }]}>
+                  Account No.
+                </Text>
+              </>
+            )}
+            {selectedQR === "maya" && (
+              <>
+                <Image
+                  source={require("../assets/payments/MayaLogo.png")}
+                  style={styles.modalLogo}
+                />
+                <Image
+                  source={require("../assets/payments/MayaQR.png")}
+                  style={styles.bigQR}
+                />
+                <Text style={[styles.modalText, { color: "#006400" }]}>
+                  Tavern PM
+                </Text>
+                <Text style={[styles.modalText, { color: "#006400" }]}>
+                  Account No.
+                </Text>
+              </>
+            )}
+          </View>
+        </Pressable>
+      </Modal>
     </View>
   );
 };
@@ -187,75 +263,43 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: "#fff",
-    fontSize: 22,
+    fontSize: 25,
     fontWeight: "bold",
   },
 
-  /** PROGRESS **/
-  inlineProgressWrapper: {
-    width: width,
-    alignSelf: "center",
-    marginVertical: 25,
-  },
-  inlineProgressContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: width * 0.9,
-    alignSelf: "center",
-  },
-  inlineCircle: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-  },
-  inlineCircleActive: { backgroundColor: "#FFD85A" },
-  inlineCircleInactive: { backgroundColor: "#fff", opacity: 0.9 },
-  inlineLine: {
-    flex: 1,
-    height: 2,
-    backgroundColor: "#fff",
-    opacity: 0.8,
-  },
-
-  /** NOTE **/
+  /** NOTE BOX **/
   noteBox: {
-    backgroundColor: "rgba(255,255,255,0.1)",
+    backgroundColor: "rgba(255, 255, 255, 0.08)",
+    borderColor: "rgba(255, 255, 255, 0.15)",
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.2)",
-    borderRadius: 10,
-    padding: 12,
-    marginBottom: 15,
+    borderRadius: 16,
+    padding: 14,
+    marginVertical: 20,
   },
-  noteHeader: {
+  noteContent: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 6,
   },
-  infoIcon: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
+  infoCircle: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     borderWidth: 1.5,
-    borderColor: "#fff",
+    borderColor: "rgba(255, 255, 255, 0.9)",
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 8,
+    marginRight: 10,
   },
-  infoText: {
+  infoLetter: {
     color: "#fff",
     fontSize: 14,
-    fontWeight: "600",
-  },
-  noteTitle: {
-    color: "#fff",
     fontWeight: "bold",
-    fontSize: 14,
   },
   noteText: {
     color: "#fff",
     fontSize: 13,
-    lineHeight: 18,
+    lineHeight: 20,
+    flex: 1,
   },
 
   /** PAYMENT **/
@@ -263,17 +307,19 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.1)",
     borderRadius: 12,
     padding: 15,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.15)",
     marginBottom: 20,
   },
   paymentTitle: {
     color: "#fff",
     fontSize: 18,
     fontWeight: "600",
-    marginBottom: 12,
   },
   qrRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    marginTop: 5,
   },
   qrCard: {
     width: "30%",
@@ -302,8 +348,6 @@ const styles = StyleSheet.create({
   totalPayableBox: {
     marginTop: 15,
     paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(255,255,255,0.2)",
     alignItems: "center",
   },
   totalLabel: {
@@ -320,29 +364,32 @@ const styles = StyleSheet.create({
   uploadContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 150, // ⬅️ Increased from 90 to 150 to move it lower
+    marginBottom: 150,
   },
   uploadLabel: {
     color: "#fff",
-    fontSize: 14,
+    fontSize: 20,
     fontWeight: "500",
+    marginTop: 5,
   },
   browseButton: {
     backgroundColor: "rgba(255,255,255,0.2)",
-    paddingVertical: 6,
-    paddingHorizontal: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 20,
     borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.15)",
   },
   browseButtonText: {
     color: "#fff",
-    fontSize: 13,
+    fontSize: 15,
     fontWeight: "600",
   },
 
-  /** CONFIRM BUTTON LOWER **/
+  /** CONFIRM BUTTON **/
   fixedButtonContainer: {
     position: "absolute",
-    bottom: 100,
+    bottom: 30,
     left: 20,
     right: 20,
   },
@@ -356,5 +403,36 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+
+  /** FLOATING QR MODAL **/
+  overlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.8)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 20,
+    alignItems: "center",
+  },
+  modalLogo: {
+    width: 100,
+    height: 35,
+    resizeMode: "contain",
+    marginBottom: 10,
+  },
+  bigQR: {
+    width: width * 0.7,
+    height: width * 0.7,
+    resizeMode: "contain",
+    marginBottom: 10,
+  },
+  modalText: {
+    fontSize: 15,
+    fontWeight: "600",
+    textAlign: "center",
   },
 });

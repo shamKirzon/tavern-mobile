@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
+  Modal,
 } from "react-native";
 import MainBackground from "../assets/backgrounds/main-background.svg";
 import { RouteProp } from "@react-navigation/native";
@@ -33,6 +34,7 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
     "Solo" | "Regular" | "To share"
   >("Solo");
   const [quantity, setQuantity] = useState(1);
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
 
   const servingOptions = [
     { label: "Solo", price: 0 },
@@ -48,7 +50,23 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
   const totalPrice = (basePrice + getSelectedPrice()) * quantity;
 
   const handleQuantityChange = (change: number) => {
-    setQuantity((prev) => Math.max(1, prev + change));
+    setQuantity((prev) => {
+      const newQty = Math.max(0, prev + change);
+      if (newQty === 0) {
+        setShowRemoveModal(true);
+      }
+      return newQty;
+    });
+  };
+
+  const handleConfirmRemove = () => {
+    setShowRemoveModal(false);
+    // You can add logic here to actually remove the item from basket
+  };
+
+  const handleCancelRemove = () => {
+    setShowRemoveModal(false);
+    setQuantity(1); // reset to 1 if cancelled
   };
 
   return (
@@ -72,11 +90,13 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
         </TouchableOpacity>
 
         {/* Food Image */}
-        <Image
-          source={require("../assets/customization/ChiliBallparkNachos.png")}
-          style={styles.image}
-          resizeMode="cover"
-        />
+        <View style={{ alignItems: "center" }}>
+          <Image
+            source={require("../assets/customization/ChiliBallparkNachos.png")}
+            style={styles.image}
+            resizeMode="cover"
+          />
+        </View>
 
         {/* Content Area */}
         <View style={styles.overlayContainer}>
@@ -93,6 +113,9 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
             Tortilla chips, cheese sauce, chili meat, pico de gallo, fresh
             salsa, sour cream
           </Text>
+
+          {/* Horizontal line */}
+          <View style={styles.divider} />
 
           {/* Servings Section */}
           <View style={styles.section}>
@@ -131,6 +154,9 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
               </TouchableOpacity>
             ))}
           </View>
+
+          {/* Horizontal line */}
+          <View style={styles.divider} />
 
           {/* Note to restaurant */}
           <View style={styles.section}>
@@ -175,6 +201,29 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      {/* ✅ Remove Item Modal */}
+      <Modal transparent visible={showRemoveModal} animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalText}>Remove this item?</Text>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={styles.noButton}
+                onPress={handleCancelRemove}
+              >
+                <Text style={styles.noButtonText}>No</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.yesButton}
+                onPress={handleConfirmRemove}
+              >
+                <Text style={styles.yesButtonText}>Yes</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -184,7 +233,7 @@ export default CustomizationScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: "transparent",
   },
   backButton: {
     flexDirection: "row",
@@ -207,11 +256,10 @@ const styles = StyleSheet.create({
     width: "90%",
     height: 220,
     borderRadius: 15,
-    alignSelf: "center",
     marginVertical: 15,
   },
   overlayContainer: {
-    backgroundColor: "rgba(0,0,0,0.85)",
+    backgroundColor: "transparent",
     paddingHorizontal: 20,
     paddingVertical: 25,
     borderTopLeftRadius: 20,
@@ -236,15 +284,20 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   basePriceLabel: {
-    color: "#bbb",
+    color: "#f4d03f",
     fontSize: 11,
   },
   description: {
     color: "#ccc",
     fontSize: 14,
     marginTop: 8,
-    marginBottom: 20,
+    marginBottom: 15,
     lineHeight: 20,
+  },
+  divider: {
+    borderBottomColor: "rgba(255,255,255,0.3)",
+    borderBottomWidth: 1,
+    marginBottom: 15,
   },
   section: {
     marginBottom: 25,
@@ -303,24 +356,29 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   textInput: {
-    backgroundColor: "#1a1a1a",
+    backgroundColor: "transparent",
     color: "#fff",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.3)",
     borderRadius: 10,
     padding: 12,
-    marginTop: 10,
+    marginTop: 25,
     fontSize: 14,
   },
   quantityContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginVertical: 15,
+    marginBottom: 15,
   },
   qtyButton: {
-    backgroundColor: "#333",
-    borderRadius: 8,
-    paddingHorizontal: 18,
-    paddingVertical: 6,
+    borderWidth: 1.5,
+    borderColor: "#fff",
+    borderRadius: 50,
+    width: 36,
+    height: 36,
+    justifyContent: "center",
+    alignItems: "center",
   },
   qtySymbol: {
     color: "#fff",
@@ -337,12 +395,64 @@ const styles = StyleSheet.create({
     backgroundColor: "#c0392b",
     paddingVertical: 15,
     borderRadius: 10,
-    marginTop: 10,
+    marginTop: 15,
   },
   updateButtonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "700",
     textAlign: "center",
+  },
+
+  // ✅ Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContainer: {
+    width: 250,
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    paddingVertical: 25,
+    paddingHorizontal: 15,
+    alignItems: "center",
+  },
+  modalText: {
+    color: "#000",
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 20,
+  },
+  modalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  noButton: {
+    flex: 1,
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: "#c0392b",
+    borderRadius: 25,
+    paddingVertical: 10,
+    backgroundColor: "#fff",
+    alignItems: "center",
+  },
+  yesButton: {
+    flex: 1,
+    backgroundColor: "#c0392b",
+    borderRadius: 25,
+    paddingVertical: 10,
+    alignItems: "center",
+  },
+  noButtonText: {
+    color: "#c0392b",
+    fontWeight: "700",
+  },
+  yesButtonText: {
+    color: "#fff",
+    fontWeight: "700",
   },
 });
