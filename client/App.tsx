@@ -32,7 +32,7 @@ const App = () => {
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
-          initialRouteName="PaymentScreen"
+          initialRouteName="CustomizationScreen"
           screenOptions={{ headerShown: false, animation: "none" }}
         >
           <Stack.Screen

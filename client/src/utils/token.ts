@@ -61,11 +61,13 @@ export const refreshToken = async () => {
     const decodedToken = jwtDecode<TokenPayLoad>(token!);
     const { email, reservationId, orderId } = decodedToken;
 
-    console.info("Current Email:", email);
-    console.info("Current Reservation Id:", reservationId);
-    console.info("Current Order Id:", orderId);
+    console.info("Current Email:", decodedToken.email);
+    console.info("Current Reservation Id:", decodedToken.reservationId);
+    console.info("Current Order Id:", decodedToken.orderId);
 
-    const res = await axiosInstance.post("/customer/register-email", { email });
+    const res = await axiosInstance.post("/auth/token/generate", {
+      decodedToken,
+    });
 
     if (!res) return console.log("no created token");
 
