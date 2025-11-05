@@ -1,595 +1,637 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   TextInput,
-  StyleSheet,
   Alert,
+  Keyboard,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { width, height } from "../utils/dimensions";
-import { RouteProp } from "@react-navigation/native";
-import { RootStackParamLists } from "../types/rootStackParamLists";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import MainBackground from "../assets/backgrounds/main-background.svg";
+import { RouteProp } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamLists } from "../types/rootStackParamLists";
 
 type ReservationScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamLists,
   "ReservationScreen"
 >;
+type ReservationScreenRouteProp = RouteProp<RootStackParamLists, "ReservationScreen">;
 
-type ReservationScreenRouteProp = RouteProp<
-  RootStackParamLists,
-  "ReservationScreen"
->;
-
-interface Props {
+type Props = {
   navigation: ReservationScreenNavigationProp;
   route: ReservationScreenRouteProp;
-}
+};
 
-const ReservationScreen: React.FC<Props> = ({ navigation }) => {
+const MAX_PAX_INCLUSIVE = 70;
+const MAX_PAX_EXCLUSIVE = 30;
+const MIN_PAX_EXCLUSIVE = 15;
+const PRICE_PER_PAX_INCLUSIVE = 1000;
+const PRICE_PER_PAX_EXCLUSIVE = 2000;
+
+const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [contact, setContact] = useState("");
-  const [reservationType, setReservationType] = useState(
-    "Inclusive (Shared Space)"
-  );
-  const [guests, setGuests] = useState<string>("");
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [contactNumber, setContactNumber] = useState("");
+  const [guests, setGuests] = useState(1);
+  const [reservationType, setReservationType] = useState("Inclusive");
+  const [selectedDate, setSelectedDate] = useState<number | null>(null);
+  const [fileName, setFileName] = useState("");
+  const [currentMonth, setCurrentMonth] = useState("November");
   const [showDropdown, setShowDropdown] = useState(false);
+  const [startIndex, setStartIndex] = useState(0);
 
-  // Generate up to 2 weeks of dates
-  const generateCalendarDates = () => {
-    const today = new Date();
-    const dates = [];
-    for (let i = 0; i < 14; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() + i);
-      dates.push(date);
+  const reservationTypes = ["Exclusive", "Inclusive"];
+
+  const { maxGuests, minGuests, pricePerPax } = useMemo(() => {
+    if (reservationType === "Exclusive") {
+      return {
+        maxGuests: MAX_PAX_EXCLUSIVE,
+        minGuests: MIN_PAX_EXCLUSIVE,
+        pricePerPax: PRICE_PER_PAX_EXCLUSIVE,
+      };
     }
-    return dates;
+    return {
+      maxGuests: MAX_PAX_INCLUSIVE,
+      minGuests: 1,
+      pricePerPax: PRICE_PER_PAX_INCLUSIVE,
+    };
+  }, [reservationType]);
+
+  React.useEffect(() => {
+    if (guests > maxGuests) {
+      setGuests(maxGuests);
+    } else if (guests < minGuests) {
+      setGuests(minGuests);
+    }
+  }, [reservationType]);
+
+  const totalFee = guests * pricePerPax;
+
+  const today = new Date();
+  const allDays = Array.from({ length: 14 }, (_, i) => {
+    const date = new Date(today);
+    date.setDate(today.getDate() + i);
+    return {
+      name: date.toLocaleDateString("en-US", { weekday: "short" }),
+      date: date.getDate(),
+    };
+  });
+
+  const handleUpload = () => {
+    setFileName("sample-document.pdf");
+    Alert.alert("Success", "File uploaded successfully!");
   };
 
-  const calendarDates = generateCalendarDates();
-
-  const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-
-  const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
-  const formatDate = (date: Date) =>
-    `${monthNames[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
-
-  const validateInputs = () => {
-    const nameRegex = /^[A-Za-z\s]+$/;
-
-    if (!firstName.trim()) {
-      Alert.alert("Invalid Input", "Please enter your first name.");
-      return false;
+  const handleBookNow = () => {
+    if (!firstName || !lastName || !contactNumber || !selectedDate) {
+      Alert.alert("Error", "Please fill in all required fields and select a date.");
+      return;
     }
-    if (!nameRegex.test(firstName)) {
-      Alert.alert("Invalid Input", "First name should only contain letters.");
-      return false;
-    }
-
-    if (!lastName.trim()) {
-      Alert.alert("Invalid Input", "Please enter your last name.");
-      return false;
-    }
-    if (!nameRegex.test(lastName)) {
-      Alert.alert("Invalid Input", "Last name should only contain letters.");
-      return false;
-    }
-
-    if (!contact) {
-      Alert.alert("Invalid Input", "Please enter your contact number.");
-      return false;
-    }
-    if (!/^09\d{9}$/.test(contact)) {
+    if (guests < minGuests || guests > maxGuests) {
       Alert.alert(
-        "Invalid Input",
-        "Contact number must be 11 digits starting with 09 (e.g., 09123456789)."
+        "Error",
+        `Number of guests must be between ${minGuests} and ${maxGuests} for ${reservationType} reservation.`
       );
-      return false;
+      return;
     }
 
-    if (!selectedDate) {
-      Alert.alert("Invalid Input", "Please select a date.");
-      return false;
-    }
-
-    const guestCount = parseInt(guests);
-    if (!guests || isNaN(guestCount)) {
-      Alert.alert("Invalid Input", "Please enter number of guests.");
-      return false;
-    }
-
-    if (reservationType === "Exclusive VIP (Private Space)") {
-      if (guestCount < 15) {
-        Alert.alert(
-          "Limit Reached",
-          "Exclusive VIP requires minimum 15 persons."
-        );
-        return false;
-      }
-      if (guestCount > 30) {
-        Alert.alert("Limit Reached", "Exclusive VIP maximum is 30 persons.");
-        return false;
-      }
-    } else {
-      if (guestCount < 1) {
-        Alert.alert("Invalid Input", "Please enter at least 1 guest.");
-        return false;
-      }
-      if (guestCount > 70) {
-        Alert.alert(
-          "Limit Reached",
-          "Inclusive (Shared Space) maximum is 70 persons."
-        );
-        return false;
-      }
-    }
-
-    return true;
+    Alert.alert(
+      "Reservation Summary",
+      `Type: ${reservationType}\nDate: ${selectedDate}\nGuests: ${guests}\nTotal Fee: ${totalFee.toLocaleString(
+        "en-US"
+      )} PHP`,
+      [{ text: "OK", onPress: () => console.log("Booking confirmed") }]
+    );
   };
 
-  const calculateFees = () => {
-    const guestCount = parseInt(guests) || 0;
-    const isExclusive = reservationType === "Exclusive VIP (Private Space)";
-    const perPax = isExclusive ? 2000 : 1000;
-    const total = guestCount * perPax;
-    const downPayment = total * 0.5;
-    const consumable = total * 0.5;
-
-    return { total, downPayment, consumable, perPax };
+  const handleSelectReservationType = (type: string) => {
+    setReservationType(type);
+    setShowDropdown(false);
   };
-
-  const handleBook = () => {
-    if (validateInputs()) {
-      Alert.alert("Success", "Reservation submitted successfully!");
-    }
-  };
-
-  const fees = calculateFees();
 
   return (
-    <View style={styles.mainContainer}>
+    <KeyboardAvoidingView
+      style={{ width, height, flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={0}
+    >
       <MainBackground
         width={width}
         height={height}
         preserveAspectRatio="none"
-        style={styles.bg}
+        style={{ position: "absolute", top: 0, left: 0 }}
       />
 
       {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerRow}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("HomeScreen")}
-            style={styles.backButton}
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          paddingHorizontal: width * 0.05,
+          paddingTop: height * 0.06,
+          paddingBottom: 20,
+          zIndex: 1,
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={{
+            width: 35,
+            height: 35,
+            justifyContent: "center",
+            alignItems: "center",
+            marginRight: 10,
+          }}
+        >
+          <Text
+            style={{
+              color: "white",
+              fontSize: width * 0.09,
+              fontWeight: "600",
+            }}
           >
-            <Text style={styles.backText}>←</Text>
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Reservation Details</Text>
-        </View>
+            ←
+          </Text>
+        </TouchableOpacity>
+        <Text
+          style={{
+            fontSize: width * 0.08,
+            fontWeight: "bold",
+            color: "white",
+          }}
+        >
+          Reservation
+        </Text>
       </View>
 
-      {/* Content */}
-      <View style={styles.contentContainer}>
-        {/* Names */}
-        <View style={styles.row}>
-          <TextInput
-            placeholder="First Name"
-            placeholderTextColor="#777"
-            value={firstName}
-            onChangeText={setFirstName}
-            style={[styles.input, { flex: 1, marginRight: 8 }]}
-          />
-          <TextInput
-            placeholder="Last Name"
-            placeholderTextColor="#777"
-            value={lastName}
-            onChangeText={setLastName}
-            style={[styles.input, { flex: 1 }]}
-          />
-        </View>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          paddingHorizontal: width * 0.05,
+          paddingBottom: 40,
+        }}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={{ gap: 18 }}>
+          {/* User Info */}
+          <Text
+            style={{
+              fontSize: width * 0.06,
+              fontWeight: "600",
+              color: "white",
+              marginBottom: 8,
+            }}
+          >
+            Enter Your Information
+          </Text>
 
-        {/* Contact */}
-        <TextInput
-          placeholder="Contact Number"
-          placeholderTextColor="#777"
-          value={contact}
-          onChangeText={setContact}
-          keyboardType="number-pad"
-          maxLength={11}
-          style={styles.input}
-        />
-
-        {/* Calendar */}
-        <Text style={styles.sectionTitleSmall}>When to visit?</Text>
-        <View style={styles.glassCard}>
-          <View style={styles.calendarHeader}>
-            <View>
-              <Text style={styles.cardTitle}>Pick a Schedule</Text>
-              <Text style={styles.cardSubtitle}>
-                {selectedDate
-                  ? formatDate(selectedDate)
-                  : "Select a date below"}
-              </Text>
-            </View>
-            <View style={styles.monthButton}>
-              <Text style={styles.monthButtonText}>
-                {monthNames[currentMonth.getMonth()]}
-              </Text>
-            </View>
+          {/* Input Fields */}
+          <View style={{ flexDirection: "row", gap: 12 }}>
+            <TextInput
+              placeholder="First Name"
+              value={firstName}
+              onChangeText={(text) => setFirstName(text.replace(/[^a-zA-Z\s]/g, ""))}
+              placeholderTextColor="#999"
+              style={{
+                flex: 1,
+                backgroundColor: "white",
+                borderRadius: 12,
+                paddingVertical: 16,
+                paddingHorizontal: 18,
+                fontSize: width * 0.04,
+                color: "#000",
+              }}
+            />
+            <TextInput
+              placeholder="Last Name"
+              value={lastName}
+              onChangeText={(text) => setLastName(text.replace(/[^a-zA-Z\s]/g, ""))}
+              placeholderTextColor="#999"
+              style={{
+                flex: 1,
+                backgroundColor: "white",
+                borderRadius: 12,
+                paddingVertical: 16,
+                paddingHorizontal: 18,
+                fontSize: width * 0.04,
+                color: "#000",
+              }}
+            />
           </View>
 
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.calendarScroll}
-          >
-            {calendarDates.map((date, index) => {
-              const isSelected =
-                selectedDate?.toDateString() === date.toDateString();
-              const dayName =
-                dayNames[date.getDay() === 0 ? 6 : date.getDay() - 1];
-              return (
+          {/* Contact Number */}
+          <TextInput
+            placeholder="Contact Number"
+            value={contactNumber}
+            onChangeText={setContactNumber}
+            placeholderTextColor="#999"
+            keyboardType="phone-pad"
+            style={{
+              backgroundColor: "white",
+              borderRadius: 12,
+              paddingVertical: 16,
+              paddingHorizontal: 18,
+              fontSize: width * 0.04,
+              color: "#000",
+            }}
+          />
+
+          {/* Schedule Picker */}
+          <View>
+            <Text
+              style={{
+                color: "white",
+                fontSize: width * 0.06,
+                fontWeight: "600",
+                marginBottom: 12,
+              }}
+            >
+              When to visit?
+            </Text>
+            <View
+              style={{
+                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                borderRadius: 16,
+                padding: 20,
+                borderWidth: 1,
+                borderColor: "rgba(255, 255, 255, 0.15)",
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: 18,
+                }}
+              >
+                <Text
+                  style={{
+                    color: "white",
+                    fontSize: width * 0.05,
+                    fontWeight: "600",
+                  }}
+                >
+                  Pick a Schedule
+                </Text>
                 <TouchableOpacity
-                  key={index}
-                  style={[
-                    styles.dateItem,
-                    isSelected && styles.dateItemSelected,
-                  ]}
-                  onPress={() => {
-                    setSelectedDate(date);
-                    setCurrentMonth(date);
+                  style={{
+                    backgroundColor: "rgba(255, 255, 255, 0.15)",
+                    paddingVertical: 8,
+                    paddingHorizontal: 25,
+                    borderRadius: 20,
+                    borderWidth: 1,
+                    borderColor: "rgba(255, 255, 255, 0.36)",
                   }}
                 >
                   <Text
-                    style={[
-                      styles.dayName,
-                      isSelected && styles.dayNameSelected,
-                    ]}
+                    style={{
+                      color: "white",
+                      fontSize: width * 0.038,
+                      fontWeight: "700",
+                    }}
                   >
-                    {dayName}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.dateNumber,
-                      isSelected && styles.dateNumberSelected,
-                    ]}
-                  >
-                    {date.getDate()}
+                    {currentMonth}
                   </Text>
                 </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
-        </View>
+              </View>
 
-        {/* Type of Reservation & Guests */}
-        <View style={styles.rowBetween}>
-          <View style={{ flex: 0.65 }}>
-            <Text style={styles.label}>Type of Reservation</Text>
-            <View>
-              <TouchableOpacity
-                style={styles.dropdown}
-                onPress={() => setShowDropdown(!showDropdown)}
+              {/* Days Carousel */}
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
               >
-                <Text style={styles.dropdownText}>{reservationType}</Text>
-                <Text style={styles.dropdownArrow}>
-                  {showDropdown ? "▲" : "▼"}
-                </Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setStartIndex((prev) => Math.max(0, prev - 6))}
+                  disabled={startIndex === 0}
+                  style={{ padding: 8, opacity: startIndex === 0 ? 0.4 : 1 }}
+                >
+                  <Text style={{ color: "white", fontSize: width * 0.08 }}>‹</Text>
+                </TouchableOpacity>
 
-              {showDropdown && (
-                <View style={styles.dropdownMenu}>
-                  <TouchableOpacity
-                    style={styles.dropdownItem}
-                    onPress={() => {
-                      setReservationType("Inclusive (Shared Space)");
-                      setShowDropdown(false);
-                      setGuests("");
-                    }}
-                  >
-                    <Text style={styles.dropdownItemText}>
-                      Inclusive (Shared Space)
-                    </Text>
-                    <Text style={styles.dropdownItemSubtext}>
-                      ₱1,000/pax • Max 70 pax
-                    </Text>
-                  </TouchableOpacity>
-                  <View style={styles.dropdownDivider} />
-                  <TouchableOpacity
-                    style={styles.dropdownItem}
-                    onPress={() => {
-                      setReservationType("Exclusive VIP (Private Space)");
-                      setShowDropdown(false);
-                      setGuests("");
-                    }}
-                  >
-                    <Text style={styles.dropdownItemText}>
-                      Exclusive VIP (Private Space)
-                    </Text>
-                    <Text style={styles.dropdownItemSubtext}>
-                      ₱2,000/pax • 15-30 pax
-                    </Text>
-                  </TouchableOpacity>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    flex: 1,
+                    justifyContent: "space-between",
+                    gap: 1,
+                  }}
+                >
+                  {allDays.slice(startIndex, startIndex + 6).map((day, index) => (
+                    <TouchableOpacity
+                      key={day.date + index}
+                      onPress={() => setSelectedDate(day.date)}
+                      style={{
+                        flex: 1,
+                        alignItems: "center",
+                        paddingVertical: 20,
+                        borderRadius: 10,
+                        backgroundColor:
+                          selectedDate === day.date ? "#8A1717" : "transparent",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "white",
+                          fontSize: width * 0.03,
+                          marginBottom: 2,
+                          opacity: 0.9,
+                        }}
+                      >
+                        {day.name}
+                      </Text>
+                      <Text
+                        style={{
+                          color: "white",
+                          fontSize: width * 0.06,
+                          fontWeight: "600",
+                        }}
+                      >
+                        {day.date}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
                 </View>
-              )}
+
+                <TouchableOpacity
+                  onPress={() => setStartIndex((prev) => Math.min(prev + 6, 8))}
+                  disabled={startIndex >= 8}
+                  style={{ padding: 8, opacity: startIndex >= 8 ? 0.4 : 1 }}
+                >
+                  <Text style={{ color: "white", fontSize: width * 0.08 }}>›</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
 
-          <View style={{ flex: 0.33 }}>
-            <Text style={styles.label}>Guests</Text>
-            <TextInput
-              placeholder="0"
-              placeholderTextColor="#777"
-              value={guests}
-              onChangeText={setGuests}
-              keyboardType="number-pad"
-              style={styles.dropdown}
-            />
+          {/* Reservation Type and Guests */}
+          <View style={{ flexDirection: "row", gap: 12 }}>
+            <View style={{ flex: 1, zIndex: showDropdown ? 100 : 1 }}>
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: width * 0.038,
+                  fontWeight: "500",
+                  marginBottom: 8,
+                }}
+              >
+                Type of Reservation
+              </Text>
+
+              <TouchableOpacity
+                onPress={() => {
+                  Keyboard.dismiss();
+                  setShowDropdown(!showDropdown);
+                }}
+                activeOpacity={0.7}
+                style={{
+                  backgroundColor: "rgba(255, 255, 255, 0.1)",
+                  borderRadius: 12,
+                  paddingVertical: 14,
+                  paddingHorizontal: 16,
+                  borderWidth: 1,
+                  borderColor: "rgba(255, 255, 255, 0.2)",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Text
+                  style={{
+                    color: "white",
+                    fontSize: width * 0.038,
+                    fontWeight: "500",
+                  }}
+                >
+                  {reservationType}
+                </Text>
+                <Text style={{ color: "white", fontSize: width * 0.025 }}>▼</Text>
+              </TouchableOpacity>
+
+              {/* Overlay behind dropdown */}
+              {showDropdown && (
+                <TouchableOpacity
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: -width * 0.05,
+                    width: width,
+                    height: height,
+                    backgroundColor: "transparent",
+                    zIndex: 90,
+                  }}
+                  onPress={() => setShowDropdown(false)}
+                  activeOpacity={1}
+                />
+              )}
+
+              {/* Dropdown List */}
+              {showDropdown && (
+                <View
+                  style={{
+                    position: "absolute",
+                    top: 80,
+                    left: 0,
+                    right: 0,
+                    backgroundColor: "#2a2a2a",
+                    borderRadius: 12,
+                    borderWidth: 1,
+                    borderColor: "rgba(255, 255, 255, 0.3)",
+                    overflow: "hidden", 
+                    zIndex: 100,
+                  }}
+                >
+                  {reservationTypes.map((type, index) => (
+                    <TouchableOpacity
+                      key={type}
+                      onPress={() => {
+                        handleSelectReservationType(type);
+                        setShowDropdown(false);
+                      }}
+                      activeOpacity={0.8}
+                      style={{
+                        paddingVertical: 14,
+                        paddingHorizontal: 16,
+                        borderBottomWidth: index < reservationTypes.length - 1 ? 1 : 0,
+                        borderBottomColor: "rgba(255, 255, 255, 0.1)",
+                        backgroundColor:
+                          reservationType === type
+                            ? "rgba(138, 23, 23, 0.6)"
+                            : "transparent",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "white",
+                          fontSize: width * 0.038,
+                          fontWeight: reservationType === type ? "700" : "500",
+                        }}
+                      >
+                        {type}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
+            </View>
+
+            {/* Guests */}
+            <View style={{ flex: 1 }}>
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: width * 0.038,
+                  fontWeight: "500",
+                  marginBottom: 8,
+                }}
+              >
+                Guests (Min: {minGuests} / Max: {maxGuests})
+              </Text>
+              <TextInput
+                value={guests.toString()}
+                onChangeText={(text) => {
+                  const numericValue = text.replace(/[^0-9]/g, "");
+                  if (numericValue === "") {
+                    setGuests(minGuests);
+                    return;
+                  }
+                  let newGuests = parseInt(numericValue) || minGuests;
+                  if (newGuests > maxGuests) newGuests = maxGuests;
+                  else if (newGuests < minGuests) newGuests = minGuests;
+                  setGuests(newGuests);
+                }}
+                keyboardType="numeric"
+                placeholderTextColor="#999"
+                onFocus={() => setShowDropdown(false)}
+                style={{
+                  backgroundColor: "rgba(255, 255, 255, 0.1)",
+                  borderRadius: 12,
+                  paddingVertical: 14,
+                  paddingHorizontal: 16,
+                  borderWidth: 1,
+                  borderColor: "rgba(255, 255, 255, 0.2)",
+                  color: "white",
+                  fontSize: width * 0.045,
+                  fontWeight: "600",
+                  textAlign: "center",
+                }}
+              />
+            </View>
           </View>
-        </View>
 
-        {/* Fee Box */}
-        <View style={styles.feeCard}>
-          <Text style={styles.cardTitle}>
-            Reservation Fee: ₱{fees.total.toLocaleString()}
-          </Text>
-          <View style={styles.feeDivider} />
-          <Text style={styles.feeText}>
-            Down Payment (50%): ₱{fees.downPayment.toLocaleString()}
-          </Text>
-          <Text style={styles.feeText}>
-            Consumable Balance: ₱{fees.consumable.toLocaleString()}
-          </Text>
-        </View>
+          {/* Reservation Fee */}
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              backgroundColor: "rgba(60, 60, 60, 0.6)",
+              borderRadius: 12,
+              paddingVertical: 18,
+              paddingHorizontal: 20,
+              borderWidth: 1,
+              borderColor: "rgba(255, 255, 255, 0.2)",
+            }}
+          >
+            <Text
+              style={{
+                color: "white",
+                fontSize: width * 0.043,
+                fontWeight: "500",
+              }}
+            >
+              Total Reservation Fee:
+            </Text>
+            <Text
+              style={{
+                color: "white",
+                fontSize: width * 0.045,
+                fontWeight: "700",
+              }}
+            >
+              {totalFee.toLocaleString("en-US")} PHP
+            </Text>
+          </View>
 
-        {/* Upload ID - simplified */}
-        <View style={styles.uploadSectionSimple}>
-          <Text style={styles.label}>Upload One (1) Valid ID</Text>
-          <TouchableOpacity style={styles.browseButtonSimple}>
-            <Text style={styles.browseButtonText}>Browse File</Text>
+          {/* Upload Section */}
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <View style={{ flex: 1 }}>
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: width * 0.05,
+                  fontWeight: "500",
+                }}
+              >
+                Upload One (1) Valid ID
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={handleUpload}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                backgroundColor: "rgba(255, 255, 255, 0.1)",
+                borderRadius: 12,
+                paddingVertical: 12,
+                paddingHorizontal: width * 0.09,
+                borderWidth: 1,
+                borderColor: "rgba(255, 255, 255, 0.2)",
+              }}
+            >
+              <Text style={{ fontSize: width * 0.045, marginRight: 8 }}>☁️</Text>
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: width * 0.038,
+                  fontWeight: "500",
+                }}
+              >
+                Browse File
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Book Now */}
+          <TouchableOpacity
+            onPress={handleBookNow}
+            style={{
+              backgroundColor: "#8A1717",
+              paddingVertical: 18,
+              borderRadius: 14,
+              alignItems: "center",
+              marginTop: 20,
+            }}
+          >
+            <Text
+              style={{
+                color: "white",
+                fontSize: width * 0.05,
+                fontWeight: "700",
+              }}
+            >
+              Book Now
+            </Text>
           </TouchableOpacity>
         </View>
-
-        {/* Book Now */}
-        <TouchableOpacity style={styles.bookButton} onPress={handleBook}>
-          <Text style={styles.bookText}>Book Now</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
-
-const styles = StyleSheet.create({
-  mainContainer: { width, height, flex: 1 },
-  bg: { position: "absolute", top: 0, left: 0 },
-
-  // Header
-  header: {
-    width: "100%",
-    paddingHorizontal: width * 0.05,
-    paddingTop: height * 0.06,
-    paddingBottom: height * 0.02,
-    backgroundColor: "transparent",
-    position: "absolute",
-    top: 0,
-    left: 0,
-    zIndex: 10,
-  },
-  headerRow: { flexDirection: "row", alignItems: "center" },
-  backButton: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  backText: { color: "white", fontSize: width * 0.08, fontWeight: "600" },
-  headerTitle: { color: "white", fontSize: width * 0.07, fontWeight: "bold" },
-
-  // Content
-  contentContainer: {
-    flex: 1,
-    paddingHorizontal: width * 0.06,
-    paddingTop: height * 0.14,
-    paddingBottom: 20,
-  },
-
-  row: { flexDirection: "row", marginBottom: 12 },
-  rowBetween: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 16,
-    marginBottom: 8,
-  },
-
-  sectionTitleSmall: {
-    color: "white",
-    fontSize: width * 0.06, // same as labels
-    fontWeight: "bold",
-    marginTop: 20,
-    marginBottom: 12,
-  },
-
-  label: {
-    color: "white",
-    fontWeight: "600",
-    marginBottom: 8,
-    fontSize: width * 0.05,
-  },
-  input: {
-    backgroundColor: "white",
-    color: "black",
-    borderRadius: 10,
-    padding: 14,
-    fontSize: width * 0.04,
-  },
-  dropdown: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "rgba(255,255,255,0.15)",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.3)",
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-  },
-  dropdownText: { color: "white", fontSize: width * 0.04, flex: 1 },
-  dropdownArrow: { color: "white", fontSize: 16, marginLeft: 8 },
-  dropdownMenu: {
-    position: "absolute",
-    top: "100%",
-    left: 0,
-    right: 0,
-    backgroundColor: "rgba(30,30,30,0.98)",
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.3)",
-    marginTop: 4,
-    overflow: "hidden",
-    zIndex: 1000,
-  },
-  dropdownItem: { padding: 14 },
-  dropdownItemText: {
-    color: "white",
-    fontSize: width * 0.04,
-    fontWeight: "600",
-    marginBottom: 4,
-  },
-  dropdownItemSubtext: {
-    color: "rgba(255,255,255,0.7)",
-    fontSize: width * 0.035,
-  },
-  dropdownDivider: { height: 1, backgroundColor: "rgba(255,255,255,0.2)" },
-
-  glassCard: {
-    backgroundColor: "rgba(255,255,255,0.1)",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.3)",
-    borderRadius: 15,
-    padding: 16,
-    marginBottom: 5,
-  },
-  feeCard: {
-    backgroundColor: "rgba(255,255,255,0.1)",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.3)",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-  },
-  feeDivider: {
-    height: 1,
-    backgroundColor: "rgba(255,255,255,0.3)",
-    marginVertical: 6,
-  },
-
-  cardTitle: { color: "white", fontSize: width * 0.045, fontWeight: "bold" },
-  cardSubtitle: {
-    color: "rgba(255,255,255,0.7)",
-    fontSize: width * 0.035,
-    marginTop: 4,
-  },
-  feeText: {
-    color: "rgba(255,255,255,0.9)",
-    fontSize: width * 0.04,
-    marginBottom: 4,
-  },
-
-  calendarHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  monthButton: {
-    backgroundColor: "rgba(255,255,255,0.2)",
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.3)",
-  },
-  monthButtonText: {
-    color: "white",
-    fontSize: width * 0.038,
-    fontWeight: "600",
-  },
-  calendarScroll: { marginTop: 8 },
-  dateItem: {
-    backgroundColor: "rgba(255,255,255,0.1)",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.3)",
-    borderRadius: 10,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    marginRight: 10,
-    alignItems: "center",
-    minWidth: 65,
-  },
-  dateItemSelected: { backgroundColor: "#A4161A", borderColor: "#A4161A" },
-  dayName: {
-    color: "rgba(255,255,255,0.7)",
-    fontSize: width * 0.032,
-    marginBottom: 4,
-  },
-  dayNameSelected: { color: "white", fontWeight: "600" },
-  dateNumber: { color: "white", fontSize: width * 0.055, fontWeight: "bold" },
-  dateNumberSelected: { color: "white" },
-
-  // Simplified Upload ID
-  uploadSectionSimple: {
-    marginBottom: 16,
-  },
-  browseButtonSimple: {
-    marginTop: 8,
-    backgroundColor: "rgba(255,255,255,0.2)",
-    paddingVertical: 14,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.3)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  browseButtonText: {
-    color: "white",
-    fontSize: width * 0.04,
-    fontWeight: "600",
-  },
-
-  bookButton: {
-    backgroundColor: "#A4161A",
-    paddingVertical: 16,
-    borderRadius: 12,
-    marginTop: 8,
-  },
-  bookText: {
-    color: "white",
-    fontSize: width * 0.045,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-});
 
 export default ReservationScreen;
