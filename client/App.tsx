@@ -42,7 +42,7 @@ const App = () => {
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
-          initialRouteName="HomeScreenTesting"
+          initialRouteName="ReservationScreenTesting"
           screenOptions={{ headerShown: false, animation: "none" }}
         >
           <Stack.Screen

@@ -13,14 +13,3 @@ export const registerEmail = async (email: string) => {
     console.log("registerEmail error: ", error);
   }
 };
-
-export const updateToken = async () => {
-  try {
-    const token = await getToken();
-    const res = await axiosInstance.post("/auth/token/update", { token });
-
-    if (!res) return console.log("auth/updateToken: can't update the token");
-
-    return res.data;
-  } catch (error) {}
-};

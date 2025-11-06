@@ -82,19 +82,3 @@ export const refreshToken = async () => {
     console.error("registerEmail error: ", error);
   }
 };
-
-export const updateToken = async (update: any) => {
-  try {
-    const token = await getToken();
-    const res = await axiosInstance.post("/auth/token/update", {
-      token,
-      update,
-    });
-
-    if (!res) return console.log("auth/updateToken: can't update the token");
-
-    console.log("updated token: ", res);
-    await deleteToken();
-    saveToken(res.data.updatedToken);
-  } catch (error) {}
-};

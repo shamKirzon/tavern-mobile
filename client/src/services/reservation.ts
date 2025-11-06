@@ -2,7 +2,7 @@ import { AxiosInstance } from "axios";
 import { axiosInstance } from "../api/axiosInstance";
 import { ReservationData, ReservationImageType } from "../types/reservation";
 import { getEmailByToken } from "./token";
-
+import { updateToken } from "./token";
 export const createReservation = async (data: ReservationData) => {
   try {
     const res = await axiosInstance.post("/reservation/create-reservation", {
@@ -10,7 +10,9 @@ export const createReservation = async (data: ReservationData) => {
     });
     if (!res) return console.error("can't create a reservation");
 
-    console.info("Reservation Created:", data);
+    const reservationId = res.data;
+    // updating token part:
+    await updateToken({ reservationId });
   } catch (error) {
     console.error("error in createReservation(). Error: ", error);
   }
