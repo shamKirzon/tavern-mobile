@@ -131,31 +131,73 @@ const ViewOrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
           paddingHorizontal: width * 0.05,
           paddingBottom: 30,
         }}
+        style={{ flex: 1 }}
       >
-        {/* Summary Card */}
-        <View
-          style={{
-            backgroundColor: "rgba(255, 255, 255, 0.1)",
-            borderRadius: 20,
-            padding: 25,
-            marginTop: 10,
-            borderWidth: 1,
-            borderColor: "rgba(255, 255, 255, 0.2)",
-          }}
-        >
+        {/* QR Code Section */}
+        <View style={{ alignItems: "center", marginTop: 20 }}>
+          <Text
+            style={{
+              color: "white",
+              fontSize: width * 0.05,
+              fontWeight: "bold",
+              marginBottom: 15,
+            }}
+          >
+            Show this QR Code upon Arrival
+          </Text>
+
+          <View
+            style={{
+              alignItems: "center",
+            }}
+          >
+            <Image
+              source={require("../assets/payments/GCashQR.png")}
+              style={{
+                width: width * 0.5,
+                height: width * 0.5,
+                marginBottom: 15,
+              }}
+              resizeMode="contain"
+            />
+
+            <TouchableOpacity
+              style={{
+                backgroundColor: "white",
+                paddingVertical: 12,
+                paddingHorizontal: 40,
+                borderRadius: 25,
+              }}
+            >
+              <Text
+                style={{
+                  color: "black",
+                  fontSize: width * 0.04,
+                  fontWeight: "bold",
+                }}
+              >
+                Download QR
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Summary Content */}
+        <View style={{ marginTop: 30 }}>
           <Text
             style={{
               color: "white",
               fontSize: width * 0.065,
               fontWeight: "bold",
               marginBottom: 20,
+              textAlign: "center",
             }}
           >
             Reservation and Order Summary
           </Text>
 
           {/* Reservation Details */}
-          <View style={{ marginBottom: 15 }}>
+          <View style={{ marginBottom: 1 }}>
             <View
               style={{
                 flexDirection: "row",
@@ -362,74 +404,17 @@ const ViewOrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
               {calculateTotal().toFixed(2)}
             </Text>
           </View>
-
-          {/* Dotted Divider */}
-          <View
-            style={{
-              borderTopWidth: 1,
-              borderColor: "white",
-              borderStyle: "dotted",
-              opacity: 0.4,
-              marginVertical: 20,
-            }}
-          />
-
-          {/* QR Code Section */}
-          <View style={{ alignItems: "center" }}>
-            <Text
-              style={{
-                color: "white",
-                fontSize: width * 0.05,
-                fontWeight: "bold",
-                marginBottom: 15,
-              }}
-            >
-              Show this QR Code upon Arrival
-            </Text>
-
-            <View
-              style={{
-                backgroundColor: "white",
-                borderColor: "#D4AF37",
-                borderWidth: 2,
-                borderRadius: 15,
-                padding: 20,
-                alignItems: "center",
-              }}
-            >
-              <Image
-                source={require("../assets/payments/GCashQR.png")}
-                style={{
-                  width: width * 0.5,
-                  height: width * 0.5,
-                  marginBottom: 15,
-                }}
-                resizeMode="contain"
-              />
-
-              <TouchableOpacity
-                style={{
-                  backgroundColor: "#D4AF37",
-                  paddingVertical: 12,
-                  paddingHorizontal: 40,
-                  borderRadius: 25,
-                }}
-              >
-                <Text
-                  style={{
-                    color: "white",
-                    fontSize: width * 0.04,
-                    fontWeight: "bold",
-                  }}
-                >
-                  Download QR
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
         </View>
+      </ScrollView>
 
-        {/* Back to Home Button */}
+      {/* Fixed Back to Home Button */}
+      <View
+        style={{
+          paddingHorizontal: width * 0.05,
+          paddingBottom: 30,
+          paddingTop: 15,
+        }}
+      >
         <TouchableOpacity
           onPress={() => navigation.navigate("HomeScreen")}
           style={{
@@ -437,7 +422,6 @@ const ViewOrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
             paddingVertical: 20,
             borderRadius: 20,
             alignItems: "center",
-            marginTop: 30,
           }}
         >
           <Text
@@ -450,7 +434,7 @@ const ViewOrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
             Back to home
           </Text>
         </TouchableOpacity>
-      </ScrollView>
+      </View>
     </View>
   );
 };
