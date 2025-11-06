@@ -9,21 +9,24 @@ export const uploadMiddleware = upload.single("file");
 class ReservationController {
   async createReservation(req: Request, res: Response) {
     try {
-      const data = req.body;
+      const { data } = req.body;
 
+      console.log("from frontend data: ", data);
       if (!data) return res.status(400).json({ message: "no data fetched" });
 
       const result = await reservationService.createReservation(data);
       console.info("reservation supabase result: ", result);
 
-      if (!result)
-        throw new Error(
-          "Reservation creation failed: No data returned from Supabase."
-        );
+      return res.status(201).json(result.reservation_id);
 
-      return res
-        .status(200)
-        .json({ message: "Reservation Created Successfully! ", result });
+      // if (!result)
+      //   throw new Error(
+      //     "Reservation creation failed: No data returned from Supabase."
+      //   );
+
+      // return res
+      //   .status(200)
+      //   .json({ message: "Reservation Created Successfully! ", result });
     } catch (error: any) {
       console.error("error from createReservation(): ", error);
       return res.status(400).json({ message: "can't create reservation" });

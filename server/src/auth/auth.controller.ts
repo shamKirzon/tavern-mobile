@@ -1,5 +1,4 @@
 import { Response, Request } from "express";
-import jwt from "jsonwebtoken";
 import { authService } from "./auth.service";
 
 class AuthController {
@@ -9,12 +8,13 @@ class AuthController {
       if (!oldToken)
         return res.status(400).json({ message: "it must have an old token" });
 
-      const updatedToken = await authService.updateToken(oldToken, update);
-      console.log(updatedToken);
+      console.log("oldtoken:", oldToken);
+      console.log("update", update);
 
-      res
-        .status(201)
-        .json({ message: "updated token successfully", updatedToken });
+      const updatedToken = await authService.updateToken(oldToken, update);
+      console.log("updatedToken Result: ", updatedToken);
+
+      res.status(201).json({ token: updatedToken });
     } catch (error: any) {
       console.error("error in authController/updateToken:", error.message);
     }
@@ -25,8 +25,6 @@ class AuthController {
       const { decodedToken } = req.body;
       if (!decodedToken)
         return res.status(400).json({ message: "it must have a content " });
-
-      console.log("decoded token: ", decodedToken);
 
       const token = await authService.generateToken(decodedToken);
       res.status(200).json({ token });

@@ -13,15 +13,16 @@ class AuthService {
 
       const decode = jwt.verify(oldToken, process.env.TOKEN_SECRET_KEY!) as any;
 
+      console.log("decode in updateToken: ", decode);
+
       const newPayload: TokenPayload = {
         ...decode,
         ...update,
       };
 
-      const token = jwt.sign(newPayload, process.env.TOKEN_SECRET_KEY!, {
-        expiresIn: "5d",
-        jwtid: uuidv4(),
-      });
+      console.info("newPayload information", newPayload);
+
+      const token = jwt.sign(newPayload, process.env.TOKEN_SECRET_KEY!);
 
       return token;
     } catch (error: any) {
