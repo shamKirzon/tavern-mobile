@@ -9,7 +9,7 @@ type TokenPayload = {
 class AuthService {
   async updateToken(oldToken: string, update: Partial<any>) {
     try {
-      const { v4: uuidv4 } = require("uuid");
+      const { v4: uuidv4 } = await import("uuid");
 
       const decode = jwt.verify(oldToken, process.env.TOKEN_SECRET_KEY!) as any;
 
@@ -30,7 +30,7 @@ class AuthService {
   }
 
   async generateToken(data: any) {
-    const { v4: uuidv4 } = require("uuid");
+    const { v4: uuidv4 } = await import("uuid");
 
     const payload: TokenPayload = {
       email: data.email,

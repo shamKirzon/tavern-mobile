@@ -2,7 +2,7 @@ import { generateQR } from "../utils/generateQR";
 import { orderRepository } from "./order.repository";
 
 class OrderService {
-  async createOrder(order: any): Promise<any> {
+  async createOrder(order: any, email: string): Promise<any> {
     try {
       const orderData = {
         orderItems: order.orderItems,
@@ -10,17 +10,22 @@ class OrderService {
         reservationId: "3fa7284c-5317-4711-aec6-d49c79a08e36",
       };
 
-      const orderId = await orderRepository.createOrder(orderData);
+      const createdOrder = await orderRepository.createOrder(orderData);
+
       const qrUrl = await generateQR(
         {
           reservationId: orderData.reservationId,
-          orderId,
+          orderId: createdOrder.order_id,
         },
         "shammysuyat@gmail.com"
       );
 
-      const updatedOrder = await orderRepository.insertQrUrl(qrUrl!, orderId);
-      return updatedOrder;
+      const updatedOrder = await orderRepository.insertQrUrl(
+        createdOrder.order_id,
+        qrUrl!
+      );
+
+      return { updatedOrder };
     } catch (error) {
       console.error("Error in createOrder(): ", error);
     }

@@ -62,7 +62,7 @@ class ReservationController {
       const localFile = req.file;
       const type = req.body.type;
 
-      const imageUrl = await uploadImageWithUrl(localFile, type);
+      const imageUrl = await uploadImageWithUrl({ localFile, type });
 
       console.log("image url: ", imageUrl);
       return res

@@ -1,4 +1,6 @@
 import React, { useState, useMemo } from "react";
+import { BlurView } from "expo-blur";
+import { LinearGradient } from "expo-linear-gradient";
 import {
   View,
   Text,
@@ -20,7 +22,10 @@ type ReservationScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamLists,
   "ReservationScreen"
 >;
-type ReservationScreenRouteProp = RouteProp<RootStackParamLists, "ReservationScreen">;
+type ReservationScreenRouteProp = RouteProp<
+  RootStackParamLists,
+  "ReservationScreen"
+>;
 
 type Props = {
   navigation: ReservationScreenNavigationProp;
@@ -89,7 +94,10 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const handleBookNow = () => {
     if (!firstName || !lastName || !contactNumber || !selectedDate) {
-      Alert.alert("Error", "Please fill in all required fields and select a date.");
+      Alert.alert(
+        "Error",
+        "Please fill in all required fields and select a date."
+      );
       return;
     }
     if (guests < minGuests || guests > maxGuests) {
@@ -196,7 +204,9 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
             <TextInput
               placeholder="First Name"
               value={firstName}
-              onChangeText={(text) => setFirstName(text.replace(/[^a-zA-Z\s]/g, ""))}
+              onChangeText={(text) =>
+                setFirstName(text.replace(/[^a-zA-Z\s]/g, ""))
+              }
               placeholderTextColor="#999"
               style={{
                 flex: 1,
@@ -211,7 +221,9 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
             <TextInput
               placeholder="Last Name"
               value={lastName}
-              onChangeText={(text) => setLastName(text.replace(/[^a-zA-Z\s]/g, ""))}
+              onChangeText={(text) =>
+                setLastName(text.replace(/[^a-zA-Z\s]/g, ""))
+              }
               placeholderTextColor="#999"
               style={{
                 flex: 1,
@@ -315,7 +327,9 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                   disabled={startIndex === 0}
                   style={{ padding: 8, opacity: startIndex === 0 ? 0.4 : 1 }}
                 >
-                  <Text style={{ color: "white", fontSize: width * 0.08 }}>‹</Text>
+                  <Text style={{ color: "white", fontSize: width * 0.08 }}>
+                    ‹
+                  </Text>
                 </TouchableOpacity>
 
                 <View
@@ -326,40 +340,44 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                     gap: 1,
                   }}
                 >
-                  {allDays.slice(startIndex, startIndex + 6).map((day, index) => (
-                    <TouchableOpacity
-                      key={day.date + index}
-                      onPress={() => setSelectedDate(day.date)}
-                      style={{
-                        flex: 1,
-                        alignItems: "center",
-                        paddingVertical: 20,
-                        borderRadius: 10,
-                        backgroundColor:
-                          selectedDate === day.date ? "#8A1717" : "transparent",
-                      }}
-                    >
-                      <Text
+                  {allDays
+                    .slice(startIndex, startIndex + 6)
+                    .map((day, index) => (
+                      <TouchableOpacity
+                        key={day.date + index}
+                        onPress={() => setSelectedDate(day.date)}
                         style={{
-                          color: "white",
-                          fontSize: width * 0.03,
-                          marginBottom: 2,
-                          opacity: 0.9,
+                          flex: 1,
+                          alignItems: "center",
+                          paddingVertical: 20,
+                          borderRadius: 10,
+                          backgroundColor:
+                            selectedDate === day.date
+                              ? "#8A1717"
+                              : "transparent",
                         }}
                       >
-                        {day.name}
-                      </Text>
-                      <Text
-                        style={{
-                          color: "white",
-                          fontSize: width * 0.06,
-                          fontWeight: "600",
-                        }}
-                      >
-                        {day.date}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
+                        <Text
+                          style={{
+                            color: "white",
+                            fontSize: width * 0.03,
+                            marginBottom: 2,
+                            opacity: 0.9,
+                          }}
+                        >
+                          {day.name}
+                        </Text>
+                        <Text
+                          style={{
+                            color: "white",
+                            fontSize: width * 0.06,
+                            fontWeight: "600",
+                          }}
+                        >
+                          {day.date}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
                 </View>
 
                 <TouchableOpacity
@@ -367,7 +385,9 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                   disabled={startIndex >= 8}
                   style={{ padding: 8, opacity: startIndex >= 8 ? 0.4 : 1 }}
                 >
-                  <Text style={{ color: "white", fontSize: width * 0.08 }}>›</Text>
+                  <Text style={{ color: "white", fontSize: width * 0.08 }}>
+                    ›
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -414,7 +434,9 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                 >
                   {reservationType}
                 </Text>
-                <Text style={{ color: "white", fontSize: width * 0.025 }}>▼</Text>
+                <Text style={{ color: "white", fontSize: width * 0.025 }}>
+                  ▼
+                </Text>
               </TouchableOpacity>
 
               {/* Overlay behind dropdown */}
@@ -446,7 +468,7 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                     borderRadius: 12,
                     borderWidth: 1,
                     borderColor: "rgba(255, 255, 255, 0.3)",
-                    overflow: "hidden", 
+                    overflow: "hidden",
                     zIndex: 100,
                   }}
                 >
@@ -461,7 +483,8 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                       style={{
                         paddingVertical: 14,
                         paddingHorizontal: 16,
-                        borderBottomWidth: index < reservationTypes.length - 1 ? 1 : 0,
+                        borderBottomWidth:
+                          index < reservationTypes.length - 1 ? 1 : 0,
                         borderBottomColor: "rgba(255, 255, 255, 0.1)",
                         backgroundColor:
                           reservationType === type
@@ -594,7 +617,9 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                 borderColor: "rgba(255, 255, 255, 0.2)",
               }}
             >
-              <Text style={{ fontSize: width * 0.045, marginRight: 8 }}>☁️</Text>
+              <Text style={{ fontSize: width * 0.045, marginRight: 8 }}>
+                ☁️
+              </Text>
               <Text
                 style={{
                   color: "white",

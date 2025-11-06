@@ -1,6 +1,11 @@
 import cloudinary from "../lib/cloudinary";
+import fs from "fs";
 
-export const uploadImageWithUrl = async (localFile: any, type: string) => {
+type Props = {
+  localFile: any;
+  type: "validId" | "payment";
+};
+export const uploadImageWithUrl = async ({ localFile, type }: Props) => {
   try {
     const result = await cloudinary.uploader.upload(localFile.path, {
       folder: type === "validId" ? "tav_valid_id" : "tav_payment",

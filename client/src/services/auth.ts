@@ -1,4 +1,3 @@
-import { AxiosInstance } from "axios";
 import { axiosInstance } from "../api/axiosInstance";
 import { getToken, saveToken } from "../utils/token";
 
@@ -11,7 +10,7 @@ export const registerEmail = async (email: string) => {
     await saveToken(res.data);
     return res.data;
   } catch (error: any) {
-    console.error("registerEmail error: ", error);
+    console.log("registerEmail error: ", error);
   }
 };
 

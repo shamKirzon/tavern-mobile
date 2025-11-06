@@ -16,7 +16,8 @@ export const saveToken = async (token: any) => {
 
 export const getToken = async () => {
   try {
-    return await AsyncStorage.getItem(TOKEN_SECRET_KEY);
+    const token = await AsyncStorage.getItem(TOKEN_SECRET_KEY);
+    return token ?? null;
   } catch (error) {
     console.error("Error getting token ", error);
     return null;
@@ -25,13 +26,15 @@ export const getToken = async () => {
 
 export const getTokenInformation = async () => {
   const token = await getToken();
-  const decodedToken = jwtDecode<TokenPayLoad>(token!);
+  if (!token) return null;
+
+  const decodedToken = jwtDecode<TokenPayLoad>(token);
   return {
     exp: decodedToken.exp,
     iat: decodedToken.iat,
     email: decodedToken.email,
     reservationId: decodedToken.reservationId,
-    orderId: decodedToken,
+    orderId: decodedToken.orderId,
     id: decodedToken.jti,
   };
 };
@@ -58,25 +61,23 @@ export const isTokenExpired = async (): Promise<boolean> => {
 export const refreshToken = async () => {
   try {
     const token = await getToken();
-    const decodedToken = jwtDecode<TokenPayLoad>(token!);
-    const { email, reservationId, orderId } = decodedToken;
+    if (!token) return null;
+    const decodedToken = jwtDecode<TokenPayLoad>(token);
 
+    console.info("\n");
+    console.info("Token Refreshed Succesfully");
     console.info("Current Email:", decodedToken.email);
     console.info("Current Reservation Id:", decodedToken.reservationId);
     console.info("Current Order Id:", decodedToken.orderId);
 
-    const res = await axiosInstance.post("/auth/token/generate", {
+    const res = await axiosInstance.post("/auth/token/refresh", {
       decodedToken,
     });
 
     if (!res) return console.log("no created token");
 
-    const refreshedToken = jwtDecode<TokenPayLoad>(res.data.token);
-
-    deleteToken();
+    await deleteToken();
     await saveToken(res.data);
-
-    return refreshedToken.iat;
   } catch (error: any) {
     console.error("registerEmail error: ", error);
   }

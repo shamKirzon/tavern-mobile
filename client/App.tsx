@@ -9,9 +9,8 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { navigationRef } from "./navigationRef";
 import WelcomeScreen from "./src/screens/WelcomeScreen";
-import { checkToken } from "./src/services/token";
-// import HomeScreenTesting from "./src/screens/shams-testing/HomeScreenTesting";
-// import ReservationScreenTesting from "./src/screens/shams-testing/ReservationScreenTesting";
+import HomeScreenTesting from "./src/screens/shams-testing/HomeScreenTesting";
+import ReservationScreenTesting from "./src/screens/shams-testing/ReservationScreenTesting";
 import EmailVerificationScreen from "./src/screens/EmailVerificationScreen";
 import OrderPolicyScreen from "./src/screens/OrderPolicyScreen";
 import MenuViewingScreen from "./src/screens/MenuViewingScreen";
@@ -21,10 +20,20 @@ import CustomizationScreen from "./src/screens/CustomizationScreen";
 import OrderHomeScreen from "./src/screens/OrderHomeScreen";
 import WaitingConfirmationScreen from "./src/screens/WaitingConfirmationScreen";
 import ViewOrderStatusScreen from "./src/screens/ViewOrderStatusScreen";
+import { checkToken } from "./src/services/token";
+import { deleteToken, getToken, getTokenInformation } from "./src/utils/token";
 
 const App = () => {
   useEffect(() => {
-    checkToken();
+    const verifyToken = async () => {
+      const token = await getToken();
+
+      // await deleteToken();
+
+      await checkToken();
+    };
+
+    verifyToken();
   }, []);
 
   const Stack = createNativeStackNavigator<RootStackParamLists>();
@@ -33,7 +42,7 @@ const App = () => {
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
-          initialRouteName="ReservationScreen"
+          initialRouteName="HomeScreenTesting"
           screenOptions={{ headerShown: false, animation: "none" }}
         >
           <Stack.Screen
@@ -87,14 +96,18 @@ const App = () => {
           <Stack.Screen
             name="ViewOrderStatusScreen"
             component={ViewOrderStatusScreen}
-/>
+          />
 
           {/* shams testing - ignore niyo lang ito  */}
 
-          {/* <Stack.Screen
+          <Stack.Screen
             name="ReservationScreenTesting"
             component={ReservationScreenTesting}
-          /> */}
+          />
+          <Stack.Screen
+            name="HomeScreenTesting"
+            component={HomeScreenTesting}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

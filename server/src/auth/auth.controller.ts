@@ -20,13 +20,16 @@ class AuthController {
     }
   }
 
-  async generateToken(req: Request, res: Response) {
+  async refreshToken(req: Request, res: Response) {
     try {
-      const { data } = req.body;
-      if (!data)
+      const { decodedToken } = req.body;
+      if (!decodedToken)
         return res.status(400).json({ message: "it must have a content " });
 
-      return await authService.generateToken(data);
+      console.log("decoded token: ", decodedToken);
+
+      const token = await authService.generateToken(decodedToken);
+      res.status(200).json({ token });
     } catch (error: any) {
       console.error("error in authController/generateToken:", error.message);
     }

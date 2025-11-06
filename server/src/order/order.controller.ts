@@ -5,12 +5,11 @@ import { reservationRepository } from "../reservation/reservation.repository";
 class OrderController {
   async createOrder(req: Request, res: Response) {
     try {
-      const { order } = req.body;
+      const { order, email } = req.body;
 
       if (!order) return res.status(400).json({ message: "no data fetched" });
 
-      const result = await orderService.createOrder(order);
-
+      const result = await orderService.createOrder(order, email);
       if (!result)
         throw new Error(
           "Order creation failed: No data returned from Supabase"
