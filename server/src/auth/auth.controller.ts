@@ -19,6 +19,18 @@ class AuthController {
       console.error("error in authController/updateToken:", error.message);
     }
   }
+
+  async generateToken(req: Request, res: Response) {
+    try {
+      const { data } = req.body;
+      if (!data)
+        return res.status(400).json({ message: "it must have a content " });
+
+      return await authService.generateToken(data);
+    } catch (error: any) {
+      console.error("error in authController/generateToken:", error.message);
+    }
+  }
 }
 
 export const authController = new AuthController();
