@@ -9,8 +9,8 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { navigationRef } from "./navigationRef";
 import WelcomeScreen from "./src/screens/WelcomeScreen";
-// import HomeScreenTesting from "./src/screens/shams-testing/HomeScreenTesting";
-// import ReservationScreenTesting from "./src/screens/shams-testing/ReservationScreenTesting";
+//import HomeScreenTesting from "./src/screens/shams-testing/HomeScreenTesting";
+//import ReservationScreenTesting from "./src/screens/shams-testing/ReservationScreenTesting";
 import EmailVerificationScreen from "./src/screens/EmailVerificationScreen";
 import OrderPolicyScreen from "./src/screens/OrderPolicyScreen";
 import MenuViewingScreen from "./src/screens/MenuViewingScreen";
@@ -20,6 +20,7 @@ import CustomizationScreen from "./src/screens/CustomizationScreen";
 import OrderHomeScreen from "./src/screens/OrderHomeScreen";
 import WaitingConfirmationScreen from "./src/screens/WaitingConfirmationScreen";
 import ViewOrderStatusScreen from "./src/screens/ViewOrderStatusScreen";
+import CartScreen from "./src/screens/CartScreen";
 import { checkToken } from "./src/services/token";
 import { deleteToken, getToken, getTokenInformation } from "./src/utils/token";
 
@@ -42,7 +43,7 @@ const App = () => {
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
-          initialRouteName="WelcomeScreen"
+          initialRouteName="CartScreen"
           screenOptions={{ headerShown: false, animation: "none" }}
         >
           <Stack.Screen
@@ -79,6 +80,8 @@ const App = () => {
             name="OrderPolicyScreen"
             component={OrderPolicyScreen}
           />
+
+          <Stack.Screen name="CartScreen" component={CartScreen} />
 
           <Stack.Screen name="OrderHomeScreen" component={OrderHomeScreen} />
 

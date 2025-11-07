@@ -10,6 +10,8 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import MainBackground from "../assets/backgrounds/main-background.svg";
@@ -89,150 +91,150 @@ const EmailVerificationScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    // ✅ Updated section starts here
-    <View style={{ width, height, flex: 1 }}>
-      <MainBackground style={{ position: "absolute", height: "100%" }} />
-      {/* ✅ Keeps all screen content inside */}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          paddingHorizontal: width * 0.08,
-        }}
-      >
-        {/* Back Button */}
-        <TouchableOpacity
-          onPress={handleBack}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={{ width, height, flex: 1 }}>
+        <MainBackground style={{ position: "absolute", height: "100%" }} />
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{
-            position: "absolute",
-            top: height * 0.06,
-            left: width * 0.06,
-          }}
-        >
-          <Text style={{ color: "#FFFFFF", fontSize: 28 }}>←</Text>
-        </TouchableOpacity>
-
-        {/* Title Section */}
-        <View style={{ marginBottom: height * 0.03 }}>
-          <Text
-            style={{
-              color: "#FFFFFF",
-              fontSize: width * 0.08,
-              fontWeight: "bold",
-              fontFamily: "Poppins",
-            }}
-          >
-            Email Verification
-          </Text>
-          <Text
-            style={{
-              color: "rgba(255, 255, 255, 0.85)",
-              textAlign: "center",
-              fontSize: width * 0.04,
-              marginTop: height * 0.015,
-              fontFamily: "Poppins",
-            }}
-          >
-            We have sent a 4-digit verification code to your email address.
-            Please enter it below to continue.
-          </Text>
-        </View>
-
-        {/* OTP Input Fields */}
-        <View
-          style={{
-            flexDirection: "row",
+            flex: 1,
             justifyContent: "center",
-            columnGap: width * 0.05,
-            marginTop: height * 0.02,
-            marginBottom: height * 0.05,
+            alignItems: "center",
+            paddingHorizontal: width * 0.08,
           }}
         >
-          {[0, 1, 2, 3].map((index) => (
-            <TextInput
-              key={index}
-              ref={inputRefs[index]}
-              keyboardType="numeric"
-              maxLength={1}
-              value={otp[index]}
-              onChangeText={(value) => handleOtpChange(index, value)}
-              onKeyPress={({ nativeEvent }) =>
-                handleKeyPress(index, nativeEvent.key)
-              }
-              style={{
-                width: width * 0.17,
-                height: width * 0.17,
-                backgroundColor: "#FFFFFF",
-                borderRadius: 10,
-                textAlign: "center",
-                fontSize: width * 0.065,
-                fontWeight: "600",
-                fontFamily: "Poppins",
-                color: "#333333",
-              }}
-            />
-          ))}
-        </View>
-
-        {/* Resend Code Section */}
-        <View style={{ alignItems: "center", marginBottom: height * 0.045 }}>
-          <Text
+          {/* Back Button */}
+          <TouchableOpacity
+            onPress={handleBack}
             style={{
-              color: "rgba(255, 255, 255, 0.7)",
-              fontSize: width * 0.035,
-              marginBottom: 6,
-              fontFamily: "Poppins",
+              position: "absolute",
+              top: height * 0.06,
+              left: width * 0.06,
             }}
           >
-            Didn’t receive an email?
-          </Text>
-          <TouchableOpacity onPress={handleResendCode} disabled={!canResend}>
+            <Text style={{ color: "#FFFFFF", fontSize: 28 }}>←</Text>
+          </TouchableOpacity>
+
+          {/* Title Section */}
+          <View style={{ marginBottom: height * 0.03 }}>
             <Text
               style={{
-                color: canResend ? "#FFFFFF" : "rgba(255, 255, 255, 0.5)",
-                fontSize: width * 0.035,
-                textDecorationLine: canResend ? "underline" : "none",
+                color: "#FFFFFF",
+                fontSize: width * 0.08,
+                fontWeight: "bold",
                 fontFamily: "Poppins",
               }}
             >
-              {canResend
-                ? "Resend code"
-                : `You can resend code in ${countdown}s`}
+              Email Verification
             </Text>
-          </TouchableOpacity>
-        </View>
+            <Text
+              style={{
+                color: "rgba(255, 255, 255, 0.85)",
+                textAlign: "center",
+                fontSize: width * 0.04,
+                marginTop: height * 0.015,
+                fontFamily: "Poppins",
+              }}
+            >
+              We have sent a 4-digit verification code to your email address.
+              Please enter it below to continue.
+            </Text>
+          </View>
 
-        {/* Continue Button */}
-        <TouchableOpacity
-          onPress={handleContinue}
-          style={{
-            backgroundColor: "#8B0000",
-            paddingVertical: height * 0.022,
-            borderRadius: 10,
-            alignItems: "center",
-            width: "85%",
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.3,
-            shadowRadius: 3,
-            elevation: 4,
-          }}
-        >
-          <Text
+          {/* OTP Input Fields */}
+          <View
             style={{
-              color: "#FFFFFF",
-              fontSize: width * 0.05,
-              fontWeight: "600",
-              fontFamily: "Poppins",
+              flexDirection: "row",
+              justifyContent: "center",
+              columnGap: width * 0.05,
+              marginTop: height * 0.02,
+              marginBottom: height * 0.05,
             }}
           >
-            Continue
-          </Text>
-        </TouchableOpacity>
-      </KeyboardAvoidingView>
-    </View>
+            {[0, 1, 2, 3].map((index) => (
+              <TextInput
+                key={index}
+                ref={inputRefs[index]}
+                keyboardType="numeric"
+                maxLength={1}
+                value={otp[index]}
+                onChangeText={(value) => handleOtpChange(index, value)}
+                onKeyPress={({ nativeEvent }) =>
+                  handleKeyPress(index, nativeEvent.key)
+                }
+                style={{
+                  width: width * 0.17,
+                  height: width * 0.17,
+                  backgroundColor: "#FFFFFF",
+                  borderRadius: 10,
+                  textAlign: "center",
+                  fontSize: width * 0.065,
+                  fontWeight: "600",
+                  fontFamily: "Poppins",
+                  color: "#333333",
+                }}
+              />
+            ))}
+          </View>
+
+          {/* Resend Code Section */}
+          <View style={{ alignItems: "center", marginBottom: height * 0.045 }}>
+            <Text
+              style={{
+                color: "rgba(255, 255, 255, 0.7)",
+                fontSize: width * 0.035,
+                marginBottom: 6,
+                fontFamily: "Poppins",
+              }}
+            >
+              Didn't receive an email?
+            </Text>
+            <TouchableOpacity onPress={handleResendCode} disabled={!canResend}>
+              <Text
+                style={{
+                  color: canResend ? "#FFFFFF" : "rgba(255, 255, 255, 0.5)",
+                  fontSize: width * 0.035,
+                  textDecorationLine: canResend ? "underline" : "none",
+                  fontFamily: "Poppins",
+                }}
+              >
+                {canResend
+                  ? "Resend code"
+                  : `You can resend code in ${countdown}s`}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Continue Button */}
+          <TouchableOpacity
+            onPress={handleContinue}
+            style={{
+              backgroundColor: "#8B0000",
+              paddingVertical: height * 0.022,
+              borderRadius: 10,
+              alignItems: "center",
+              width: "85%",
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.3,
+              shadowRadius: 3,
+              elevation: 4,
+            }}
+          >
+            <Text
+              style={{
+                color: "#FFFFFF",
+                fontSize: width * 0.05,
+                fontWeight: "600",
+                fontFamily: "Poppins",
+              }}
+            >
+              Continue
+            </Text>
+          </TouchableOpacity>
+        </KeyboardAvoidingView>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
