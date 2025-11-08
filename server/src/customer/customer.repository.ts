@@ -16,7 +16,7 @@ class CustomerRepository {
 
       return data;
     } catch (error: any) {
-      console.error("Error from getCustomerByEmail(): ", error.message);
+      console.error("customerRepository/getCustomerByEmail() ", error.message);
     }
   }
 

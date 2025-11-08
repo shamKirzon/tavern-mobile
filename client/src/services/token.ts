@@ -47,7 +47,10 @@ export const updateToken = async (update: any) => {
       update,
     });
 
-    if (!res) return console.log("auth/updateToken: can't update the token");
+    if (!res)
+      return console.log(
+        "services/token/updateToken(): can't update the token"
+      );
 
     await deleteToken();
     await saveToken(res.data);
@@ -64,6 +67,6 @@ export const updateToken = async (update: any) => {
 
     console.log("updated token: ", tokenInfo);
   } catch (error) {
-    console.error("error in services updatedToken(); ", error);
+    console.error("services/token/updatedToken(); ", error);
   }
 };

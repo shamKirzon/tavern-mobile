@@ -16,7 +16,7 @@ class AuthController {
 
       res.status(201).json({ token: updatedToken });
     } catch (error: any) {
-      console.error("error in authController/updateToken:", error.message);
+      console.error("authController/updateToken:", error.message);
     }
   }
 
@@ -29,7 +29,7 @@ class AuthController {
       const token = await authService.generateToken(decodedToken);
       res.status(200).json({ token });
     } catch (error: any) {
-      console.error("error in authController/generateToken:", error.message);
+      console.error("authController/generateToken:", error.message);
     }
   }
 }

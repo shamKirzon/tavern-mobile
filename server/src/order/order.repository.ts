@@ -1,9 +1,9 @@
 import { supabase } from "../lib/supabase-client";
 
 class OrderRepository {
-  async createOrder(orderData: any) {
+  async createOrder(orderData: any, reservationId: string) {
     try {
-      const { orderItems, total, reservationId } = orderData;
+      const { orderItems, total } = orderData;
 
       const { data: reservationDate, error: reservationDateError } =
         await supabase
@@ -60,13 +60,9 @@ class OrderRepository {
             qr_code_url: qrUrl,
           },
         ])
-        .eq("order_id", orderId)
-        .select()
-        .single();
+        .eq("order_id", orderId);
 
       if (error) return console.error("supabase error in insertQrUrl()", error);
-
-      return data;
     } catch (error) {
       console.error("error repository/insertQrUrl ", error);
     }

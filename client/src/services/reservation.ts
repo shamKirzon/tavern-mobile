@@ -14,7 +14,7 @@ export const createReservation = async (data: ReservationData) => {
     // updating token part:
     await updateToken({ reservationId });
   } catch (error) {
-    console.error("error in createReservation(). Error: ", error);
+    console.error("services/reservation/createReservation(). Error: ", error);
   }
 };
 
@@ -23,7 +23,7 @@ export const uploadImage = async (
   type: ReservationImageType
 ) => {
   try {
-    if (!imageUri) return console.log("must have an imageUri");
+    if (!imageUri) return console.log("It must have an imageUri");
 
     const formData = new FormData();
     const email = await getEmailByToken();
@@ -50,6 +50,6 @@ export const uploadImage = async (
 
     return res.data.imageUrl;
   } catch (error: any) {
-    console.error("error in fe uploadImage()", error.message);
+    console.error("services/reservation/uploadImage()", error.message);
   }
 };

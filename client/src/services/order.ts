@@ -17,7 +17,7 @@ export const createOrder = async (order: ordersData) => {
     console.log("order.ts/createOrder: res from be: ", res.data.orderId);
     await updateToken({ orderId: res.data.orderId });
   } catch (error) {
-    console.error("error in createOrder(). Error: ", error);
+    console.error("services/orders/error in createOrder() Error: ", error);
   }
 };
 
@@ -28,6 +28,6 @@ export const getOrderData = async (orderId: string) => {
 
     console.info("orders data: ", res);
   } catch (error) {
-    console.error("error in createReservation(). Error: ", error);
+    console.error("services/orders/getOrderData() Error:", error);
   }
 };

@@ -2,32 +2,36 @@ import { generateQR } from "../utils/generateQR";
 import { orderRepository } from "./order.repository";
 
 class OrderService {
-  async createOrder(order: any, email: string): Promise<any> {
+  async createOrder(
+    order: any,
+    email: string,
+    reservationId: string
+  ): Promise<any> {
     try {
       const orderData = {
         orderItems: order.orderItems,
         total: order.total,
-        reservationId: "3fa7284c-5317-4711-aec6-d49c79a08e36",
       };
 
-      const createdOrder = await orderRepository.createOrder(orderData);
+      const orderId = await orderRepository.createOrder(
+        orderData,
+        reservationId
+      );
 
       const qrUrl = await generateQR(
         {
-          reservationId: orderData.reservationId,
-          orderId: createdOrder.order_id,
+          reservationId,
+          orderId,
         },
-        "shammysuyat@gmail.com"
+        email
       );
 
-      const updatedOrder = await orderRepository.insertQrUrl(
-        createdOrder.order_id,
-        qrUrl!
-      );
+      // inserting qr url
+      await orderRepository.insertQrUrl(orderId, qrUrl!);
 
-      return { updatedOrder };
+      return orderId;
     } catch (error) {
-      console.error("Error in createOrder(): ", error);
+      console.error("order.service - error in  createOrder(): ", error);
     }
   }
 

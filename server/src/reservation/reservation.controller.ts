@@ -15,18 +15,8 @@ class ReservationController {
       if (!data) return res.status(400).json({ message: "no data fetched" });
 
       const result = await reservationService.createReservation(data);
-      console.info("reservation supabase result: ", result);
 
       return res.status(201).json(result.reservation_id);
-
-      // if (!result)
-      //   throw new Error(
-      //     "Reservation creation failed: No data returned from Supabase."
-      //   );
-
-      // return res
-      //   .status(200)
-      //   .json({ message: "Reservation Created Successfully! ", result });
     } catch (error: any) {
       console.error("error from createReservation(): ", error);
       return res.status(400).json({ message: "can't create reservation" });
@@ -45,8 +35,6 @@ class ReservationController {
         return res
           .status(400)
           .json({ message: "there is no returned results. " });
-
-      console.info("reservation supabase result: ", result);
 
       return res
         .status(200)
