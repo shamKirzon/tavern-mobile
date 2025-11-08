@@ -19,4 +19,5 @@ export type RootStackParamLists = {
   // shams testing, ignore niyo lang ito:
   HomeScreenTesting: undefined;
   ReservationScreenTesting: undefined;
+  OrderScreenTesting: undefined;
 };
