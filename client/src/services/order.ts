@@ -1,20 +1,21 @@
 import { axiosInstance } from "../api/axiosInstance";
 import { ordersData } from "../types/orders";
-import { updateToken } from "../utils/token";
+import { getReservationIdByToken, updateToken } from "./token";
 import { getEmailByToken } from "./token";
 
 export const createOrder = async (order: ordersData) => {
   try {
-    const email = getEmailByToken();
+    const email = await getEmailByToken();
+    const reservationId = await getReservationIdByToken();
     const res = await axiosInstance.post("/order/create-order", {
       order,
       email,
+      reservationId,
     });
     if (!res) return console.error("can't create a reservation");
 
-    await updateToken({ reservationId: "", orderId: "" });
-
-    console.info("Order Created:", res);
+    console.log("order.ts/createOrder: res from be: ", res.data.orderId);
+    await updateToken({ orderId: res.data.orderId });
   } catch (error) {
     console.error("error in createOrder(). Error: ", error);
   }
