@@ -5,8 +5,9 @@ import { height, width } from "../utils/dimensions";
 import { View, Text, TouchableOpacity } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import MainBackground from "../assets/backgrounds/main-background.svg";
+import InfoIcon from "../assets/images/info.svg";
+import LoadingIcon from "../assets/images/loading.svg";
 
-// ✅ Keep same types as you defined
 type WatingConfirmationScreenRouteProp = RouteProp<
   RootStackParamLists,
   "WaitingConfirmationScreen"
@@ -67,7 +68,7 @@ const WaitingConfirmationScreen: React.FC<Props> = ({ navigation }) => {
             <Text
               style={{
                 color: "#FFF",
-                fontSize: width * 0.06,
+                fontSize: 25,
                 fontWeight: "700",
                 fontFamily: "Poppins",
               }}
@@ -75,20 +76,32 @@ const WaitingConfirmationScreen: React.FC<Props> = ({ navigation }) => {
               Order Status
             </Text>
           </View>
+        </View>
 
-          {/* ===== AWAITING CONFIRMATION ===== */}
-          <View style={{ alignItems: "center", marginTop: height * 0.1 }}>
-            <Text
-              style={{
-                color: "#FFF",
-                fontSize: width * 0.065,
-                fontWeight: "700",
-                fontFamily: "Poppins",
-              }}
-            >
-              Awaiting Confirmation
-            </Text>
-          </View>
+        {/* ===== CENTERED CONTENT (Loading Icon to Info Card) ===== */}
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <LoadingIcon
+            width={width * 0.15}
+            height={width * 0.15}
+            style={{ marginBottom: height * 0.03 }}
+          />
+          <Text
+            style={{
+              color: "#FFF",
+              fontSize: width * 0.065,
+              fontWeight: "700",
+              fontFamily: "Poppins",
+              marginBottom: height * 0.04,
+            }}
+          >
+            Awaiting Confirmation
+          </Text>
 
           {/* ===== INFO CARD ===== */}
           <View
@@ -96,22 +109,35 @@ const WaitingConfirmationScreen: React.FC<Props> = ({ navigation }) => {
               backgroundColor: "rgba(255, 255, 255, 0.12)",
               borderRadius: 20,
               padding: width * 0.045,
-              marginTop: height * 0.04,
               borderWidth: 1,
               borderColor: "rgba(255, 255, 255, 0.15)",
+              width: "100%",
             }}
           >
-            <Text
+            <View
               style={{
-                color: "#FFF",
-                fontSize: width * 0.045,
-                fontWeight: "700",
+                flexDirection: "row",
+                alignItems: "center",
                 marginBottom: height * 0.01,
-                fontFamily: "Poppins",
               }}
             >
-              What Happens Next?
-            </Text>
+              <InfoIcon
+                width={width * 0.05}
+                height={width * 0.05}
+                style={{ marginRight: width * 0.02 }}
+              />
+              <Text
+                style={{
+                  color: "#FFF",
+                  fontSize: width * 0.045,
+                  fontWeight: "700",
+                  fontFamily: "Poppins",
+                }}
+              >
+                What Happens Next?
+              </Text>
+            </View>
+
             <Text
               style={{
                 color: "rgba(255, 255, 255, 0.9)",
@@ -133,8 +159,8 @@ const WaitingConfirmationScreen: React.FC<Props> = ({ navigation }) => {
           onPress={handleBackToHome}
           style={{
             backgroundColor: "#8B0000",
-            paddingVertical: height * 0.018,
-            borderRadius: 30,
+            paddingVertical: 16,
+            borderRadius: 16,
             alignItems: "center",
             shadowColor: "#000",
             shadowOffset: { width: 0, height: 4 },
@@ -147,7 +173,7 @@ const WaitingConfirmationScreen: React.FC<Props> = ({ navigation }) => {
           <Text
             style={{
               color: "#FFF",
-              fontSize: width * 0.042,
+              fontSize: 16,
               fontWeight: "700",
               fontFamily: "Poppins",
             }}
