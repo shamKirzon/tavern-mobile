@@ -42,7 +42,6 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const { showEmailVerifiedToggle, setShowEmailVerifiedToggle } =
     useAuthStore();
   const [email, setEmail] = useState("");
-  // const [email, setEmail] = useState("dannahtorres12@gmail.com");
   const [isEmailInvalid, setIsEmailInvalid] = useState<boolean>(false);
   const [showToaster, setShowToaster] = useState(false);
   const [reservationStatus, setReservationStatus] = useState<
@@ -72,12 +71,10 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     }
   }, [showToaster]);
 
-  // testing part:
+  // email verified toggle
   useEffect(() => {
     if (showEmailVerifiedToggle) {
       setShowToaster(true);
-      // change content
-      // for reservation part:
     }
 
     setShowEmailVerifiedToggle(false);
@@ -116,7 +113,9 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     return emailRegex.test(email.trim());
   };
 
-  const handleBookNow = () => {};
+  const handleBookNow = () => {
+    navigation.navigate("ReservationScreen");
+  };
   // verify email:
   const handleContinue = async () => {
     if (!validateEmail(email)) {

@@ -3,10 +3,9 @@ import { authController } from "./auth.controller";
 
 const authRoutes = Router();
 
-authRoutes.post("/update", authController.updateToken);
-authRoutes.post("/refresh", authController.refreshToken);
-// meron akong generate pero di ko nilagyan ng controller since
-// wala naman akong api endpoint na generate eh
-// yung isa ko is si customer ang tinawag ko
+authRoutes.post("/token/update", authController.updateToken);
+authRoutes.post("/token/refresh", authController.refreshToken);
+authRoutes.post("/otp/send-otp", authController.sendOtp);
+authRoutes.post("/otp/validate-otp", authController.validateOtp);
 
 export default authRoutes;
