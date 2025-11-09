@@ -15,6 +15,8 @@ import {
 } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import MainBackground from "../assets/backgrounds/main-background.svg";
+import { generateOtp, registerEmail, validateOtp } from "../services/auth";
+import { useAuthStore } from "../stores/useAuthStore";
 
 type EmailVerificationScreenRouteProps = RouteProp<
   RootStackParamLists,
@@ -30,10 +32,14 @@ interface Props {
   navigation: EmailVerificationScreenNavigationProps;
 }
 
-const EmailVerificationScreen: React.FC<Props> = ({ navigation }) => {
+const EmailVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { email } = route.params;
+  const { setShowEmailVerifiedToggle, showEmailVerifiedToggle } =
+    useAuthStore();
   const [otp, setOtp] = useState<string[]>(["", "", "", ""]);
   const [countdown, setCountdown] = useState<number>(55);
   const [canResend, setCanResend] = useState<boolean>(false);
+  const [isOtpInvalid, setIsOtpInvalid] = useState<boolean>(false);
   const inputRefs = [
     useRef<TextInput>(null),
     useRef<TextInput>(null),
@@ -41,7 +47,10 @@ const EmailVerificationScreen: React.FC<Props> = ({ navigation }) => {
     useRef<TextInput>(null),
   ];
 
-  const userEmail = "user@example.com"; // TODO: Get from route.params or backend
+  // testing console part:
+  useEffect(() => {
+    console.log("value of showEmailVerifiedToggle: ", showEmailVerifiedToggle);
+  }, [showEmailVerifiedToggle]);
 
   useEffect(() => {
     if (countdown > 0) {
@@ -52,6 +61,13 @@ const EmailVerificationScreen: React.FC<Props> = ({ navigation }) => {
     }
   }, [countdown]);
 
+  const showOtpError = () => {
+    setIsOtpInvalid(true);
+
+    setTimeout(() => {
+      setIsOtpInvalid(false);
+    }, 3000);
+  };
   const handleOtpChange = (index: number, value: string) => {
     if (!/^\d*$/.test(value)) return;
     const newOtp = [...otp];
@@ -70,17 +86,29 @@ const EmailVerificationScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleContinue = async () => {
     const otpCode = otp.join("");
-    if (otpCode.length !== 4) {
-      Alert.alert("Error", "Please enter complete OTP code");
+
+    // otp validation part:
+    // result = isValidOtp & message
+    const result = await validateOtp(email, otpCode);
+    if (!result?.isValidOtp) {
+      showOtpError();
+      console.log("message:", result?.message);
+      setOtp(["", "", "", ""]);
+      inputRefs[0].current?.focus();
       return;
     }
-    console.log("OTP entered:", otpCode);
-    console.log("Email:", userEmail);
+
+    // if correct otp:
+    await registerEmail(email);
+
+    setShowEmailVerifiedToggle(true);
+    navigation.navigate("HomeScreen");
   };
 
   const handleResendCode = async () => {
     if (!canResend) return;
-    console.log("Resend OTP to:", userEmail);
+    await generateOtp(email);
+    console.log("Resend OTP to:", email);
     setCountdown(55);
     setCanResend(false);
     setOtp(["", "", "", ""]);
@@ -177,6 +205,19 @@ const EmailVerificationScreen: React.FC<Props> = ({ navigation }) => {
             ))}
           </View>
 
+          {isOtpInvalid && (
+            <Text
+              style={{
+                color: "#EFD974",
+                fontSize: width * 0.04,
+                marginBottom: 6,
+                fontFamily: "Poppins",
+              }}
+            >
+              OTP is incorrect. Please try again.
+            </Text>
+          )}
+
           {/* Resend Code Section */}
           <View style={{ alignItems: "center", marginBottom: height * 0.045 }}>
             <Text
@@ -208,6 +249,7 @@ const EmailVerificationScreen: React.FC<Props> = ({ navigation }) => {
           {/* Continue Button */}
           <TouchableOpacity
             onPress={handleContinue}
+            disabled={otp.some((digit) => digit === "")}
             style={{
               backgroundColor: "#8B0000",
               paddingVertical: height * 0.022,
@@ -219,6 +261,7 @@ const EmailVerificationScreen: React.FC<Props> = ({ navigation }) => {
               shadowOpacity: 0.3,
               shadowRadius: 3,
               elevation: 4,
+              opacity: otp.some((digit) => digit === "") ? 0.5 : 1,
             }}
           >
             <Text

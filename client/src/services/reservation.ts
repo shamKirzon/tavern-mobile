@@ -3,6 +3,7 @@ import { axiosInstance } from "../api/axiosInstance";
 import { ReservationData, ReservationImageType } from "../types/reservation";
 import { getEmailByToken } from "./token";
 import { updateToken } from "./token";
+
 export const createReservation = async (data: ReservationData) => {
   try {
     const res = await axiosInstance.post("/reservation/create-reservation", {

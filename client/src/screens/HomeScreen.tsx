@@ -1,4 +1,4 @@
-import React, { useState, useEffect, JSX } from "react";
+import React, { useState, useEffect, useRef, JSX } from "react";
 import {
   View,
   Text,
@@ -15,6 +15,12 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useAuthStore } from "../stores/useAuthStore";
 import MainBackground from "../assets/backgrounds/main-background.svg";
 import { category } from "../data/category";
+import { generateOtp } from "../services/auth";
+import {
+  getEmailByToken,
+  getOrderIdByToken,
+  getReservationIdByToken,
+} from "../services/token";
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamLists,
@@ -29,43 +35,131 @@ interface Props {
 }
 
 const HomeScreen: React.FC<Props> = ({ navigation }) => {
-  const { isAuthenticated } = useAuthStore();
+  const [hasEmail, setHasEmail] = useState<string | null>(null);
+  const [hasReservation, setHasReservation] = useState<string | null>(null);
+  const [hasOrder, setHasOrder] = useState<string | null>(null);
+
+  const { showEmailVerifiedToggle, setShowEmailVerifiedToggle } =
+    useAuthStore();
   const [email, setEmail] = useState("");
+  // const [email, setEmail] = useState("dannahtorres12@gmail.com");
+  const [isEmailInvalid, setIsEmailInvalid] = useState<boolean>(false);
   const [showToaster, setShowToaster] = useState(false);
   const [reservationStatus, setReservationStatus] = useState<
     "none" | "pending" | "approved" | "cancelled" | "review"
   >("none");
 
-  const fadeAnim = new Animated.Value(0);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  const handleContinue = () => {
-    if (!email.trim()) {
-      alert("Please enter your email");
+  // toaster anim.
+  useEffect(() => {
+    if (showToaster) {
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+
+      const timer = setTimeout(() => {
+        Animated.timing(fadeAnim, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }).start(() => setShowToaster(false));
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showToaster]);
+
+  // testing part:
+  useEffect(() => {
+    if (showEmailVerifiedToggle) {
+      setShowToaster(true);
+      // change content
+      // for reservation part:
+    }
+
+    setShowEmailVerifiedToggle(false);
+  }, [showEmailVerifiedToggle]);
+
+  // check auth
+  useEffect(() => {
+    const fetchData = async () => {
+      const email = await getEmailByToken();
+      const reservation = await getReservationIdByToken();
+      const order = await getOrderIdByToken();
+
+      setHasEmail(email);
+      setHasReservation(reservation);
+      setHasOrder(order);
+    };
+    fetchData();
+    handleStatus();
+  }, []);
+
+  const handleStatus = async () => {
+    if (hasEmail && hasReservation && hasOrder) {
+      return undefined;
+    } else if (hasEmail && hasReservation) {
+      // check first the reservation status
+    } else if (hasEmail) {
+      // book now button
+    } else {
+      setReservationStatus("none");
+    }
+  };
+
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+
+    return emailRegex.test(email.trim());
+  };
+
+  const handleBookNow = () => {};
+  // verify email:
+  const handleContinue = async () => {
+    if (!validateEmail(email)) {
+      setIsEmailInvalid(true);
+      setEmail("");
+      setShowToaster(true);
       return;
     }
 
-    setShowToaster(true);
-
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-
-    setTimeout(() => {
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }).start(() => {
-        setShowToaster(false);
-        setReservationStatus("none");
-      });
-    }, 3000);
+    navigation.navigate("EmailVerificationScreen", { email });
+    await generateOtp(email);
   };
 
   const renderToaster = (): JSX.Element | null => {
     if (!showToaster) return null;
+
+    // Only one toaster at a time
+    if (isEmailInvalid) {
+      return (
+        <Animated.View
+          style={{
+            opacity: fadeAnim,
+            backgroundColor: "#D32F2F",
+            paddingVertical: 12,
+            paddingHorizontal: 20,
+            borderRadius: 10,
+            marginBottom: 15,
+            width: "100%",
+            alignItems: "center",
+          }}
+        >
+          <Text
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              fontSize: width * 0.04,
+            }}
+          >
+            Invalid Email. Please enter a valid email address.
+          </Text>
+        </Animated.View>
+      );
+    }
 
     return (
       <Animated.View
@@ -104,7 +198,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       case "approved":
         return (
           <Text style={[styles.label, { backgroundColor: "#4CAF50" }]}>
-            Email Verified
+            Reservation Approved
           </Text>
         );
       case "cancelled":
@@ -131,7 +225,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       <View style={{ width: "100%", alignItems: "center", marginBottom: 20 }}>
         {renderReservationLabel()}
         <TouchableOpacity
-          onPress={() => navigation.navigate("EmailVerificationScreen")}
+          // onPress={() => navigation.navigate("EmailVerificationScreen")}
           style={styles.statusButton}
         >
           <Text style={styles.statusText}>View Status</Text>
@@ -190,18 +284,36 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
         {reservationStatus === "none" && (
           <>
-            <TextInput
-              placeholder="email@example.com"
-              placeholderTextColor="#999"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              style={styles.input}
-            />
+            {!hasEmail && (
+              <TextInput
+                placeholder="email@example.com"
+                placeholderTextColor="#999"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                style={styles.input}
+              />
+            )}
 
-            <TouchableOpacity onPress={handleContinue} style={styles.verifyBtn}>
-              <Text style={styles.verifyText}>Verify Email</Text>
-            </TouchableOpacity>
+            {hasEmail ? (
+              <TouchableOpacity
+                onPress={handleBookNow}
+                style={[styles.verifyBtn]}
+              >
+                <Text style={styles.verifyText}>Book Now</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                onPress={handleContinue}
+                style={[
+                  styles.verifyBtn,
+                  !email && { opacity: 0.5 }, // fade when disabled
+                ]}
+                disabled={!email}
+              >
+                <Text style={styles.verifyText}>Verify Email</Text>
+              </TouchableOpacity>
+            )}
           </>
         )}
 

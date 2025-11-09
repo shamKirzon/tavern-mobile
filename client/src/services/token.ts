@@ -39,6 +39,13 @@ export const getReservationIdByToken = async (): Promise<any> => {
   return tokenInfo.reservationId;
 };
 
+export const getOrderIdByToken = async (): Promise<any> => {
+  const tokenInfo = await getTokenInformation();
+  if (!tokenInfo) return null;
+
+  return tokenInfo.orderId;
+};
+
 export const updateToken = async (update: any) => {
   try {
     const oldToken = await getToken();
