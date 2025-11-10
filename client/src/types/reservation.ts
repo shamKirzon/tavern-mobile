@@ -6,7 +6,7 @@ export type ReservationData = {
   validIdUrl?: string;
   paymentUrl?: string;
   reservationType?: string;
-  date?: string;
+  date?: Date;
   pax?: number;
   reservationAmount?: number;
 };

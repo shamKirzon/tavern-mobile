@@ -6,8 +6,14 @@ export type RootStackParamLists = {
   EmailVerificationScreen: { email: string };
   OrderPolicyScreen: undefined;
   HomeScreen: undefined;
-  BookingSummaryScreen: undefined;
-  PaymentScreen: undefined;
+  BookingSummaryScreen: {
+    name: string;
+    date: string;
+    guests: number;
+    reservationType: string;
+    reservationFee: string;
+  };
+  ReservationPaymentScreen: { reservationFee: string };
   MenuViewingScreen: { category: string };
   CustomizationScreen: undefined;
   OrderHomeScreen: undefined;

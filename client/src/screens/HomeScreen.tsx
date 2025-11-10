@@ -92,14 +92,26 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       setHasOrder(order);
     };
     fetchData();
-    handleStatus();
   }, []);
+
+  // handle status with basis
+  useEffect(() => {
+    handleStatus();
+  }, [hasEmail, hasReservation, hasOrder]);
+
+  // reservation
+  useEffect(() => {}, []);
 
   const handleStatus = async () => {
     if (hasEmail && hasReservation && hasOrder) {
       return undefined;
     } else if (hasEmail && hasReservation) {
+      // i need some backend api for fetching the current status:
       // check first the reservation status
+
+      // just for the example:
+      console.log("HANDLESTATUS TRIGGERS");
+      setReservationStatus("pending");
     } else if (hasEmail) {
       // book now button
     } else {
@@ -224,7 +236,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       <View style={{ width: "100%", alignItems: "center", marginBottom: 20 }}>
         {renderReservationLabel()}
         <TouchableOpacity
-          // onPress={() => navigation.navigate("EmailVerificationScreen")}
+          onPress={() => navigation.navigate("WaitingConfirmationScreen")}
           style={styles.statusButton}
         >
           <Text style={styles.statusText}>View Status</Text>

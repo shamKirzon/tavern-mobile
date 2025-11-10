@@ -14,6 +14,7 @@ export const createReservation = async (data: ReservationData) => {
     const reservationId = res.data;
     // updating token part:
     await updateToken({ reservationId });
+    return reservationId;
   } catch (error) {
     console.error("services/reservation/createReservation(). Error: ", error);
   }

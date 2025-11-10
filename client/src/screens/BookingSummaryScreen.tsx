@@ -11,6 +11,7 @@ import {
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamLists } from "../types/rootStackParamLists";
+import { height, width } from "../utils/dimensions";
 
 type BookingSummaryScreenNavigationProps = NativeStackNavigationProp<
   RootStackParamLists,
@@ -27,8 +28,16 @@ type Props = {
   route: BookingSummaryScreenRouteProps;
 };
 
-const BookingSummaryScreen: React.FC<Props> = ({ navigation }) => {
+const BookingSummaryScreen: React.FC<Props> = ({ navigation, route }) => {
   const [isChecked, setIsChecked] = useState(false);
+  const { name, date, guests, reservationType, reservationFee } = route.params;
+  const convertStringToDate = new Date(date);
+
+  const readableDate = convertStringToDate.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 
   return (
     <View style={{ flex: 1 }}>
@@ -51,52 +60,34 @@ const BookingSummaryScreen: React.FC<Props> = ({ navigation }) => {
             <View style={styles.customArrow} />
           </TouchableOpacity>
 
-          <Text style={styles.headerTitle}>Reservation</Text>
-        </View>
-
-        {/* Progress Bar */}
-        <View style={styles.inlineProgressWrapper}>
-          <View style={styles.inlineProgressContainer}>
-            {[0, 1, 2, 3, 4].map((step) => (
-              <React.Fragment key={step}>
-                <View
-                  style={[
-                    styles.inlineCircle,
-                    step === 0
-                      ? styles.inlineCircleActive
-                      : styles.inlineCircleInactive,
-                  ]}
-                />
-                {step < 4 && <View style={styles.inlineLine} />}
-              </React.Fragment>
-            ))}
-          </View>
+          <Text style={styles.headerTitle}>Reservation Summary</Text>
         </View>
 
         {/* Scrollable Content */}
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           {/* Reservation Details */}
-          <Text style={styles.sectionTitle}>Booking Summary</Text>
           <View style={styles.infoBox}>
             <View style={styles.row}>
               <Text style={styles.label}>Name:</Text>
-              <Text style={styles.value}>Dannah Joyce Torres</Text>
+              <Text style={styles.value}>{name}</Text>
             </View>
             <View style={styles.row}>
               <Text style={styles.label}>Date:</Text>
-              <Text style={styles.value}>October 07, 2025</Text>
+              <Text style={styles.value}>{readableDate}</Text>
             </View>
             <View style={styles.row}>
               <Text style={styles.label}>Type:</Text>
-              <Text style={styles.value}>Exclusive</Text>
+              <Text style={styles.value}>{reservationType}</Text>
             </View>
             <View style={styles.row}>
               <Text style={styles.label}>Guests:</Text>
-              <Text style={styles.value}>50</Text>
+              <Text style={styles.value}>{guests}</Text>
             </View>
             <View style={styles.row}>
               <Text style={styles.label}>Reservation Fee:</Text>
-              <Text style={styles.value}>₱30,000.00</Text>
+              <Text style={styles.value}>
+                {parseInt(reservationFee).toLocaleString()} PHP
+              </Text>
             </View>
           </View>
 
@@ -135,22 +126,54 @@ const BookingSummaryScreen: React.FC<Props> = ({ navigation }) => {
                 processing your order.
               </Text>
             </View>
+          </View>
 
-            {/* Checkbox Agreement */}
-            <Pressable
+          {/* Checkbox Agreement */}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginTop: height * 0.015,
+            }}
+          >
+            <TouchableOpacity
               onPress={() => setIsChecked(!isChecked)}
-              style={styles.checkboxContainer}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginRight: 8, // small spacing between checkbox and text
+              }}
             >
+              {/* Checkbox Box */}
               <View
-                style={[
-                  styles.checkbox,
-                  { backgroundColor: isChecked ? "#8B0000" : "transparent" },
-                ]}
-              />
-              <Text style={styles.checkboxLabel}>
-                I have read and agree to the ordering and payment policies.
-              </Text>
-            </Pressable>
+                style={{
+                  width: 20,
+                  height: 20,
+                  borderWidth: 2,
+                  borderColor: "#ccc",
+                  borderRadius: 4,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundColor: isChecked ? "#4CAF50" : "transparent",
+                }}
+              >
+                {/* Check mark */}
+                {isChecked && (
+                  <Text style={{ color: "white", fontSize: 14 }}>✓</Text>
+                )}
+              </View>
+            </TouchableOpacity>
+
+            {/* Label */}
+            <Text
+              style={{
+                color: "white",
+                fontSize: width * 0.034,
+                flexShrink: 1, // allows text to wrap if it’s long
+              }}
+            >
+              I have read and agree to the ordering and payment policies.
+            </Text>
           </View>
         </ScrollView>
 
@@ -158,7 +181,9 @@ const BookingSummaryScreen: React.FC<Props> = ({ navigation }) => {
         <TouchableOpacity
           style={[styles.button, { opacity: isChecked ? 1 : 0.5 }]}
           disabled={!isChecked}
-          onPress={() => navigation?.navigate?.("HomeScreen")}
+          onPress={() =>
+            navigation.navigate("ReservationPaymentScreen", { reservationFee })
+          }
         >
           <Text style={styles.buttonText}>Continue to Payment</Text>
         </TouchableOpacity>
@@ -196,38 +221,8 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     color: "#FFFFFF",
-    fontSize: 22,
+    fontSize: width * 0.07,
     fontWeight: "bold",
-  },
-
-  /** Progress Bar **/
-  inlineProgressWrapper: {
-    width: "100%",
-    alignItems: "center",
-    marginBottom: 25,
-  },
-  inlineProgressContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "90%",
-  },
-  inlineCircle: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-  },
-  inlineCircleActive: {
-    backgroundColor: "#FFD85A",
-  },
-  inlineCircleInactive: {
-    backgroundColor: "#FFFFFF",
-  },
-  inlineLine: {
-    flex: 1,
-    height: 1.5,
-    backgroundColor: "#FFFFFF",
-    opacity: 0.9,
   },
 
   /** Content **/
@@ -239,6 +234,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   infoBox: {
+    marginTop: height * 0.012,
     backgroundColor: "rgba(255,255,255,0.1)",
     borderRadius: 12,
     padding: 15,
@@ -250,7 +246,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   label: { color: "#FFFFFF", fontSize: 14 },
-  value: { color: "#FFFFFF", fontSize: 14, fontWeight: "500" },
+  value: { color: "#FFFFFF", fontSize: 14, fontWeight: "700" },
 
   /** Terms **/
   termsContainer: {
@@ -280,14 +276,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderWidth: 2,
-    borderColor: "#ccc",
-    borderRadius: 4,
-    marginRight: 8,
-  },
+
   checkboxLabel: { color: "#fff", flex: 1, fontSize: 13 },
 
   /** Button **/

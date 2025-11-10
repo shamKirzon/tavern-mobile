@@ -45,18 +45,28 @@ const PRICE_PER_PAX_EXCLUSIVE = 2000;
 
 const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
   const { setReservationData, customerReservationData } = useReservationStore();
-  const [firstName, setFirstName] = useState("Boy ");
-  const [lastName, setLastName] = useState("Abunda");
-  const [contactNumber, setContactNumber] = useState("0923392083343");
+  const [firstName, setFirstName] = useState("shammy   kierson ");
+  const [lastName, setLastName] = useState("suyat");
+  const [contactNumber, setContactNumber] = useState("");
   const [guests, setGuests] = useState(1);
   const [reservationType, setReservationType] = useState("Inclusive");
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
+  const [validId, setValidId] = useState<string>("");
   const [currentMonth, setCurrentMonth] = useState("November");
   const [showDropdown, setShowDropdown] = useState(false);
   const [startIndex, setStartIndex] = useState(0);
   const [isUploading, setIsUploading] = useState<boolean>(false);
 
+  const today = new Date();
   const reservationTypes = ["Exclusive", "Inclusive"];
+  const bookNowDisabled =
+    !firstName ||
+    !lastName ||
+    !contactNumber ||
+    !guests ||
+    !reservationType ||
+    !selectedDate ||
+    !validId;
 
   const { maxGuests, minGuests, pricePerPax } = useMemo(() => {
     if (reservationType === "Exclusive") {
@@ -83,7 +93,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const totalFee = guests * pricePerPax;
 
-  const today = new Date();
   const allDays = Array.from({ length: 14 }, (_, i) => {
     const date = new Date(today);
     date.setDate(today.getDate() + i);
@@ -111,6 +120,7 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
       const validIdUrl = await uploadImage(imageUri, "validId");
       if (validIdUrl) {
         console.log("valid id url successfully:", validIdUrl);
+        setValidId(validIdUrl);
         setReservationData({ validIdUrl });
       }
     } catch (error) {
@@ -120,40 +130,69 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   };
 
+  const capitalizeWords = (name: string) => {
+    return name
+      .split(/\s+/)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+  };
+  const createDate = (day: number, month: string, year: number): Date => {
+    const months: Record<string, number> = {
+      january: 0,
+      february: 1,
+      march: 2,
+      april: 3,
+      may: 4,
+      june: 5,
+      july: 6,
+      august: 7,
+      september: 8,
+      october: 9,
+      november: 10,
+      december: 11,
+    };
+
+    const monthIndex = months[month.toLowerCase()];
+
+    if (monthIndex === undefined) {
+      console.error("Invalid month name:", month);
+      return new Date(NaN); // invalid date
+    }
+
+    const date = new Date(year, monthIndex, day);
+    console.log("CREATE DATE RESULTS:", date);
+    return date;
+  };
+
   const handleBookNow = async () => {
     const email = await getEmailByToken();
-    if (!firstName || !lastName || !contactNumber || !selectedDate) {
-      Alert.alert(
-        "Error",
-        "Please fill in all required fields and select a date."
-      );
-      return;
-    }
-    if (guests < minGuests || guests > maxGuests) {
-      Alert.alert(
-        "Error",
-        `Number of guests must be between ${minGuests} and ${maxGuests} for ${reservationType} reservation.`
-      );
-      return;
-    }
+
+    const date = createDate(selectedDate!, currentMonth, 2025);
 
     // container:
     const reservationData: ReservationData = {
       email,
-      firstName,
-      lastName,
-      mobileNumber: contactNumber,
-      reservationType,
-      date: selectedDate.toString(),
+      firstName: capitalizeWords(firstName),
+      lastName: capitalizeWords(lastName),
+      mobileNumber: contactNumber.trim(),
+      reservationType: reservationType.toLowerCase(),
+      date,
       pax: guests,
       reservationAmount: totalFee,
     };
 
-    // insert to reservationState:s
     setReservationData(reservationData);
 
-    // sa reservationPaymentScreen pa ito
-    // await createReservation(customerReservationData);
+    // navigation:
+    navigation.navigate("BookingSummaryScreen", {
+      name: `${reservationData.firstName}${reservationData.lastName}`,
+      date: reservationData.date?.toISOString()!,
+      guests: reservationData.pax!,
+      reservationType:
+        reservationData.reservationType?.charAt(0).toUpperCase()! +
+        reservationData.reservationType?.slice(1),
+      reservationFee: reservationData.reservationAmount?.toString()!,
+    });
   };
 
   useEffect(() => {
@@ -592,19 +631,26 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                 <TextInput
                   value={guests.toString()}
                   onChangeText={(text) => {
+                    // Remove all non-numeric characters
                     const numericValue = text.replace(/[^0-9]/g, "");
+
+                    // If empty, set minimum immediately
                     if (numericValue === "") {
                       setGuests(minGuests);
                       return;
                     }
-                    let newGuests = parseInt(numericValue) || minGuests;
+
+                    // Parse the number
+                    let newGuests = parseInt(numericValue);
+
+                    // Clamp to min and max
                     if (newGuests > maxGuests) newGuests = maxGuests;
                     else if (newGuests < minGuests) newGuests = minGuests;
+
                     setGuests(newGuests);
                   }}
                   keyboardType="numeric"
                   placeholderTextColor="#999"
-                  onFocus={() => setShowDropdown(false)}
                   style={{
                     backgroundColor: "rgba(255, 255, 255, 0.1)",
                     borderRadius: 12,
@@ -667,7 +713,7 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                 <Text
                   style={{
                     color: "white",
-                    fontSize: width * 0.05,
+                    fontSize: width * 0.044,
                     fontWeight: "500",
                   }}
                 >
@@ -679,17 +725,18 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  backgroundColor: "rgba(255, 255, 255, 0.1)",
+                  backgroundColor: validId
+                    ? "rgba(0, 200, 100, 0.2)"
+                    : "rgba(255, 255, 255, 0.1)",
                   borderRadius: 12,
                   paddingVertical: 12,
-                  paddingHorizontal: width * 0.09,
+                  paddingHorizontal: width * 0.06,
                   borderWidth: 1,
-                  borderColor: "rgba(255, 255, 255, 0.2)",
+                  borderColor: validId
+                    ? "rgba(0, 255, 100, 0.4)"
+                    : "rgba(255, 255, 255, 0.2)",
                 }}
               >
-                <Text style={{ fontSize: width * 0.045, marginRight: 8 }}>
-                  ☁️
-                </Text>
                 <Text
                   style={{
                     color: "white",
@@ -697,21 +744,25 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                     fontWeight: "500",
                   }}
                 >
-                  Browse File
+                  {validId ? "File Uploaded" : "Browse File"}
                 </Text>
               </TouchableOpacity>
             </View>
 
             {/* Book Now */}
             <TouchableOpacity
+              disabled={bookNowDisabled}
               onPress={handleBookNow}
-              style={{
-                backgroundColor: "#8A1717",
-                paddingVertical: 18,
-                borderRadius: 14,
-                alignItems: "center",
-                marginTop: 20,
-              }}
+              style={[
+                {
+                  backgroundColor: "#8A1717",
+                  paddingVertical: 18,
+                  borderRadius: 14,
+                  alignItems: "center",
+                  marginTop: 20,
+                },
+                bookNowDisabled && { opacity: 0.5 },
+              ]}
             >
               <Text
                 style={{

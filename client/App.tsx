@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import HomeScreen from "./src/screens/HomeScreen";
 import ReservationScreen from "./src/screens/ReservationScreen";
 import ReservationPaymentScreen from "./src/screens/ReservationPaymentScreen";
-import ReservationReviewScreen from "./src/screens/ReservationReviewScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { RootStackParamLists } from "./src/types/rootStackParamLists";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -15,7 +14,6 @@ import EmailVerificationScreen from "./src/screens/EmailVerificationScreen";
 import OrderPolicyScreen from "./src/screens/OrderPolicyScreen";
 import MenuViewingScreen from "./src/screens/MenuViewingScreen";
 import BookingSummaryScreen from "./src/screens/BookingSummaryScreen";
-import PaymentScreen from "./src/screens/PaymentScreen";
 import CustomizationScreen from "./src/screens/CustomizationScreen";
 import OrderHomeScreen from "./src/screens/OrderHomeScreen";
 import WaitingConfirmationScreen from "./src/screens/WaitingConfirmationScreen";
@@ -53,7 +51,7 @@ const App = () => {
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
-          initialRouteName="HomeScreen"
+          initialRouteName="WelcomeScreen"
           screenOptions={{ headerShown: false, animation: "none" }}
         >
           <Stack.Screen
@@ -66,17 +64,13 @@ const App = () => {
           />
 
           <Stack.Screen name="HomeScreen" component={HomeScreen} />
-          <Stack.Screen
-            name="ReservationReview"
-            component={ReservationReviewScreen}
-          />
 
           <Stack.Screen
             name="ReservationScreen"
             component={ReservationScreen}
           />
           <Stack.Screen
-            name="ReservationPayment"
+            name="ReservationPaymentScreen"
             component={ReservationPaymentScreen}
           />
           <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
@@ -99,7 +93,6 @@ const App = () => {
             name="WaitingConfirmationScreen"
             component={WaitingConfirmationScreen}
           />
-          <Stack.Screen name="PaymentScreen" component={PaymentScreen} />
 
           <Stack.Screen
             name="BookingSummaryScreen"
