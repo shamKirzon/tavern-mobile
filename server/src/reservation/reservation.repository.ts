@@ -87,6 +87,23 @@ class ReservationRepository {
       console.error("error in getting reservation status ", error);
     }
   }
+
+  async getReservationAmount(reservationId: string) {
+    try {
+      const { data, error } = await supabase
+        .from("reservations")
+        .select("reservation_amount")
+        .eq("reservation_id", reservationId)
+        .single();
+
+      if (error) throw error;
+
+      console.log("from get reservation amount:", data);
+      return data;
+    } catch (error) {
+      console.error("error in getting reservation amount ", error);
+    }
+  }
 }
 
 export const reservationRepository = new ReservationRepository();

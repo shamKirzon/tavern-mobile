@@ -19,6 +19,11 @@ reservationRoutes.get(
   reservationController.getReservationStatus
 );
 
+reservationRoutes.get(
+  "/get-reservation-amount/:reservationId",
+  reservationController.getReservationAmount
+);
+
 // for contentType: multipart/form-data
 reservationRoutes.post(
   "/upload-image",

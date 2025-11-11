@@ -26,6 +26,14 @@ class ReservationService {
       return status?.reservation_status;
     } catch (error) {}
   }
+  async getReservationAmount(reservationId: string): Promise<any> {
+    try {
+      const amount = await reservationRepository.getReservationAmount(
+        reservationId
+      );
+      return amount?.reservation_amount;
+    } catch (error) {}
+  }
 }
 
 export const reservationService = new ReservationService();

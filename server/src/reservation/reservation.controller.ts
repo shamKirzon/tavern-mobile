@@ -67,6 +67,29 @@ class ReservationController {
     }
   }
 
+  async getReservationAmount(req: Request, res: Response) {
+    try {
+      const { reservationId } = req.params;
+
+      if (!reservationId)
+        return res.status(400).json({ message: "must have reservation id" });
+
+      const amount = await reservationService.getReservationAmount(
+        reservationId
+      );
+
+      if (!amount)
+        return res
+          .status(400)
+          .json({ message: "there is no returned reservation status. " });
+
+      return res.status(200).json({ amount });
+    } catch (error: any) {
+      console.error("reservationController/getReservationTotal(): ", error);
+      return res.status(400).json({ message: "can't get reservation total" });
+    }
+  }
+
   async uploadImage(req: Request, res: Response) {
     try {
       if (!req.file)
