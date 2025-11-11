@@ -10,8 +10,13 @@ reservationRoutes.post(
 );
 
 reservationRoutes.post(
-  "/get-reservation-data",
+  "/get-reservation-data/:reservationId",
   reservationController.getReservationData
+);
+
+reservationRoutes.get(
+  "/get-reservation-status/:reservationId",
+  reservationController.getReservationStatus
 );
 
 // for contentType: multipart/form-data

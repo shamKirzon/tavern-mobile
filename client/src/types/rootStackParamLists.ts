@@ -17,8 +17,8 @@ export type RootStackParamLists = {
   MenuViewingScreen: { category: string };
   CustomizationScreen: undefined;
   OrderHomeScreen: undefined;
-  WaitingConfirmationScreen: undefined;
-  ViewOrderStatusScreen: undefined;
+  ReservationStatusScreen: undefined;
+  OrderStatusScreen: undefined;
   CartScreen: undefined;
 
   // shams testing, ignore niyo lang ito:

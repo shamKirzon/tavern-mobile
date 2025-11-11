@@ -16,13 +16,13 @@ import MenuViewingScreen from "./src/screens/MenuViewingScreen";
 import BookingSummaryScreen from "./src/screens/BookingSummaryScreen";
 import CustomizationScreen from "./src/screens/CustomizationScreen";
 import OrderHomeScreen from "./src/screens/OrderHomeScreen";
-import WaitingConfirmationScreen from "./src/screens/WaitingConfirmationScreen";
-import ViewOrderStatusScreen from "./src/screens/ViewOrderStatusScreen";
+import OrderStatusScreen from "./src/screens/OrderStatusScreen";
 import CartScreen from "./src/screens/CartScreen";
 import { checkToken } from "./src/services/token";
 import { useFonts } from "expo-font";
 import { deleteToken, getToken, getTokenInformation } from "./src/utils/token";
 import OrderScreenTesting from "./src/screens/shams-testing/OrderScreenTesting";
+import ReservationStatusScreen from "./src/screens/ReservationStatusScreen";
 
 const App = () => {
   const [fontsLoaded] = useFonts({
@@ -90,8 +90,8 @@ const App = () => {
           <Stack.Screen name="OrderHomeScreen" component={OrderHomeScreen} />
 
           <Stack.Screen
-            name="WaitingConfirmationScreen"
-            component={WaitingConfirmationScreen}
+            name="ReservationStatusScreen"
+            component={ReservationStatusScreen}
           />
 
           <Stack.Screen
@@ -100,8 +100,8 @@ const App = () => {
           />
 
           <Stack.Screen
-            name="ViewOrderStatusScreen"
-            component={ViewOrderStatusScreen}
+            name="OrderStatusScreen"
+            component={OrderStatusScreen}
           />
 
           {/* shams testing - ignore niyo lang ito  */}

@@ -10,12 +10,21 @@ class ReservationService {
     }
   }
 
-  async getReservationData(email: string): Promise<any> {
+  async getReservationData(reservationId: string): Promise<any> {
     try {
-      return await reservationRepository.getReservationData(email);
+      return await reservationRepository.getReservationData(reservationId);
     } catch (error: any) {
       console.error("error in getting reservation information: ", error);
     }
+  }
+
+  async getReservationStatus(reservationId: string): Promise<any> {
+    try {
+      const status = await reservationRepository.getReservationStatus(
+        reservationId
+      );
+      return status?.reservation_status;
+    } catch (error) {}
   }
 }
 

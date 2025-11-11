@@ -44,6 +44,7 @@ const PRICE_PER_PAX_INCLUSIVE = 1000;
 const PRICE_PER_PAX_EXCLUSIVE = 2000;
 
 const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
+  const [isGuestInvalid, setIsGuestInvalid] = useState(false);
   const { setReservationData, customerReservationData } = useReservationStore();
   const [firstName, setFirstName] = useState("shammy   kierson ");
   const [lastName, setLastName] = useState("suyat");
@@ -626,28 +627,27 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                     marginBottom: 8,
                   }}
                 >
-                  Guests (Min: {minGuests} / Max: {maxGuests})
+                  Guests (Min: {minGuests} | Max: {maxGuests})
                 </Text>
+
                 <TextInput
                   value={guests.toString()}
                   onChangeText={(text) => {
-                    // Remove all non-numeric characters
                     const numericValue = text.replace(/[^0-9]/g, "");
-
-                    // If empty, set minimum immediately
                     if (numericValue === "") {
-                      setGuests(minGuests);
+                      setGuests(0);
+                      setIsGuestInvalid(true);
                       return;
                     }
 
-                    // Parse the number
-                    let newGuests = parseInt(numericValue);
-
-                    // Clamp to min and max
-                    if (newGuests > maxGuests) newGuests = maxGuests;
-                    else if (newGuests < minGuests) newGuests = minGuests;
-
+                    const newGuests = parseInt(numericValue);
                     setGuests(newGuests);
+
+                    if (newGuests < minGuests || newGuests > maxGuests) {
+                      setIsGuestInvalid(true);
+                    } else {
+                      setIsGuestInvalid(false);
+                    }
                   }}
                   keyboardType="numeric"
                   placeholderTextColor="#999"
@@ -656,8 +656,10 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                     borderRadius: 12,
                     paddingVertical: 14,
                     paddingHorizontal: 16,
-                    borderWidth: 1,
-                    borderColor: "rgba(255, 255, 255, 0.2)",
+                    borderWidth: 2,
+                    borderColor: isGuestInvalid
+                      ? "red"
+                      : "rgba(255, 255, 255, 0.2)",
                     color: "white",
                     fontSize: width * 0.045,
                     fontWeight: "600",

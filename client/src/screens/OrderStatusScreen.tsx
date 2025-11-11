@@ -14,22 +14,22 @@ import { RootStackParamLists } from "../types/rootStackParamLists";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import MainBackground from "../assets/backgrounds/main-background.svg";
 
-type ViewOrderStatusScreenNavigationProp = NativeStackNavigationProp<
+type OrderStatusScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamLists,
-  "ViewOrderStatusScreen"
+  "OrderStatusScreen"
 >;
 
-type ViewOrderStatusScreenRouteProp = RouteProp<
+type OrderStatusScreenRouteProp = RouteProp<
   RootStackParamLists,
-  "ViewOrderStatusScreen"
+  "OrderStatusScreen"
 >;
 
 interface Props {
-  navigation: ViewOrderStatusScreenNavigationProp;
-  route: ViewOrderStatusScreenRouteProp;
+  navigation: OrderStatusScreenNavigationProp;
+  route: OrderStatusScreenRouteProp;
 }
 
-const ViewOrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
+const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(10)).current;
 
@@ -439,4 +439,4 @@ const ViewOrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
   );
 };
 
-export default ViewOrderStatusScreen;
+export default OrderStatusScreen;

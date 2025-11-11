@@ -20,6 +20,33 @@ export const createReservation = async (data: ReservationData) => {
   }
 };
 
+export const getReservationStatus = async (reservationId: string) => {
+  try {
+    const res = await axiosInstance.get(
+      `/reservation/get-reservation-status/${reservationId}`
+    );
+    if (!res) return console.error("can't get reservation status");
+
+    return res.data.status;
+  } catch (error) {
+    console.error(
+      "services/reservation/getReservationStatus(). Error: ",
+      error
+    );
+  }
+};
+
+export const getReservationData = async (reservationId: string) => {
+  try {
+    const res = await axiosInstance.post(
+      "/reservation/get-reservation-data/${reservationId}"
+    );
+    if (!res) return console.error("can't get reservation data ");
+  } catch (error) {
+    console.error("services/reservation/getReservationData(). Error: ", error);
+  }
+};
+
 export const uploadImage = async (
   imageUri: string,
   type: ReservationImageType

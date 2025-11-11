@@ -8,21 +8,21 @@ import MainBackground from "../assets/backgrounds/main-background.svg";
 import InfoIcon from "../assets/images/info.svg";
 import LoadingIcon from "../assets/images/loading.svg";
 
-type WatingConfirmationScreenRouteProp = RouteProp<
+type ReservationStatusScreenRouteProp = RouteProp<
   RootStackParamLists,
-  "WaitingConfirmationScreen"
+  "ReservationStatusScreen"
 >;
-type WatingConfirmationScreenNavigationProp = NativeStackNavigationProp<
+type ReservationStatusScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamLists,
-  "WaitingConfirmationScreen"
+  "ReservationStatusScreen"
 >;
 
 interface Props {
-  route: WatingConfirmationScreenRouteProp;
-  navigation: WatingConfirmationScreenNavigationProp;
+  route: ReservationStatusScreenRouteProp;
+  navigation: ReservationStatusScreenNavigationProp;
 }
 
-const WaitingConfirmationScreen: React.FC<Props> = ({ navigation }) => {
+const ReservationStatusScreen: React.FC<Props> = ({ navigation }) => {
   const handleBackToHome = () => {
     navigation.navigate("HomeScreen");
   };
@@ -73,7 +73,7 @@ const WaitingConfirmationScreen: React.FC<Props> = ({ navigation }) => {
                 fontFamily: "Poppins",
               }}
             >
-              Order Status
+              Reservation Status
             </Text>
           </View>
         </View>
@@ -186,4 +186,4 @@ const WaitingConfirmationScreen: React.FC<Props> = ({ navigation }) => {
   );
 };
 
-export default WaitingConfirmationScreen;
+export default ReservationStatusScreen;

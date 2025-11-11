@@ -24,12 +24,12 @@ class ReservationController {
   }
   async getReservationData(req: Request, res: Response) {
     try {
-      const { email } = req.body;
+      const { reservationId } = req.params;
 
-      if (!email)
-        return res.status(400).json({ message: "must have an email" });
+      if (!reservationId)
+        return res.status(400).json({ message: "must have reservation id " });
 
-      const result = await reservationService.getReservationData(email);
+      const result = await reservationService.getReservationData(reservationId);
 
       if (!result)
         return res
@@ -42,6 +42,28 @@ class ReservationController {
     } catch (error: any) {
       console.error("error from createReservation(): ", error);
       return res.status(400).json({ message: "can't create reservation" });
+    }
+  }
+  async getReservationStatus(req: Request, res: Response) {
+    try {
+      const { reservationId } = req.params;
+
+      if (!reservationId)
+        return res.status(400).json({ message: "must have reservation id" });
+
+      const status = await reservationService.getReservationStatus(
+        reservationId
+      );
+
+      if (!status)
+        return res
+          .status(400)
+          .json({ message: "there is no returned reservation status. " });
+
+      return res.status(200).json({ status });
+    } catch (error: any) {
+      console.error("reservationController/createReservation(): ", error);
+      return res.status(400).json({ message: "can't get reservation status" });
     }
   }
 

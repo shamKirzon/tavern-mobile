@@ -50,12 +50,12 @@ class ReservationRepository {
       console.error("error in createReservation: ", error);
     }
   }
-  async getReservationData(email: string) {
+  async getReservationData(reservationId: string) {
     try {
       const customerId = await supabase
         .from("customers")
         .select("customer_id")
-        .eq("email", email)
+        .eq("reservation_id", reservationId)
         .single();
 
       const { data, error } = await supabase
@@ -68,6 +68,23 @@ class ReservationRepository {
       return data;
     } catch (error) {
       console.error("error in getting reservation information: ", error);
+    }
+  }
+
+  async getReservationStatus(reservationId: string) {
+    try {
+      const { data, error } = await supabase
+        .from("reservations")
+        .select("reservation_status")
+        .eq("reservation_id", reservationId)
+        .single();
+
+      if (error) throw error;
+
+      console.log("from get reservation status:", data);
+      return data;
+    } catch (error) {
+      console.error("error in getting reservation status ", error);
     }
   }
 }

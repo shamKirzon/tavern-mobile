@@ -21,6 +21,7 @@ import {
   getOrderIdByToken,
   getReservationIdByToken,
 } from "../services/token";
+import { getReservationStatus } from "../services/reservation";
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamLists,
@@ -45,10 +46,24 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [isEmailInvalid, setIsEmailInvalid] = useState<boolean>(false);
   const [showToaster, setShowToaster] = useState(false);
   const [reservationStatus, setReservationStatus] = useState<
-    "none" | "pending" | "approved" | "cancelled" | "review"
+    "none" | "pending" | "accepted" | "rejected" | "done"
   >("none");
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  //   // 🔹 Connect to Socket.IO server
+
+  //   // 🔹 Listen for reservation updates
+  //   socket.on("reservationStatus", (data) => {
+  //     console.log("Fetched reservation:", data.newStatus);
+  //     setReservationStatus(data.newStatus);
+  //   });
+
+  //   // 🔹 Cleanup on component unmount
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  // }, []); // empty dependency = runs only once on mount
 
   // toaster anim.
   useEffect(() => {
@@ -106,17 +121,22 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     if (hasEmail && hasReservation && hasOrder) {
       return undefined;
     } else if (hasEmail && hasReservation) {
-      // i need some backend api for fetching the current status:
-      // check first the reservation status
-
       // just for the example:
       console.log("HANDLESTATUS TRIGGERS");
-      setReservationStatus("pending");
+      const res = await getReservationStatus(hasReservation);
+      if (!res) return;
+
+      console.log("response from backend", res);
+      setReservationStatus(res);
     } else if (hasEmail) {
       // book now button
     } else {
       setReservationStatus("none");
     }
+  };
+
+  const handleViewStatus = async () => {
+    if (!hasReservation) return;
   };
 
   const validateEmail = (email: string): boolean => {
@@ -206,19 +226,19 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
             Pending Reservation Approval
           </Text>
         );
-      case "approved":
+      case "accepted":
         return (
           <Text style={[styles.label, { backgroundColor: "#4CAF50" }]}>
             Reservation Approved
           </Text>
         );
-      case "cancelled":
+      case "rejected":
         return (
           <Text style={[styles.label, { backgroundColor: "#E05002" }]}>
-            Your Reservation has been Cancelled.
+            Your Reservation has been Rejected.
           </Text>
         );
-      case "review":
+      case "done":
         return (
           <Text style={[styles.label, { backgroundColor: "#C6A300" }]}>
             Review Order Summary.
@@ -236,7 +256,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       <View style={{ width: "100%", alignItems: "center", marginBottom: 20 }}>
         {renderReservationLabel()}
         <TouchableOpacity
-          onPress={() => navigation.navigate("WaitingConfirmationScreen")}
+          onPress={() => handleViewStatus()}
           style={styles.statusButton}
         >
           <Text style={styles.statusText}>View Status</Text>

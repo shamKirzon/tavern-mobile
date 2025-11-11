@@ -106,7 +106,7 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
         >
           <ActivityIndicator size="large" color="#fff" />
           <Text style={{ color: "#fff", marginTop: 10, fontSize: 16 }}>
-            Submitting your payment...
+            Processing your request...
           </Text>
         </View>
       )}
