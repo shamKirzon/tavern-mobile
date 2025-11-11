@@ -15,6 +15,7 @@ import InfoIcon from "../assets/images/info.svg";
 import CircleSpinner from "./ui/CircleSpinner";
 import Rejected from "../assets/icons/rejected.svg";
 import OrderPolicyScreen from "./OrderPolicyScreen";
+import { useReservationStore } from "../stores/useReservationStore";
 type ReservationStatusScreenRouteProp = RouteProp<
   RootStackParamLists,
   "ReservationStatusScreen"
@@ -32,10 +33,13 @@ interface Props {
 const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const { reservationStatus } = route.params;
+  const { reservationAmount } = useReservationStore();
+
   const [title, setTitle] = useState("");
   const [header, setHeader] = useState("");
   const [description, setDescription] = useState("");
-  const [reservationAmout, setReservationAmount] = useState<number>();
+
+  const spendLimit = (reservationAmount / 2).toLocaleString();
 
   const statusText = {
     pending: {
@@ -121,7 +125,6 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   const displayOrderPolicy = (): React.JSX.Element => {
-    const [orderSpendLimit] = useState("15,000.00");
     const [agreed, setAgreed] = useState(false);
 
     const handleContinueOrdering = () => {
@@ -258,7 +261,7 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
                     fontFamily: "Poppins",
                   }}
                 >
-                  ₱{orderSpendLimit}
+                  ₱{spendLimit}
                 </Text>
               </View>
             </View>
@@ -391,7 +394,7 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
               <Text
                 style={{
                   color: "white",
-                  fontSize: width * 0.034,
+                  fontSize: width * 0.032,
                   flexShrink: 1, // allows text to wrap if it’s long
                 }}
               >

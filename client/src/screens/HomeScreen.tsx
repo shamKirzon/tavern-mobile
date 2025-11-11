@@ -22,8 +22,12 @@ import {
   getOrderIdByToken,
   getReservationIdByToken,
 } from "../services/token";
-import { getReservationStatus } from "../services/reservation";
+import {
+  getReservationStatus,
+  getReservationAmount,
+} from "../services/reservation";
 import Loading from "./ui/Loading";
+import { useReservationStore } from "../stores/useReservationStore";
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamLists,
@@ -44,6 +48,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
   const { showEmailVerifiedToggle, setShowEmailVerifiedToggle } =
     useAuthStore();
+  const { setReservationAmount, reservationAmount } = useReservationStore();
   const [email, setEmail] = useState("");
   const [isEmailInvalid, setIsEmailInvalid] = useState<boolean>(false);
   const [showToaster, setShowToaster] = useState(false);
@@ -53,8 +58,8 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     "none" | "pending" | "accepted" | "rejected" | "done"
   >("none");
 
+  // done = orderstatusScreen
   const fadeAnim = useRef(new Animated.Value(0)).current;
-
   // toaster anim.
   useEffect(() => {
     if (showToaster) {
@@ -105,8 +110,20 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   }, [hasEmail, hasReservation, hasOrder]);
 
   // reservation
-  useEffect(() => {}, []);
+  useEffect(() => {
+    const getTotal = async () => {
+      if (!hasReservation) return;
+      const amount = await getReservationAmount(hasReservation);
+      setReservationAmount(amount);
+    };
 
+    getTotal();
+  }, [hasReservation]);
+
+  // testing:
+  useEffect(() => {
+    console.log("Reservation Amount:", reservationAmount);
+  }, [reservationAmount]);
   const handleStatus = async () => {
     if (hasEmail && hasReservation && hasOrder) {
       return undefined;
@@ -118,7 +135,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         const res = await getReservationStatus(hasReservation);
         if (!res) return;
 
-        console.log("response from backend", res);
+        console.log("Reservation Status: ", res);
         setReservationStatus(res);
       } catch (error) {
         console.error("Error: ", error);
@@ -237,6 +254,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
           </Text>
         );
       case "done":
+        // pag meron ka nang order id
         return (
           <Text style={[styles.label, { backgroundColor: "#C6A300" }]}>
             Review Order Summary.

@@ -14,6 +14,8 @@ export type ReservationData = {
 export type ReservationImageType = "validId" | "payment";
 
 export interface ReservationStore {
+  reservationAmount: number;
+  setReservationAmount: (data: number) => void;
   customerReservationData: ReservationData;
   setReservationData: (data: Partial<ReservationData>) => void;
   clearReservationData: () => void;

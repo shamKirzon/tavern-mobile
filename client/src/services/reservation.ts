@@ -37,14 +37,14 @@ export const getReservationStatus = async (reservationId: string) => {
 };
 
 // aayusin pa
-export const getReservationTotal = async (reservationId: string) => {
+export const getReservationAmount = async (reservationId: string) => {
   try {
     const res = await axiosInstance.get(
-      `/reservation/get-reservation-status/${reservationId}`
+      `/reservation/get-reservation-amount/${reservationId}`
     );
     if (!res) return console.error("can't get reservation status");
 
-    return res.data.status;
+    return res.data.amount;
   } catch (error) {
     console.error(
       "services/reservation/getReservationStatus(). Error: ",
