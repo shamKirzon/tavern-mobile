@@ -154,7 +154,7 @@ const BookingSummaryScreen: React.FC<Props> = ({ navigation, route }) => {
                   borderRadius: 4,
                   justifyContent: "center",
                   alignItems: "center",
-                  backgroundColor: isChecked ? "#4CAF50" : "transparent",
+                  backgroundColor: isChecked ? "#D4AF37" : "transparent",
                 }}
               >
                 {/* Check mark */}

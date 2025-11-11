@@ -7,6 +7,7 @@ import {
   ImageBackground,
   StyleSheet,
   Animated,
+  ActivityIndicator,
 } from "react-native";
 import { width, height } from "../utils/dimensions";
 import { RouteProp } from "@react-navigation/native";
@@ -22,6 +23,7 @@ import {
   getReservationIdByToken,
 } from "../services/token";
 import { getReservationStatus } from "../services/reservation";
+import Loading from "./ui/Loading";
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamLists,
@@ -45,25 +47,13 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [isEmailInvalid, setIsEmailInvalid] = useState<boolean>(false);
   const [showToaster, setShowToaster] = useState(false);
+  const [isLoading, setIsLoadings] = useState<boolean>(false);
+
   const [reservationStatus, setReservationStatus] = useState<
     "none" | "pending" | "accepted" | "rejected" | "done"
   >("none");
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
-
-  //   // 🔹 Connect to Socket.IO server
-
-  //   // 🔹 Listen for reservation updates
-  //   socket.on("reservationStatus", (data) => {
-  //     console.log("Fetched reservation:", data.newStatus);
-  //     setReservationStatus(data.newStatus);
-  //   });
-
-  //   // 🔹 Cleanup on component unmount
-  //   return () => {
-  //     socket.disconnect();
-  //   };
-  // }, []); // empty dependency = runs only once on mount
 
   // toaster anim.
   useEffect(() => {
@@ -121,13 +111,20 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     if (hasEmail && hasReservation && hasOrder) {
       return undefined;
     } else if (hasEmail && hasReservation) {
-      // just for the example:
-      console.log("HANDLESTATUS TRIGGERS");
-      const res = await getReservationStatus(hasReservation);
-      if (!res) return;
+      try {
+        // just for the example:
+        setIsLoadings(true);
+        console.log("HANDLESTATUS TRIGGERS");
+        const res = await getReservationStatus(hasReservation);
+        if (!res) return;
 
-      console.log("response from backend", res);
-      setReservationStatus(res);
+        console.log("response from backend", res);
+        setReservationStatus(res);
+      } catch (error) {
+        console.error("Error: ", error);
+      } finally {
+        setIsLoadings(false);
+      }
     } else if (hasEmail) {
       // book now button
     } else {
@@ -137,6 +134,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleViewStatus = async () => {
     if (!hasReservation) return;
+    navigation.navigate("ReservationStatusScreen", { reservationStatus });
   };
 
   const validateEmail = (email: string): boolean => {
@@ -296,62 +294,65 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   );
 
   return (
-    <View style={styles.mainContainer}>
-      <MainBackground
-        width={width}
-        height={height}
-        preserveAspectRatio="none"
-        style={styles.bg}
-      />
+    <>
+      {isLoading && Loading()}
+      <View style={styles.mainContainer}>
+        <MainBackground
+          width={width}
+          height={height}
+          preserveAspectRatio="none"
+          style={styles.bg}
+        />
 
-      <View style={styles.content}>
-        <Text style={styles.title}>Book a Reservation.</Text>
-        <Text style={styles.subtitle}>
-          Great food, great drinks, top notch service and a warm inviting
-          ambiance.
-        </Text>
+        <View style={styles.content}>
+          <Text style={styles.title}>Book a Reservation.</Text>
+          <Text style={styles.subtitle}>
+            Great food, great drinks, top notch service and a warm inviting
+            ambiance.
+          </Text>
 
-        {renderToaster()}
+          {renderToaster()}
 
-        {reservationStatus === "none" && (
-          <>
-            {!hasEmail && (
-              <TextInput
-                placeholder="email@example.com"
-                placeholderTextColor="#999"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                style={styles.input}
-              />
-            )}
+          {reservationStatus === "none" && (
+            <>
+              {!hasEmail && (
+                <TextInput
+                  placeholder="email@example.com"
+                  placeholderTextColor="#999"
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  style={styles.input}
+                />
+              )}
 
-            {hasEmail ? (
-              <TouchableOpacity
-                onPress={handleBookNow}
-                style={[styles.verifyBtn]}
-              >
-                <Text style={styles.verifyText}>Book Now</Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                onPress={handleContinue}
-                style={[
-                  styles.verifyBtn,
-                  !email && { opacity: 0.5 }, // fade when disabled
-                ]}
-                disabled={!email}
-              >
-                <Text style={styles.verifyText}>Verify Email</Text>
-              </TouchableOpacity>
-            )}
-          </>
-        )}
+              {hasEmail ? (
+                <TouchableOpacity
+                  onPress={handleBookNow}
+                  style={[styles.verifyBtn]}
+                >
+                  <Text style={styles.verifyText}>Book Now</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  onPress={handleContinue}
+                  style={[
+                    styles.verifyBtn,
+                    !email && { opacity: 0.5 }, // fade when disabled
+                  ]}
+                  disabled={!email}
+                >
+                  <Text style={styles.verifyText}>Verify Email</Text>
+                </TouchableOpacity>
+              )}
+            </>
+          )}
 
-        {reservationSection()}
-        {menu()}
+          {reservationSection()}
+          {menu()}
+        </View>
       </View>
-    </View>
+    </>
   );
 };
 
