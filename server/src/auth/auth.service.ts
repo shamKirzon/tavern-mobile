@@ -7,8 +7,8 @@ interface OtpValidationResult {
 
 type TokenPayload = {
   email: string;
-  reservationId?: string;
-  orderId?: string;
+  reservationId?: string | null;
+  orderId?: string | null;
 };
 
 class AuthService {
