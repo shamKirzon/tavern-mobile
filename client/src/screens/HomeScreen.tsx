@@ -124,6 +124,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     console.log("Reservation Amount:", reservationAmount);
   }, [reservationAmount]);
+
   const handleStatus = async () => {
     if (hasEmail && hasReservation && hasOrder) {
       return undefined;

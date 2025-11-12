@@ -16,6 +16,7 @@ import CircleSpinner from "./ui/CircleSpinner";
 import Rejected from "../assets/icons/rejected.svg";
 import OrderPolicyScreen from "./OrderPolicyScreen";
 import { useReservationStore } from "../stores/useReservationStore";
+import { updateToken } from "../services/token";
 type ReservationStatusScreenRouteProp = RouteProp<
   RootStackParamLists,
   "ReservationStatusScreen"
@@ -108,14 +109,15 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   };
 
-  const handleStatusAction = () => {
+  const handleStatusAction = async () => {
     switch (reservationStatus) {
       case "pending":
         navigation.navigate("HomeScreen");
         break;
       case "rejected":
+        await updateToken({ reservationId: null });
         navigation.navigate("HomeScreen");
-        // delete reservation
+
         break;
       case "done":
         break;

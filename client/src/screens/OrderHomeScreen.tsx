@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Image,
   LayoutChangeEvent,
+  Keyboard,
 } from "react-native";
 import { width, height } from "../utils/dimensions";
 import { RouteProp } from "@react-navigation/native";
@@ -43,16 +44,36 @@ interface Props {
 }
 
 const OrderHomeScreen: React.FC<Props> = ({ navigation }) => {
+  const allDrinks = Object.values(drinks).flat();
+  const menuData = [...appetizers, ...mainCourse, ...desserts, ...allDrinks];
+
   const { isAuthenticated } = useAuthStore();
-  const [search, setSearch] = useState("");
+  const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [filteredData, setFilteredData] = useState(menuData);
+
+  const positions = useRef({
+    Appetizer: 0,
+    MainCourse: 0,
+    Dessert: 0,
+    Drinks: 0,
+  });
+
+  const itemPositions = useRef<{ [key: string]: number }>({});
 
   const scrollViewRef = useRef<ScrollView | null>(null);
-
-  const onAppetizerLayout = (e: LayoutChangeEvent) => {};
-  const onMainCourseLayout = (e: LayoutChangeEvent) => {};
-  const onDessertLayout = (e: LayoutChangeEvent) => {};
-  const onDrinksLayout = (e: LayoutChangeEvent) => {};
+  const onAppetizerLayout = (e: LayoutChangeEvent) => {
+    positions.current.Appetizer = e.nativeEvent.layout.y;
+  };
+  const onMainCourseLayout = (e: LayoutChangeEvent) => {
+    positions.current.MainCourse = e.nativeEvent.layout.y;
+  };
+  const onDessertLayout = (e: LayoutChangeEvent) => {
+    positions.current.Dessert = e.nativeEvent.layout.y;
+  };
+  const onDrinksLayout = (e: LayoutChangeEvent) => {
+    positions.current.Drinks = e.nativeEvent.layout.y;
+  };
 
   // 🟢 Filtering logic
   const filteredCategories =
@@ -60,6 +81,52 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation }) => {
       ? ["Appetizer", "MainCourse", "Dessert", "Drinks"]
       : [selectedCategory];
 
+  const getCategory = (result: any) => {
+    if (appetizers.find((item) => item.name === result.name))
+      return "Appetizer";
+    if (mainCourse.find((item) => item.name === result.name))
+      return "MainCourse";
+    if (desserts.find((item) => item.name === result.name)) return "Dessert";
+    if (
+      Object.values(drinks)
+        .flat()
+        .find((item) => item.name === result.name)
+    )
+      return "Drinks";
+
+    return null; // not found
+  };
+
+  // functions:
+  const handleSearch = (text: string) => {
+    setQuery(text);
+    if (text.trim() === "") {
+      setFilteredData([]);
+    } else {
+      const result = menuData.filter((item) =>
+        item.name.toLowerCase().includes(text.toLowerCase())
+      );
+
+      setFilteredData(result);
+    }
+
+    console.log(`Searching for ${text}`);
+    console.log(`data: `, filteredData);
+  };
+
+  const onSearchResultPress = (result: any) => {
+    const resultCategory = getCategory(result);
+    setSelectedCategory(resultCategory);
+    Keyboard.dismiss();
+    setQuery("");
+
+    setTimeout(() => {
+      const y = itemPositions.current[result.name];
+      if (y !== undefined && scrollViewRef.current) {
+        scrollViewRef.current.scrollTo({ y: y + 100, animated: true });
+      }
+    }, 300); // slight delay to ensure layout is measured
+  };
   return (
     <View style={styles.mainContainer}>
       <MainBackground
@@ -72,19 +139,18 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation }) => {
         ref={scrollViewRef}
         style={{ width: "100%" }}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled" // para maclick muna yung content nang di umaalis sa keyboard
         contentContainerStyle={{ alignItems: "center", paddingBottom: 100 }} // bottom padding so basket doesn't overlap
       >
         <View style={styles.content}>
           <Text style={styles.menuTitle}>Welcome to Tavern Asia!</Text>
-
-          {/* Search bar */}
+          {/* search bar */}
           <View style={styles.searchContainer}>
             <SearchIcon width={22} height={22} style={{ marginRight: 1 }} />
             <TextInput
               placeholder="What food do you crave?"
               placeholderTextColor="#999"
-              value={search}
-              onChangeText={setSearch}
+              onChangeText={handleSearch}
               style={[
                 styles.input,
                 {
@@ -97,12 +163,38 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation }) => {
             />
           </View>
 
-          {/* Special Promos */}
+          {/* search results */}
+          {query.trim() !== "" && (
+            <View style={styles.dropdownContainer}>
+              {filteredData.length > 0 ? (
+                filteredData.map((item, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => onSearchResultPress(item)}
+                    style={styles.dropdownItem}
+                    activeOpacity={0.8}
+                  >
+                    <SearchIcon
+                      width={22}
+                      height={22}
+                      style={{ marginRight: 10 }}
+                    />
+                    <Text style={styles.dropdownText}>{item.name}</Text>
+                  </TouchableOpacity>
+                ))
+              ) : (
+                <Text style={styles.noResult}>No results found</Text>
+              )}
+            </View>
+          )}
+
+          {/* special promos */}
           <Text style={styles.menuTitle}>Special Promos</Text>
           <View style={{ width: "100%", height: 147, marginBottom: 25 }}>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
+              // keyboardShouldPersistTaps="handled" // or "always" - di ko alam kung gumagana ba to
               pagingEnabled
               snapToAlignment="center"
               decelerationRate="fast"
@@ -116,7 +208,6 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation }) => {
               </View>
             </ScrollView>
           </View>
-
           {/* Category Icons */}
           <View style={styles.categoryContainer}>
             <TouchableOpacity
@@ -175,7 +266,6 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation }) => {
               <Text style={styles.categoryText}>Drinks</Text>
             </TouchableOpacity>
           </View>
-
           {/* Menu Sections */}
           {filteredCategories.includes("Appetizer") && (
             <>
@@ -184,7 +274,13 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation }) => {
               </View>
               <View style={styles.menuGrid}>
                 {appetizers.map((item, index) => (
-                  <View key={index} style={styles.menuCard}>
+                  <View
+                    key={index}
+                    style={styles.menuCard}
+                    onLayout={(e) => {
+                      itemPositions.current[item.name] = e.nativeEvent.layout.y;
+                    }}
+                  >
                     <View>
                       <Image source={item.image} style={styles.menuImage} />
                       <TouchableOpacity style={styles.plusButton}>
@@ -200,7 +296,6 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation }) => {
               </View>
             </>
           )}
-
           {filteredCategories.includes("MainCourse") && (
             <>
               <View onLayout={onMainCourseLayout}>
@@ -208,7 +303,13 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation }) => {
               </View>
               <View style={styles.menuGrid}>
                 {mainCourse.map((item, index) => (
-                  <View key={index} style={styles.menuCard}>
+                  <View
+                    key={index}
+                    style={styles.menuCard}
+                    onLayout={(e) => {
+                      itemPositions.current[item.name] = e.nativeEvent.layout.y;
+                    }}
+                  >
                     <View>
                       <Image source={item.image} style={styles.menuImage} />
                       <TouchableOpacity style={styles.plusButton}>
@@ -224,7 +325,6 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation }) => {
               </View>
             </>
           )}
-
           {filteredCategories.includes("Dessert") && (
             <>
               <View onLayout={onDessertLayout}>
@@ -232,7 +332,13 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation }) => {
               </View>
               <View style={styles.menuGrid}>
                 {desserts.map((item, index) => (
-                  <View key={index} style={styles.menuCard}>
+                  <View
+                    key={index}
+                    style={styles.menuCard}
+                    onLayout={(e) => {
+                      itemPositions.current[item.name] = e.nativeEvent.layout.y;
+                    }}
+                  >
                     <View>
                       <Image source={item.image} style={styles.menuImage} />
                       <TouchableOpacity style={styles.plusButton}>
@@ -248,7 +354,6 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation }) => {
               </View>
             </>
           )}
-
           {filteredCategories.includes("Drinks") && (
             <>
               <View onLayout={onDrinksLayout}>
@@ -258,7 +363,14 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation }) => {
                 {Object.values(drinks)
                   .flat()
                   .map((item: any, index) => (
-                    <View key={index} style={styles.menuCard}>
+                    <View
+                      key={index}
+                      style={styles.menuCard}
+                      onLayout={(e) => {
+                        itemPositions.current[item.name] =
+                          e.nativeEvent.layout.y;
+                      }}
+                    >
                       <View>
                         <Image source={item.image} style={styles.menuImage} />
                         <TouchableOpacity style={styles.plusButton}>
@@ -329,6 +441,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
+    width: width * 0.9,
   },
   menuTitle: {
     color: "white",
@@ -454,6 +567,46 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: width * 0.04,
     opacity: 0.8,
+  },
+  // results:
+  dropdownContainer: {
+    position: "absolute", // overlay other content
+    marginTop: height * 0.14, // adjust depending on search bar height
+    left: 0, // align with search bar start
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    zIndex: 999,
+    paddingVertical: 8,
+    paddingRight: 40,
+    width: width * 0.9,
+  },
+
+  dropdownItem: {
+    flexDirection: "row",
+    alignContent: "center",
+    textAlign: "center",
+
+    paddingVertical: 10,
+    paddingLeft: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+  },
+
+  dropdownText: {
+    fontSize: 16,
+    color: "#111",
+  },
+
+  noResult: {
+    textAlign: "center",
+    color: "#999",
+    paddingVertical: 10,
+    fontSize: 16,
   },
 });
 

@@ -36,7 +36,6 @@ export const getReservationStatus = async (reservationId: string) => {
   }
 };
 
-// aayusin pa
 export const getReservationAmount = async (reservationId: string) => {
   try {
     const res = await axiosInstance.get(

@@ -51,7 +51,7 @@ const App = () => {
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
-          initialRouteName="HomeScreen"
+          initialRouteName="OrderHomeScreen"
           screenOptions={{ headerShown: false, animation: "none" }}
         >
           <Stack.Screen
