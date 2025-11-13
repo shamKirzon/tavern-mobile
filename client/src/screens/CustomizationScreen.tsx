@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -30,10 +30,14 @@ interface Props {
 }
 
 import { appetizers, mainCourse, desserts, drinks } from "../data/menu";
+import { useOrderStore } from "../stores/useOrderStore";
+import { ordersData } from "../types/orders";
 
 const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
-  const { order } = route.params;
+  const { order, from } = route.params;
+  const { orders, addOrders } = useOrderStore();
 
+  const buttonLabel = from === "CartScreen" ? "Update Basket" : "Add to Cart";
   const basePrice = order.price;
   let description = order.description.join(", ");
   description = description.charAt(0).toUpperCase() + description.slice(1);
@@ -42,6 +46,7 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
     "Solo" | "Regular" | "To share"
   >("Solo");
   const [quantity, setQuantity] = useState(1);
+  const [note, setNote] = useState<string>("");
   const [showRemoveModal, setShowRemoveModal] = useState(false);
 
   const servingOptions = [
@@ -50,16 +55,11 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
     { label: "To share", price: 680 },
   ];
 
-  const getSelectedPrice = () => {
-    const selected = servingOptions.find((s) => s.label === selectedServing);
-    return selected ? selected.price : 0;
-  };
-
   const totalPrice = (basePrice + getSelectedPrice()) * quantity;
+  const category = getCategory(order);
 
   //functions:
-
-  const getCategory = (result: any) => {
+  function getCategory(result: any) {
     if (appetizers.find((item) => item.name === result.name))
       return "Appetizer";
     if (mainCourse.find((item) => item.name === result.name))
@@ -73,8 +73,40 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
       return "Drinks";
 
     return null; // not found
+  }
+  function getSelectedPrice() {
+    const selected = servingOptions.find((s) => s.label === selectedServing);
+    return selected ? selected.price : 0;
+  }
+
+  const handleOrderAction = () => {
+    const orderData: ordersData = {
+      orderItems: [
+        {
+          orderName: order.name,
+          ...(category === "Appetizer" || category === "MainCourse"
+            ? {
+                serving: {
+                  servingSize: selectedServing.toLowerCase() as
+                    | "solo"
+                    | "regular"
+                    | "to share",
+                  servingPrice: servingOptions.find(
+                    (serving) => serving.label === selectedServing
+                  )!.price, // ! asserts that price exists
+                },
+              }
+            : {}),
+          quantity,
+          note,
+          price: totalPrice,
+        },
+      ],
+    };
+
+    addOrders(orderData);
+    navigation.goBack();
   };
-  const category = getCategory(order);
 
   const handleQuantityChange = (change: number) => {
     setQuantity((prev) => {
@@ -236,9 +268,11 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
                   height: 100,
                 },
               ]}
+              value={note}
               placeholder="Specify any additional requests or preferences"
               placeholderTextColor="#999"
               multiline
+              onChangeText={(value) => setNote(value)}
             />
           </View>
 
@@ -270,36 +304,14 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
                 marginTop: 100,
               },
             ]}
+            onPress={() => handleOrderAction()}
           >
             <Text style={styles.updateButtonText}>
-              Update Basket - ₱{totalPrice.toFixed(2)}
+              {buttonLabel} - ₱{totalPrice.toFixed(2)}
             </Text>
           </TouchableOpacity>
         </View>
       </KeyboardAwareScrollView>
-
-      {/* ✅ Remove Item Modal */}
-      <Modal transparent visible={showRemoveModal} animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalText}>Remove this item?</Text>
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                style={styles.noButton}
-                onPress={handleCancelRemove}
-              >
-                <Text style={styles.noButtonText}>No</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.yesButton}
-                onPress={handleConfirmRemove}
-              >
-                <Text style={styles.yesButtonText}>Yes</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 };

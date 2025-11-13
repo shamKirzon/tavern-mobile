@@ -15,7 +15,7 @@ export type RootStackParamLists = {
   };
   ReservationPaymentScreen: { reservationFee: string };
   MenuViewingScreen: { category: string };
-  CustomizationScreen: { order: any };
+  CustomizationScreen: { order: any; from: "OrderHomeScreen" | "CartScreen" };
   OrderHomeScreen: undefined;
   ReservationStatusScreen: { reservationStatus: string };
   OrderStatusScreen: undefined;

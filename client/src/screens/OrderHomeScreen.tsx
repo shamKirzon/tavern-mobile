@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -26,6 +26,7 @@ import Drinks from "../assets/images/drinks.svg";
 import Basket from "../assets/images/basket.svg";
 
 import { appetizers, mainCourse, desserts, drinks } from "../data/menu";
+import { useOrderStore } from "../stores/useOrderStore";
 
 type OrderHomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamLists,
@@ -43,6 +44,7 @@ interface Props {
 }
 
 const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { orders } = useOrderStore();
   const allDrinks = Object.values(drinks).flat();
   const menuData = [...appetizers, ...mainCourse, ...desserts, ...allDrinks];
 
@@ -73,6 +75,11 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
 
     return null; // not found
   };
+
+  // testing part:
+  useEffect(() => {
+    console.info("updated orders", orders);
+  }, [orders]);
 
   // functions:
   const handleSearch = (text: string) => {
@@ -106,9 +113,10 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   const handleCustomizeOrder = (order: any) => {
-    console.log("order information: ", order);
-
-    navigation.navigate("CustomizationScreen", { order });
+    navigation.navigate("CustomizationScreen", {
+      order,
+      from: "OrderHomeScreen",
+    });
   };
 
   return (
@@ -397,9 +405,11 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
       <View style={styles.basketBar}>
         <Basket width={28} height={28} style={{ marginRight: 8 }} />
         <Text style={styles.basketText}>Basket</Text>
-        <Text style={styles.basketItems}>0 items</Text>
+        <Text style={styles.basketItems}>{orders.orderItems.length} items</Text>
         <View style={{ flex: 1 }} />
-        <Text style={styles.basketPrice}>₱0.00</Text>
+        <Text style={styles.basketPrice}>
+          ₱ {orders.total?.toFixed(2).toLocaleString()}
+        </Text>
       </View>
     </View>
   );

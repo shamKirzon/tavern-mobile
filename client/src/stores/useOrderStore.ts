@@ -1,12 +1,22 @@
 import { create } from "zustand";
-import { orderStore, ordersData } from "../types/orders";
+import { orderStore } from "../types/orders";
 
 export const useOrderStore = create<orderStore>((set) => ({
   orders: { orderItems: [], total: 0 },
 
   addOrders: (data) =>
     set((state) => ({
-      orders: { ...state.orders, ...data },
+      orders: {
+        ...state.orders,
+
+        orderItems: [
+          ...(state.orders.orderItems || []),
+          ...(data.orderItems || []),
+        ],
+        total:
+          (state.orders.total || 0) +
+          (data.orderItems?.reduce((sum, item) => sum + item.price, 0) || 0),
+      },
     })),
 
   removeOrders: (name) =>

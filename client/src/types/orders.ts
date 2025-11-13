@@ -1,7 +1,7 @@
 export type ordersData = {
   orderItems: {
     orderName: string;
-    serving: {
+    serving?: {
       servingSize: "solo" | "regular" | "to share";
       servingPrice: number;
     };
@@ -9,7 +9,7 @@ export type ordersData = {
     note: string;
     price: number;
   }[];
-  total: number;
+  total?: number;
 };
 
 export interface orderStore {
