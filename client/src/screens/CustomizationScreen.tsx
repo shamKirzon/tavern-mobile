@@ -6,13 +6,14 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
-  ScrollView,
   Modal,
 } from "react-native";
 import MainBackground from "../assets/backgrounds/main-background.svg";
-import { RouteProp } from "@react-navigation/native";
+import { getActionFromState, RouteProp } from "@react-navigation/native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamLists } from "../types/rootStackParamLists";
+import { height, width } from "../utils/dimensions";
 
 type CustomizationScreenScreenRouteProps = RouteProp<
   RootStackParamLists,
@@ -28,8 +29,15 @@ interface Props {
   navigation: CustomizationScreenNavigationProps;
 }
 
+import { appetizers, mainCourse, desserts, drinks } from "../data/menu";
+
 const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
-  const basePrice = 435;
+  const { order } = route.params;
+
+  const basePrice = order.price;
+  let description = order.description.join(", ");
+  description = description.charAt(0).toUpperCase() + description.slice(1);
+
   const [selectedServing, setSelectedServing] = useState<
     "Solo" | "Regular" | "To share"
   >("Solo");
@@ -49,16 +57,32 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
 
   const totalPrice = (basePrice + getSelectedPrice()) * quantity;
 
+  //functions:
+
+  const getCategory = (result: any) => {
+    if (appetizers.find((item) => item.name === result.name))
+      return "Appetizer";
+    if (mainCourse.find((item) => item.name === result.name))
+      return "MainCourse";
+    if (desserts.find((item) => item.name === result.name)) return "Dessert";
+    if (
+      Object.values(drinks)
+        .flat()
+        .find((item) => item.name === result.name)
+    )
+      return "Drinks";
+
+    return null; // not found
+  };
+  const category = getCategory(order);
+
   const handleQuantityChange = (change: number) => {
     setQuantity((prev) => {
-      const newQty = Math.max(0, prev + change);
-      if (newQty === 0) {
-        setShowRemoveModal(true);
-      }
-      return newQty;
+      const newQty = prev + change;
+
+      return newQty < 1 ? 1 : newQty;
     });
   };
-
   const handleConfirmRemove = () => {
     setShowRemoveModal(false);
     // You can add logic here to actually remove the item from basket
@@ -79,84 +103,122 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
         style={StyleSheet.absoluteFillObject}
       />
 
-      <ScrollView
+      <KeyboardAwareScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 40 }}
+        contentContainerStyle={{
+          marginTop: width * 0.1,
+          paddingBottom: 100,
+        }}
+        keyboardShouldPersistTaps="handled"
+        enableOnAndroid={true}
+        extraScrollHeight={20}
       >
-        {/* Header */}
-        <TouchableOpacity style={styles.backButton}>
-          <Text style={styles.backArrow}>←</Text>
-          <Text style={styles.menuText}>Menu</Text>
-        </TouchableOpacity>
+        {/* ===== HEADER WITH BACK BUTTON ===== */}
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginBottom: height * 0.008,
+            paddingHorizontal: 20,
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={{ marginRight: width * 0.03, padding: 5 }}
+          >
+            <Text
+              style={{
+                color: "#FFF",
+                fontSize: 30,
+                fontWeight: "300",
+                lineHeight: 30,
+              }}
+            >
+              ‹
+            </Text>
+          </TouchableOpacity>
+          <Text
+            style={{
+              color: "#FFF",
+              fontSize: width * 0.06,
+              fontWeight: "700",
+              fontFamily: "Poppins",
+            }}
+          >
+            Menu
+          </Text>
+        </View>
 
         {/* Food Image */}
         <View style={{ alignItems: "center" }}>
-          <Image
-            source={require("../assets/customization/ChiliBallparkNachos.png")}
-            style={styles.image}
-            resizeMode="cover"
-          />
+          <Image source={order.image} style={styles.image} resizeMode="cover" />
         </View>
 
         {/* Content Area */}
         <View style={styles.overlayContainer}>
           {/* Title and Price */}
           <View style={styles.rowBetween}>
-            <Text style={styles.title}>Chili Ballpark Nachos</Text>
+            <Text style={styles.title}>{order.name}</Text>
             <View style={{ alignItems: "flex-end" }}>
               <Text style={styles.price}>₱{basePrice.toFixed(2)}</Text>
               <Text style={styles.basePriceLabel}>Base price</Text>
             </View>
           </View>
 
-          <Text style={styles.description}>
-            Tortilla chips, cheese sauce, chili meat, pico de gallo, fresh
-            salsa, sour cream
-          </Text>
+          <Text style={styles.description}>{description}</Text>
 
           {/* Horizontal line */}
           <View style={styles.divider} />
 
-          {/* Servings Section */}
-          <View style={styles.section}>
-            <View style={styles.rowBetween}>
-              <Text style={styles.sectionTitle}>
-                Chili Ballpark Nachos Servings
-              </Text>
-              <View style={styles.pickContainer}>
-                <Text style={styles.pickText}>Pick 1</Text>
-              </View>
-            </View>
-
-            {servingOptions.map((option) => (
-              <TouchableOpacity
-                key={option.label}
-                style={styles.radioRow}
-                onPress={() => setSelectedServing(option.label as any)}
-              >
-                <View style={styles.radioContainer}>
-                  <View
-                    style={[
-                      styles.outerCircle,
-                      selectedServing === option.label &&
-                        styles.outerCircleActive,
-                    ]}
-                  >
-                    {selectedServing === option.label && (
-                      <View style={styles.innerCircle} />
-                    )}
+          {category !== "Dessert" && category !== "Drinks" && (
+            <>
+              {/* Servings Section */}
+              <View style={styles.section}>
+                <View style={styles.rowBetween}>
+                  <Text style={styles.sectionTitle}>
+                    Chili Ballpark Nachos Servings
+                  </Text>
+                  <View style={styles.pickContainer}>
+                    <Text style={styles.pickText}>Pick 1</Text>
                   </View>
-                  <Text style={styles.radioLabel}>{option.label}</Text>
                 </View>
-                <Text style={styles.radioPrice}>
-                  {option.price === 0 ? "0.00" : `+${option.price.toFixed(2)}`}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
 
-          {/* Horizontal line */}
-          <View style={styles.divider} />
+                {servingOptions.map((option) => (
+                  <View style={styles.radioRow} key={option.label}>
+                    {/* Left side (radio + label) */}
+                    <View style={styles.radioContainer}>
+                      <TouchableOpacity
+                        onPress={() => setSelectedServing(option.label as any)}
+                      >
+                        <View
+                          style={[
+                            styles.outerCircle,
+                            selectedServing === option.label &&
+                              styles.outerCircleActive,
+                          ]}
+                        >
+                          {selectedServing === option.label && (
+                            <View style={styles.innerCircle} />
+                          )}
+                        </View>
+                      </TouchableOpacity>
+
+                      <Text style={styles.radioLabel}>{option.label}</Text>
+                    </View>
+
+                    {/* Right side (price) */}
+                    <Text style={styles.radioPrice}>
+                      {option.price === 0
+                        ? "0.00"
+                        : `+${option.price.toFixed(2)}`}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+              {/* Horizontal line */}
+              <View style={styles.divider} />
+            </>
+          )}
 
           {/* Note to restaurant */}
           <View style={styles.section}>
@@ -166,9 +228,15 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
                 <Text style={styles.pickText}>Optional</Text>
               </View>
             </View>
+
             <TextInput
-              style={styles.textInput}
-              placeholder="Add your request (subject to restaurant’s discretion)"
+              style={[
+                styles.textInput,
+                (category === "Dessert" || category === "Drinks") && {
+                  height: 100,
+                },
+              ]}
+              placeholder="Specify any additional requests or preferences"
               placeholderTextColor="#999"
               multiline
             />
@@ -178,7 +246,8 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
           <View style={styles.quantityContainer}>
             <TouchableOpacity
               onPress={() => handleQuantityChange(-1)}
-              style={styles.qtyButton}
+              disabled={quantity == 1}
+              style={[styles.qtyButton, quantity == 1 && { opacity: 0.3 }]}
             >
               <Text style={styles.qtySymbol}>−</Text>
             </TouchableOpacity>
@@ -194,13 +263,20 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
           </View>
 
           {/* Update Basket Button */}
-          <TouchableOpacity style={styles.updateButton}>
+          <TouchableOpacity
+            style={[
+              styles.updateButton,
+              (category === "Dessert" || category === "Drinks") && {
+                marginTop: 100,
+              },
+            ]}
+          >
             <Text style={styles.updateButtonText}>
               Update Basket - ₱{totalPrice.toFixed(2)}
             </Text>
           </TouchableOpacity>
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
 
       {/* ✅ Remove Item Modal */}
       <Modal transparent visible={showRemoveModal} animationType="fade">
@@ -369,7 +445,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 15,
+    paddingBottom: width * 0.07,
   },
   qtyButton: {
     borderWidth: 1.5,
@@ -395,7 +471,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#c0392b",
     paddingVertical: 15,
     borderRadius: 10,
-    marginTop: 15,
   },
   updateButtonText: {
     color: "#fff",

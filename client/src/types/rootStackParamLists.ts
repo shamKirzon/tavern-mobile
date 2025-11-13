@@ -15,12 +15,11 @@ export type RootStackParamLists = {
   };
   ReservationPaymentScreen: { reservationFee: string };
   MenuViewingScreen: { category: string };
-  CustomizationScreen: undefined;
+  CustomizationScreen: { order: any };
   OrderHomeScreen: undefined;
   ReservationStatusScreen: { reservationStatus: string };
   OrderStatusScreen: undefined;
   CartScreen: undefined;
-
   // shams testing, ignore niyo lang ito:
   HomeScreenTesting: undefined;
   ReservationScreenTesting: undefined;

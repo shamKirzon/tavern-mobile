@@ -23,9 +23,8 @@ import Appetizer from "../assets/images/appetizer.svg";
 import MainCourse from "../assets/images/main-course.svg";
 import Dessert from "../assets/images/dessert.svg";
 import Drinks from "../assets/images/drinks.svg";
-import Basket from "../assets/images/basket.svg"; // 🟢 Added basket import
+import Basket from "../assets/images/basket.svg";
 
-// 🟢 Import menu data directly
 import { appetizers, mainCourse, desserts, drinks } from "../data/menu";
 
 type OrderHomeScreenNavigationProp = NativeStackNavigationProp<
@@ -43,39 +42,17 @@ interface Props {
   route: OrderHomeScreenRouteProp;
 }
 
-const OrderHomeScreen: React.FC<Props> = ({ navigation }) => {
+const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
   const allDrinks = Object.values(drinks).flat();
   const menuData = [...appetizers, ...mainCourse, ...desserts, ...allDrinks];
 
-  const { isAuthenticated } = useAuthStore();
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [filteredData, setFilteredData] = useState(menuData);
 
-  const positions = useRef({
-    Appetizer: 0,
-    MainCourse: 0,
-    Dessert: 0,
-    Drinks: 0,
-  });
-
   const itemPositions = useRef<{ [key: string]: number }>({});
-
   const scrollViewRef = useRef<ScrollView | null>(null);
-  const onAppetizerLayout = (e: LayoutChangeEvent) => {
-    positions.current.Appetizer = e.nativeEvent.layout.y;
-  };
-  const onMainCourseLayout = (e: LayoutChangeEvent) => {
-    positions.current.MainCourse = e.nativeEvent.layout.y;
-  };
-  const onDessertLayout = (e: LayoutChangeEvent) => {
-    positions.current.Dessert = e.nativeEvent.layout.y;
-  };
-  const onDrinksLayout = (e: LayoutChangeEvent) => {
-    positions.current.Drinks = e.nativeEvent.layout.y;
-  };
 
-  // 🟢 Filtering logic
   const filteredCategories =
     selectedCategory === null
       ? ["Appetizer", "MainCourse", "Dessert", "Drinks"]
@@ -125,8 +102,15 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation }) => {
       if (y !== undefined && scrollViewRef.current) {
         scrollViewRef.current.scrollTo({ y: y + 100, animated: true });
       }
-    }, 300); // slight delay to ensure layout is measured
+    }, 300);
   };
+
+  const handleCustomizeOrder = (order: any) => {
+    console.log("order information: ", order);
+
+    navigation.navigate("CustomizationScreen", { order });
+  };
+
   return (
     <View style={styles.mainContainer}>
       <MainBackground
@@ -140,7 +124,7 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation }) => {
         style={{ width: "100%" }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled" // para maclick muna yung content nang di umaalis sa keyboard
-        contentContainerStyle={{ alignItems: "center", paddingBottom: 100 }} // bottom padding so basket doesn't overlap
+        contentContainerStyle={{ alignItems: "center", paddingBottom: 100 }}
       >
         <View style={styles.content}>
           <Text style={styles.menuTitle}>Welcome to Tavern Asia!</Text>
@@ -267,9 +251,11 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation }) => {
             </TouchableOpacity>
           </View>
           {/* Menu Sections */}
+
+          {/* Appetizer section */}
           {filteredCategories.includes("Appetizer") && (
             <>
-              <View onLayout={onAppetizerLayout}>
+              <View>
                 <Text style={styles.menuTtitle}>Appetizer</Text>
               </View>
               <View style={styles.menuGrid}>
@@ -283,7 +269,10 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation }) => {
                   >
                     <View>
                       <Image source={item.image} style={styles.menuImage} />
-                      <TouchableOpacity style={styles.plusButton}>
+                      <TouchableOpacity
+                        style={styles.plusButton}
+                        onPress={() => handleCustomizeOrder(item)}
+                      >
                         <Text style={styles.plusText}>+</Text>
                       </TouchableOpacity>
                     </View>
@@ -296,9 +285,11 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation }) => {
               </View>
             </>
           )}
+
+          {/* MainCourse section */}
           {filteredCategories.includes("MainCourse") && (
             <>
-              <View onLayout={onMainCourseLayout}>
+              <View>
                 <Text style={styles.menuTtitle}>Main Course</Text>
               </View>
               <View style={styles.menuGrid}>
@@ -312,7 +303,10 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation }) => {
                   >
                     <View>
                       <Image source={item.image} style={styles.menuImage} />
-                      <TouchableOpacity style={styles.plusButton}>
+                      <TouchableOpacity
+                        style={styles.plusButton}
+                        onPress={() => handleCustomizeOrder(item)}
+                      >
                         <Text style={styles.plusText}>+</Text>
                       </TouchableOpacity>
                     </View>
@@ -325,9 +319,11 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation }) => {
               </View>
             </>
           )}
+
+          {/* Dessert section */}
           {filteredCategories.includes("Dessert") && (
             <>
-              <View onLayout={onDessertLayout}>
+              <View>
                 <Text style={styles.menuTtitle}>Dessert</Text>
               </View>
               <View style={styles.menuGrid}>
@@ -341,7 +337,10 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation }) => {
                   >
                     <View>
                       <Image source={item.image} style={styles.menuImage} />
-                      <TouchableOpacity style={styles.plusButton}>
+                      <TouchableOpacity
+                        style={styles.plusButton}
+                        onPress={() => handleCustomizeOrder(item)}
+                      >
                         <Text style={styles.plusText}>+</Text>
                       </TouchableOpacity>
                     </View>
@@ -354,9 +353,11 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation }) => {
               </View>
             </>
           )}
+
+          {/* Drinks  section */}
           {filteredCategories.includes("Drinks") && (
             <>
-              <View onLayout={onDrinksLayout}>
+              <View>
                 <Text style={styles.menuTtitle}>Drinks</Text>
               </View>
               <View style={styles.menuGrid}>
@@ -373,7 +374,10 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation }) => {
                     >
                       <View>
                         <Image source={item.image} style={styles.menuImage} />
-                        <TouchableOpacity style={styles.plusButton}>
+                        <TouchableOpacity
+                          style={styles.plusButton}
+                          onPress={() => handleCustomizeOrder(item)}
+                        >
                           <Text style={styles.plusText}>+</Text>
                         </TouchableOpacity>
                       </View>
