@@ -47,8 +47,8 @@ const PRICE_PER_PAX_EXCLUSIVE = 2000;
 const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
   const [isGuestInvalid, setIsGuestInvalid] = useState(false);
   const { setReservationData, customerReservationData } = useReservationStore();
-  const [firstName, setFirstName] = useState("shammy   kierson ");
-  const [lastName, setLastName] = useState("suyat");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [contactNumber, setContactNumber] = useState("");
   const [guests, setGuests] = useState(1);
   const [reservationType, setReservationType] = useState("Inclusive");
