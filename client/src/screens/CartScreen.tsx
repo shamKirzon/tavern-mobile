@@ -14,6 +14,8 @@ import {
 } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import MainBackground from "../assets/backgrounds/main-background.svg";
+import { useOrderStore } from "../stores/useOrderStore";
+import { appetizers, desserts, drinks, mainCourse } from "../data/menu";
 
 type CartScreenRouteProps = RouteProp<RootStackParamLists, "CartScreen">;
 type CartScreenNavigationProps = NativeStackNavigationProp<
@@ -39,6 +41,7 @@ const HEADER_MIN_HEIGHT = 90;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
 const CartScreen: React.FC<Props> = ({ route, navigation }) => {
+  const { orders, removeOrders } = useOrderStore();
   const scrollY = useRef(new Animated.Value(0)).current;
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
@@ -102,26 +105,16 @@ const CartScreen: React.FC<Props> = ({ route, navigation }) => {
     },
   ]);
 
-  const calculateTotal = () =>
-    cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  // functions:
 
-  const updateQuantity = (itemId: string, newQuantity: number) => {
-    if (newQuantity < 1) return;
-    setCartItems((prev) =>
-      prev.map((item) =>
-        item.id === itemId ? { ...item, quantity: newQuantity } : item
-      )
-    );
-  };
-
-  const removeItem = (itemId: string) => {
-    setItemToDelete(itemId);
+  const removeItem = (orderName: string) => {
+    setItemToDelete(orderName);
     setDeleteModalVisible(true);
   };
 
   const confirmDelete = () => {
     if (itemToDelete) {
-      setCartItems((prev) => prev.filter((item) => item.id !== itemToDelete));
+      removeOrders(itemToDelete);
     }
     setDeleteModalVisible(false);
     setItemToDelete(null);
@@ -132,10 +125,13 @@ const CartScreen: React.FC<Props> = ({ route, navigation }) => {
     setItemToDelete(null);
   };
 
-  const editItem = (itemId: string) =>
-    navigation.navigate("CustomizationScreen", { order: "" });
-  const handleBack = () => navigation.navigate("OrderHomeScreen");
-  const handleAddItems = () => console.log("Navigate to add items");
+  // kunin mo yung order from mapping
+  const editItem = (order: any) => {
+    console.log("order information: ", order);
+    navigation.navigate("CustomizationScreen", { order, from: "CartScreen" });
+  };
+
+  const handleAddItems = () => navigation.goBack();
   const handlePlaceOrder = () => console.log("Place order");
 
   // Animated values
@@ -188,10 +184,13 @@ const CartScreen: React.FC<Props> = ({ route, navigation }) => {
           style={[s.headerDarkOverlay, { opacity: headerBackgroundOpacity }]}
         />
         <View style={s.headerOverlay}>
-          <TouchableOpacity style={s.backButton} onPress={handleBack}>
-            <Text style={s.backArrow}>←</Text>
+          <TouchableOpacity
+            style={s.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={s.backArrow}>‹</Text>
           </TouchableOpacity>
-          <Text style={s.headerTitle}>Menu</Text>
+          <Text style={s.headerTitle}>Cart</Text>
         </View>
       </Animated.View>
 
@@ -208,32 +207,39 @@ const CartScreen: React.FC<Props> = ({ route, navigation }) => {
         <View style={s.contentContainer}>
           <View style={s.orderSummaryHeader}>
             <Text style={s.orderSummaryTitle}>Order Summary</Text>
-            <TouchableOpacity onPress={handleAddItems}>
-              <Text style={s.addItemsText}>Add Items</Text>
-            </TouchableOpacity>
+
+            {orders.orderItems.length > 0 && (
+              <TouchableOpacity onPress={handleAddItems}>
+                <Text style={s.addItemsText}>Add Items</Text>
+              </TouchableOpacity>
+            )}
           </View>
 
-          {cartItems.length === 0 ? (
+          {/* no orders  */}
+          {orders.orderItems.length === 0 ? (
             <View style={s.emptyContainer}>
               <Text style={s.emptyTitle}>Your Basket is Empty</Text>
               <Text style={s.emptySubtitle}>
                 Add some delicious items to get started!
               </Text>
-              <TouchableOpacity style={s.browseButton} onPress={handleAddItems}>
+              <TouchableOpacity
+                style={s.browseButton}
+                onPress={() => navigation.navigate("OrderHomeScreen")}
+              >
                 <Text style={s.browseButtonText}>Browse Menu</Text>
               </TouchableOpacity>
             </View>
           ) : (
             <View style={s.itemsContainer}>
-              {cartItems.map((item) => (
-                <View key={item.id} style={s.cartItem}>
+              {orders.orderItems.map((item: any) => (
+                <View key={item.orderName} style={s.cartItem}>
                   <Image source={item.image} style={s.itemImage} />
                   <View style={s.itemDetails}>
-                    <Text style={s.itemName}>{item.name}</Text>
+                    <Text style={s.itemName}>{item.orderName}</Text>
                     <View style={s.buttonRow}>
                       <TouchableOpacity
                         style={s.editButton}
-                        onPress={() => editItem(item.id)}
+                        onPress={() => editItem(item)}
                       >
                         <Text style={s.buttonText}>Edit</Text>
                       </TouchableOpacity>
@@ -262,7 +268,9 @@ const CartScreen: React.FC<Props> = ({ route, navigation }) => {
         <View style={s.bottomSection}>
           <View style={s.totalContainer}>
             <Text style={s.totalLabel}>Total</Text>
-            <Text style={s.totalAmount}>₱{calculateTotal().toFixed(2)}</Text>
+            <Text style={s.totalAmount}>
+              ₱ {orders.total?.toFixed(2).toLocaleString()}
+            </Text>
           </View>
           <TouchableOpacity
             style={s.placeOrderButton}
@@ -354,7 +362,7 @@ const s = StyleSheet.create({
     paddingHorizontal: 20,
   },
   backButton: { marginRight: 15 },
-  backArrow: { fontSize: 28, color: "#fff", fontFamily: "Poppins" },
+  backArrow: { color: "#FFF", fontSize: 30, fontWeight: "300", lineHeight: 30 },
   headerTitle: {
     fontSize: 24,
     fontWeight: "700",

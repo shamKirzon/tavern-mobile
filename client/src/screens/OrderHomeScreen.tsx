@@ -402,7 +402,10 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
       </ScrollView>
 
       {/* 🟢 Fixed Basket Bar at bottom */}
-      <View style={styles.basketBar}>
+      <TouchableOpacity
+        style={styles.basketBar}
+        onPress={() => navigation.navigate("CartScreen")}
+      >
         <Basket width={28} height={28} style={{ marginRight: 8 }} />
         <Text style={styles.basketText}>Basket</Text>
         <Text style={styles.basketItems}>{orders.orderItems.length} items</Text>
@@ -410,7 +413,7 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
         <Text style={styles.basketPrice}>
           ₱ {orders.total?.toFixed(2).toLocaleString()}
         </Text>
-      </View>
+      </TouchableOpacity>
     </View>
   );
 };
