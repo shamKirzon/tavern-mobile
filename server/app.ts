@@ -6,6 +6,8 @@ import reservationRoutes from "./src/reservation/reservation.routes";
 import orderRoutes from "./src/order/order.route";
 import authRoutes from "./src/auth/auth.routes";
 import rateLimit, { RateLimitRequestHandler } from "express-rate-limit";
+import helmet from "helmet";
+import morgan from "morgan";
 
 const rateLimiter: RateLimitRequestHandler = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -19,6 +21,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(rateLimiter);
+app.use(helmet());
+app.use(morgan("dev"));
 
 app.use("/api/customer", customerRoutes);
 app.use("/api/reservation", reservationRoutes);
