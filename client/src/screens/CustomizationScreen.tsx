@@ -35,7 +35,7 @@ import { ordersData } from "../types/orders";
 
 const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
   const { order, from } = route.params;
-  const { orders, addOrders } = useOrderStore();
+  const { addOrders } = useOrderStore();
 
   const buttonLabel = from === "CartScreen" ? "Update Basket" : "Add to Cart";
   const basePrice = order.price;
@@ -47,7 +47,6 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
   >("Solo");
   const [quantity, setQuantity] = useState(1);
   const [note, setNote] = useState<string>("");
-  const [showRemoveModal, setShowRemoveModal] = useState(false);
 
   const servingOptions = [
     { label: "Solo", price: 0 },
@@ -100,6 +99,8 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
           quantity,
           note,
           price: totalPrice,
+          image: order.image!,
+          description: order.description!,
         },
       ],
     };
@@ -114,15 +115,6 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
 
       return newQty < 1 ? 1 : newQty;
     });
-  };
-  const handleConfirmRemove = () => {
-    setShowRemoveModal(false);
-    // You can add logic here to actually remove the item from basket
-  };
-
-  const handleCancelRemove = () => {
-    setShowRemoveModal(false);
-    setQuantity(1); // reset to 1 if cancelled
   };
 
   return (

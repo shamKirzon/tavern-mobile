@@ -7,7 +7,9 @@ export type ordersData = {
     };
     quantity: number;
     note: string;
+    image: any;
     price: number;
+    description: string[];
   }[];
   total?: number;
 };

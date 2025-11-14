@@ -8,8 +8,6 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { navigationRef } from "./navigationRef";
 import WelcomeScreen from "./src/screens/WelcomeScreen";
-import HomeScreenTesting from "./src/screens/shams-testing/HomeScreenTesting";
-import ReservationScreenTesting from "./src/screens/shams-testing/ReservationScreenTesting";
 import EmailVerificationScreen from "./src/screens/EmailVerificationScreen";
 import OrderPolicyScreen from "./src/screens/OrderPolicyScreen";
 import MenuViewingScreen from "./src/screens/MenuViewingScreen";
@@ -21,7 +19,6 @@ import CartScreen from "./src/screens/CartScreen";
 import { checkToken } from "./src/services/token";
 import { useFonts } from "expo-font";
 import { deleteToken, getToken, getTokenInformation } from "./src/utils/token";
-import OrderScreenTesting from "./src/screens/shams-testing/OrderScreenTesting";
 import ReservationStatusScreen from "./src/screens/ReservationStatusScreen";
 
 const App = () => {
@@ -102,22 +99,6 @@ const App = () => {
           <Stack.Screen
             name="OrderStatusScreen"
             component={OrderStatusScreen}
-          />
-
-          {/* shams testing - ignore niyo lang ito  */}
-
-          <Stack.Screen
-            name="ReservationScreenTesting"
-            component={ReservationScreenTesting}
-          />
-          <Stack.Screen
-            name="HomeScreenTesting"
-            component={HomeScreenTesting}
-          />
-
-          <Stack.Screen
-            name="OrderScreenTesting"
-            component={OrderScreenTesting}
           />
         </Stack.Navigator>
       </NavigationContainer>
