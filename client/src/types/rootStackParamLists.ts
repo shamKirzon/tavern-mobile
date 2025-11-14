@@ -20,8 +20,4 @@ export type RootStackParamLists = {
   ReservationStatusScreen: { reservationStatus: string };
   OrderStatusScreen: undefined;
   CartScreen: undefined;
-  // shams testing, ignore niyo lang ito:
-  HomeScreenTesting: undefined;
-  ReservationScreenTesting: undefined;
-  OrderScreenTesting: undefined;
 };
