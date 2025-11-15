@@ -15,6 +15,8 @@ class ReservationRepository {
         date,
         pax,
         reservationAmount,
+        paymentReferenceNumber,
+        paymentAmount,
       } = reservationData;
 
       const customerId = await supabase
@@ -37,6 +39,8 @@ class ReservationRepository {
             pax,
             reservation_amount: reservationAmount,
             customer_id: customerId.data?.customer_id,
+            payment_reference_number: paymentReferenceNumber!,
+            payment_amount: paymentAmount!,
           },
         ])
         .select()
