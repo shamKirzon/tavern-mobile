@@ -25,7 +25,7 @@ export const useOrderStore = create<orderStore>((set) => ({
         orderItems: state.orders.orderItems.filter((o) => o.orderName !== name),
         total: state.orders.orderItems
           .filter((o) => o.orderName !== name)
-          .reduce((sum, item) => sum + item.price, 0),
+          .reduce((sum, item) => sum + item.total, 0),
       },
     })),
 

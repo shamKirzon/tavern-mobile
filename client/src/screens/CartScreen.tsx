@@ -180,7 +180,7 @@ const CartScreen: React.FC<Props> = ({ route, navigation }) => {
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={s.deleteButton}
-                        onPress={() => removeItem(item.id)}
+                        onPress={() => removeItem(item.orderName)}
                       >
                         <Text style={s.buttonText}>🗑</Text>
                       </TouchableOpacity>
