@@ -5,6 +5,7 @@ import { getEmailByToken } from "./token";
 import { updateToken } from "./token";
 
 export const createReservation = async (data: ReservationData) => {
+  console.log("*********API*******", data);
   try {
     const res = await axiosInstance.post("/reservation/create-reservation", {
       data,

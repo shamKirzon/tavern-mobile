@@ -197,10 +197,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
     });
   };
 
-  useEffect(() => {
-    console.log("CURRENT INFORMATION: ", customerReservationData);
-  }, [customerReservationData]);
-
   const handleSelectReservationType = (type: string) => {
     setReservationType(type);
     setShowDropdown(false);

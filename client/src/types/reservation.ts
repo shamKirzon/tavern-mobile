@@ -9,6 +9,8 @@ export type ReservationData = {
   date?: Date;
   pax?: number;
   reservationAmount?: number;
+  paymentReferenceNumber?: string;
+  paymentAmount?: number;
 };
 
 export type ReservationImageType = "validId" | "payment";
