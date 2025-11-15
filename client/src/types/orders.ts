@@ -10,6 +10,7 @@ export type ordersData = {
     image: any;
     price: number;
     description: string[];
+    total: number;
   }[];
   total?: number;
 };
@@ -17,8 +18,8 @@ export type ordersData = {
 export interface orderStore {
   orders: ordersData;
   addOrders: (data: Partial<ordersData>) => void;
-  removeOrders: (name: string) => void;
-  updateOrders: (
+  removeOrders: (id: string) => void; // remove by unique id
+  updateOrder: (
     name: string,
     updatedData: Partial<ordersData["orderItems"][number]>
   ) => void;

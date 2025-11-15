@@ -6,16 +6,19 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
-  Modal,
 } from "react-native";
 import MainBackground from "../assets/backgrounds/main-background.svg";
-import { getActionFromState, RouteProp } from "@react-navigation/native";
+import { RouteProp } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamLists } from "../types/rootStackParamLists";
-import { height, width } from "../utils/dimensions";
 
-type CustomizationScreenScreenRouteProps = RouteProp<
+import { appetizers, mainCourse, desserts, drinks } from "../data/menu";
+import { useOrderStore } from "../stores/useOrderStore";
+import { ordersData } from "../types/orders";
+import { width } from "../utils/dimensions";
+
+type CustomizationScreenRouteProps = RouteProp<
   RootStackParamLists,
   "CustomizationScreen"
 >;
@@ -24,102 +27,118 @@ type CustomizationScreenNavigationProps = NativeStackNavigationProp<
   "CustomizationScreen"
 >;
 
+type Servings = "Solo" | "Regular" | "To Share";
+
 interface Props {
-  route: CustomizationScreenScreenRouteProps;
+  route: CustomizationScreenRouteProps;
   navigation: CustomizationScreenNavigationProps;
 }
 
-import { appetizers, mainCourse, desserts, drinks } from "../data/menu";
-import { useOrderStore } from "../stores/useOrderStore";
-import { ordersData } from "../types/orders";
-
 const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
   const { order, from } = route.params;
-  const { addOrders } = useOrderStore();
+  const { addOrders, updateOrder } = useOrderStore();
 
+  const orderName = order.name || order.orderName;
   const buttonLabel = from === "CartScreen" ? "Update Basket" : "Add to Cart";
-  const basePrice = order.price;
-  let description = order.description.join(", ");
-  description = description.charAt(0).toUpperCase() + description.slice(1);
 
-  const [selectedServing, setSelectedServing] = useState<
-    "Solo" | "Regular" | "To share"
-  >("Solo");
-  const [quantity, setQuantity] = useState(1);
-  const [note, setNote] = useState<string>("");
-
+  // Initialize state with previous order info
+  const [selectedServing, setSelectedServing] = useState<Servings>(
+    order.serving?.servingSize
+      ? (capitalize(order.serving.servingSize) as Servings)
+      : "Solo"
+  );
+  const [quantity, setQuantity] = useState(order.quantity || 1);
+  const [note, setNote] = useState(order.note || "");
+  const [computedPrice, setComputedPrice] = useState(order.price);
+  const [totalPrice, setTotalPrice] = useState(
+    order.total || order.price * (order.quantity || 1)
+  );
   const servingOptions = [
     { label: "Solo", price: 0 },
     { label: "Regular", price: 350 },
-    { label: "To share", price: 680 },
+    { label: "To Share", price: 680 },
   ];
 
-  const totalPrice = (basePrice + getSelectedPrice()) * quantity;
   const category = getCategory(order);
 
-  //functions:
+  // Recompute total only if quantity or serving changes
+  useEffect(() => {
+    const servingPrice =
+      servingOptions.find((s) => s.label === selectedServing)?.price || 0;
+    const newTotal = (computedPrice + servingPrice) * quantity;
+    setTotalPrice(newTotal);
+  }, [quantity, selectedServing]);
+
+  // Functions
   function getCategory(result: any) {
-    if (appetizers.find((item) => item.name === result.name))
+    if (
+      appetizers.find((item) => item.name === (result.name || result.orderName))
+    )
       return "Appetizer";
-    if (mainCourse.find((item) => item.name === result.name))
+    if (
+      mainCourse.find((item) => item.name === (result.name || result.orderName))
+    )
       return "MainCourse";
-    if (desserts.find((item) => item.name === result.name)) return "Dessert";
+    if (
+      desserts.find((item) => item.name === (result.name || result.orderName))
+    )
+      return "Dessert";
     if (
       Object.values(drinks)
         .flat()
-        .find((item) => item.name === result.name)
+        .find((item) => item.name === (result.name || result.orderName))
     )
       return "Drinks";
-
-    return null; // not found
+    return null;
   }
-  function getSelectedPrice() {
-    const selected = servingOptions.find((s) => s.label === selectedServing);
-    return selected ? selected.price : 0;
+
+  function capitalize(str: string) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
   }
 
   const handleOrderAction = () => {
-    const orderData: ordersData = {
-      orderItems: [
-        {
-          orderName: order.name,
-          ...(category === "Appetizer" || category === "MainCourse"
-            ? {
-                serving: {
-                  servingSize: selectedServing.toLowerCase() as
-                    | "solo"
-                    | "regular"
-                    | "to share",
-                  servingPrice: servingOptions.find(
-                    (serving) => serving.label === selectedServing
-                  )!.price, // ! asserts that price exists
-                },
-              }
-            : {}),
-          quantity,
-          note,
-          price: totalPrice,
-          image: order.image!,
-          description: order.description!,
-        },
-      ],
+    const servingPrice =
+      servingOptions.find((s) => s.label === selectedServing)?.price || 0;
+
+    const newOrderItem = {
+      orderName: order.name || order.orderName,
+      serving:
+        category === "Appetizer" || category === "MainCourse"
+          ? {
+              servingSize: selectedServing.toLowerCase() as
+                | "solo"
+                | "regular"
+                | "to share",
+              servingPrice,
+            }
+          : undefined,
+      quantity,
+      note,
+      price: computedPrice,
+      total: (computedPrice + servingPrice) * quantity,
+      image: order.image!,
+      description: order.description!,
     };
 
-    addOrders(orderData);
+    if (from === "CartScreen") {
+      console.log("ito ang aking order name: ", orderName);
+      updateOrder(orderName, newOrderItem);
+    } else {
+      addOrders({ orderItems: [newOrderItem] });
+    }
+
     navigation.goBack();
   };
 
   const handleQuantityChange = (change: number) => {
-    setQuantity((prev) => {
-      const newQty = prev + change;
-
-      return newQty < 1 ? 1 : newQty;
-    });
+    setQuantity((prev: any) => Math.max(1, prev + change));
   };
+
+  let description = order.description?.join(", ") || "";
+  description = description.charAt(0).toUpperCase() + description.slice(1);
 
   return (
     <View style={styles.container}>
-      {/* ✅ Proper SVG background */}
       <MainBackground
         width="100%"
         height="100%"
@@ -129,87 +148,60 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
 
       <KeyboardAwareScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          marginTop: width * 0.1,
-          paddingBottom: 100,
-        }}
+        contentContainerStyle={{ marginTop: 60, paddingBottom: 100 }}
         keyboardShouldPersistTaps="handled"
-        enableOnAndroid={true}
+        enableOnAndroid
         extraScrollHeight={20}
       >
-        {/* ===== HEADER WITH BACK BUTTON ===== */}
+        {/* HEADER */}
         <View
           style={{
             flexDirection: "row",
             alignItems: "center",
-            marginBottom: height * 0.008,
+            marginBottom: 10,
             paddingHorizontal: 20,
           }}
         >
           <TouchableOpacity
             onPress={() => navigation.goBack()}
-            style={{ marginRight: width * 0.03, padding: 5 }}
+            style={{ marginRight: 10, padding: 5 }}
           >
-            <Text
-              style={{
-                color: "#FFF",
-                fontSize: 30,
-                fontWeight: "300",
-                lineHeight: 30,
-              }}
-            >
-              ‹
-            </Text>
+            <Text style={{ color: "#FFF", fontSize: 30 }}>‹</Text>
           </TouchableOpacity>
-          <Text
-            style={{
-              color: "#FFF",
-              fontSize: width * 0.06,
-              fontWeight: "700",
-              fontFamily: "Poppins",
-            }}
-          >
+          <Text style={{ color: "#FFF", fontSize: 24, fontWeight: "700" }}>
             Menu
           </Text>
         </View>
 
-        {/* Food Image */}
+        {/* FOOD IMAGE */}
         <View style={{ alignItems: "center" }}>
           <Image source={order.image} style={styles.image} resizeMode="cover" />
         </View>
 
-        {/* Content Area */}
+        {/* CONTENT */}
         <View style={styles.overlayContainer}>
-          {/* Title and Price */}
+          {/* Title and Base Price */}
           <View style={styles.rowBetween}>
-            <Text style={styles.title}>{order.name}</Text>
+            <Text style={styles.title}>{order.name || order.orderName}</Text>
             <View style={{ alignItems: "flex-end" }}>
-              <Text style={styles.price}>₱{basePrice.toFixed(2)}</Text>
+              <Text style={styles.price}>₱{computedPrice.toFixed(2)}</Text>
               <Text style={styles.basePriceLabel}>Base price</Text>
             </View>
           </View>
 
           <Text style={styles.description}>{description}</Text>
-
-          {/* Horizontal line */}
           <View style={styles.divider} />
 
+          {/* Servings */}
           {category !== "Dessert" && category !== "Drinks" && (
             <>
-              {/* Servings Section */}
               <View style={styles.section}>
                 <View style={styles.rowBetween}>
-                  <Text style={styles.sectionTitle}>
-                    Chili Ballpark Nachos Servings
-                  </Text>
-                  <View style={styles.pickContainer}>
-                    <Text style={styles.pickText}>Pick 1</Text>
-                  </View>
+                  <Text style={styles.sectionTitle}>Servings</Text>
                 </View>
 
                 {servingOptions.map((option) => (
                   <View style={styles.radioRow} key={option.label}>
-                    {/* Left side (radio + label) */}
                     <View style={styles.radioContainer}>
                       <TouchableOpacity
                         onPress={() => setSelectedServing(option.label as any)}
@@ -226,11 +218,8 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
                           )}
                         </View>
                       </TouchableOpacity>
-
                       <Text style={styles.radioLabel}>{option.label}</Text>
                     </View>
-
-                    {/* Right side (price) */}
                     <Text style={styles.radioPrice}>
                       {option.price === 0
                         ? "0.00"
@@ -239,20 +228,15 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
                   </View>
                 ))}
               </View>
-              {/* Horizontal line */}
               <View style={styles.divider} />
             </>
           )}
 
-          {/* Note to restaurant */}
+          {/* Note */}
           <View style={styles.section}>
             <View style={styles.rowBetween}>
               <Text style={styles.sectionTitle}>Note to restaurant</Text>
-              <View style={styles.pickContainer}>
-                <Text style={styles.pickText}>Optional</Text>
-              </View>
             </View>
-
             <TextInput
               style={[
                 styles.textInput,
@@ -261,25 +245,23 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
                 },
               ]}
               value={note}
-              placeholder="Specify any additional requests or preferences"
+              placeholder="Specify any additional requests"
               placeholderTextColor="#999"
               multiline
-              onChangeText={(value) => setNote(value)}
+              onChangeText={setNote}
             />
           </View>
 
-          {/* Quantity Selector */}
+          {/* Quantity */}
           <View style={styles.quantityContainer}>
             <TouchableOpacity
               onPress={() => handleQuantityChange(-1)}
-              disabled={quantity == 1}
-              style={[styles.qtyButton, quantity == 1 && { opacity: 0.3 }]}
+              disabled={quantity === 1}
+              style={[styles.qtyButton, quantity === 1 && { opacity: 0.3 }]}
             >
               <Text style={styles.qtySymbol}>−</Text>
             </TouchableOpacity>
-
             <Text style={styles.qtyText}>{quantity}</Text>
-
             <TouchableOpacity
               onPress={() => handleQuantityChange(1)}
               style={styles.qtyButton}
@@ -288,15 +270,10 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
             </TouchableOpacity>
           </View>
 
-          {/* Update Basket Button */}
+          {/* Update Button */}
           <TouchableOpacity
-            style={[
-              styles.updateButton,
-              (category === "Dessert" || category === "Drinks") && {
-                marginTop: 100,
-              },
-            ]}
-            onPress={() => handleOrderAction()}
+            style={styles.updateButton}
+            onPress={handleOrderAction}
           >
             <Text style={styles.updateButtonText}>
               {buttonLabel} - ₱{totalPrice.toFixed(2)}
@@ -309,6 +286,8 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
 };
 
 export default CustomizationScreen;
+
+// styles remain the same (you can reuse your original styles)
 
 const styles = StyleSheet.create({
   container: {

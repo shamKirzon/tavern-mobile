@@ -15,7 +15,6 @@ import {
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import MainBackground from "../assets/backgrounds/main-background.svg";
 import { useOrderStore } from "../stores/useOrderStore";
-import { appetizers, desserts, drinks, mainCourse } from "../data/menu";
 
 type CartScreenRouteProps = RouteProp<RootStackParamLists, "CartScreen">;
 type CartScreenNavigationProps = NativeStackNavigationProp<
@@ -28,14 +27,6 @@ interface Props {
   navigation: CartScreenNavigationProps;
 }
 
-interface CartItem {
-  id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  image: any;
-}
-
 const HEADER_MAX_HEIGHT = height * 0.25;
 const HEADER_MIN_HEIGHT = 90;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
@@ -45,65 +36,6 @@ const CartScreen: React.FC<Props> = ({ route, navigation }) => {
   const scrollY = useRef(new Animated.Value(0)).current;
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
-
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: "1",
-      name: "Tav Special Pork Sisig",
-      price: 3845.0,
-      quantity: 1,
-      image: require("../assets/images/maincourse/pork-sisig.jpg"),
-    },
-    {
-      id: "2",
-      name: "Tav Chicken Fingers Platter",
-      price: 2202.0,
-      quantity: 1,
-      image: require("../assets/images/maincourse/fried-chicken.jpg"),
-    },
-    {
-      id: "3",
-      name: "Chili Ballpark Nachos",
-      price: 305.0,
-      quantity: 1,
-      image: require("../assets/images/appetizer/nachos-con-queso.jpg"),
-    },
-    {
-      id: "4",
-      name: "Crispy Bagnet",
-      price: 450.0,
-      quantity: 2,
-      image: require("../assets/images/appetizer/crispy-bagnet.jpg"),
-    },
-    {
-      id: "5",
-      name: "Beef Potato",
-      price: 520.0,
-      quantity: 1,
-      image: require("../assets/images/maincourse/beef-potato.jpg"),
-    },
-    {
-      id: "6",
-      name: "Bulgogi Beef",
-      price: 680.0,
-      quantity: 1,
-      image: require("../assets/images/maincourse/bulgogi-beef.jpg"),
-    },
-    {
-      id: "7",
-      name: "Creamy Bangus",
-      price: 395.0,
-      quantity: 2,
-      image: require("../assets/images/maincourse/creamy-bangus.jpg"),
-    },
-    {
-      id: "8",
-      name: "Peppery Squid",
-      price: 420.0,
-      quantity: 1,
-      image: require("../assets/images/appetizer/peppery-squid.jpg"),
-    },
-  ]);
 
   // functions:
 
@@ -128,7 +60,10 @@ const CartScreen: React.FC<Props> = ({ route, navigation }) => {
   // kunin mo yung order from mapping
   const editItem = (order: any) => {
     console.log("order information: ", order);
-    navigation.navigate("CustomizationScreen", { order, from: "CartScreen" });
+    navigation.navigate("CustomizationScreen", {
+      order,
+      from: "CartScreen",
+    });
   };
 
   const handleAddItems = () => navigation.goBack();
@@ -231,8 +166,8 @@ const CartScreen: React.FC<Props> = ({ route, navigation }) => {
             </View>
           ) : (
             <View style={s.itemsContainer}>
-              {orders.orderItems.map((item: any) => (
-                <View key={item.orderName} style={s.cartItem}>
+              {orders.orderItems.map((item: any, index) => (
+                <View key={`${item.orderName}-${index}`} style={s.cartItem}>
                   <Image source={item.image} style={s.itemImage} />
                   <View style={s.itemDetails}>
                     <Text style={s.itemName}>{item.orderName}</Text>
@@ -252,7 +187,7 @@ const CartScreen: React.FC<Props> = ({ route, navigation }) => {
                     </View>
                   </View>
                   <View style={s.itemActions}>
-                    <Text style={s.itemPrice}>₱{item.price.toFixed(2)}</Text>
+                    <Text style={s.itemPrice}>₱{item.total.toFixed(2)}</Text>
                     <View style={s.quantityBadge}>
                       <Text style={s.quantityText}>{item.quantity}</Text>
                     </View>
@@ -264,7 +199,7 @@ const CartScreen: React.FC<Props> = ({ route, navigation }) => {
         </View>
       </Animated.ScrollView>
 
-      {cartItems.length > 0 && (
+      {orders.orderItems.length > 0 && (
         <View style={s.bottomSection}>
           <View style={s.totalContainer}>
             <Text style={s.totalLabel}>Total</Text>

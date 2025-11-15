@@ -113,6 +113,7 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   const handleCustomizeOrder = (order: any) => {
+    console.log("orderhomescreen/handleCustomerOrder: ", order);
     navigation.navigate("CustomizationScreen", {
       order,
       from: "OrderHomeScreen",
