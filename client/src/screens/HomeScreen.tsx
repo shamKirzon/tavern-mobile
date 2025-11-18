@@ -29,6 +29,7 @@ import {
 import Loading from "./ui/Loading";
 import { useReservationStore } from "../stores/useReservationStore";
 import { useOrderStore } from "../stores/useOrderStore";
+import { ReservationStatus } from "../types/reservation";
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamLists,
@@ -56,9 +57,8 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [showToaster, setShowToaster] = useState(false);
   const [isLoading, setIsLoadings] = useState<boolean>(false);
 
-  const [reservationStatus, setReservationStatus] = useState<
-    "none" | "pending" | "accepted" | "rejected" | "done"
-  >("none");
+  const [reservationStatus, setReservationStatus] =
+    useState<ReservationStatus>("none");
 
   // done = orderstatusScreen
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -83,7 +83,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     }
   }, [showToaster]);
 
-  // email verified toggle
+  // email verified toggle"
   useEffect(() => {
     if (showEmailVerifiedToggle) {
       setShowToaster(true);
@@ -130,12 +130,10 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleStatus = async () => {
     if (hasEmail && hasReservation && hasOrder) {
-      return undefined;
+      setReservationStatus("done");
     } else if (hasEmail && hasReservation) {
       try {
-        // just for the example:
         setIsLoadings(true);
-        console.log("HANDLESTATUS TRIGGERS");
         const res = await getReservationStatus(hasReservation);
         if (!res) return;
 
@@ -155,9 +153,13 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleViewStatus = async () => {
     if (!hasReservation) return;
-    navigation.navigate("ReservationStatusScreen", { reservationStatus });
-  };
 
+    if (hasOrder) {
+      navigation.navigate("OrderStatusScreen");
+    } else if (hasReservation) {
+      navigation.navigate("ReservationStatusScreen", { reservationStatus });
+    }
+  };
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
 
@@ -258,7 +260,6 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
           </Text>
         );
       case "done":
-        // pag meron ka nang order id
         return (
           <Text style={[styles.label, { backgroundColor: "#C6A300" }]}>
             Review Order Summary.

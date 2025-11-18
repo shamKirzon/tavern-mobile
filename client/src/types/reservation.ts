@@ -22,3 +22,10 @@ export interface ReservationStore {
   setReservationData: (data: Partial<ReservationData>) => void;
   clearReservationData: () => void;
 }
+
+export type ReservationStatus =
+  | "none"
+  | "pending"
+  | "accepted"
+  | "rejected"
+  | "done";

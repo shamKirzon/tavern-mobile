@@ -15,6 +15,8 @@ import {
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import MainBackground from "../assets/backgrounds/main-background.svg";
 import { useOrderStore } from "../stores/useOrderStore";
+import { createOrder } from "../services/order";
+import Loading from "./ui/Loading";
 
 type CartScreenRouteProps = RouteProp<RootStackParamLists, "CartScreen">;
 type CartScreenNavigationProps = NativeStackNavigationProp<
@@ -36,6 +38,7 @@ const CartScreen: React.FC<Props> = ({ route, navigation }) => {
 
   const scrollY = useRef(new Animated.Value(0)).current;
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 
   const numericSpendLimit = Number(spendLimit.replace(/,/g, ""));
@@ -62,14 +65,11 @@ const CartScreen: React.FC<Props> = ({ route, navigation }) => {
   };
 
   const editItem = (order: any) => {
-    console.log("order information: ", order);
     navigation.navigate("CustomizationScreen", {
       order,
       from: "CartScreen",
     });
   };
-
-  // Please add additional items to reach the minimum spend of ₱{variable}.
 
   const getSpendStatusMessage = (): React.JSX.Element | null => {
     if (!orders.total) return null;
@@ -117,7 +117,18 @@ const CartScreen: React.FC<Props> = ({ route, navigation }) => {
     );
   };
   const handleAddItems = () => navigation.goBack();
-  const handlePlaceOrder = () => console.log("Place order");
+
+  const handlePlaceOrder = async () => {
+    try {
+      setIsLoading(true);
+      const res = await createOrder(orders);
+      if (!res) return;
+      navigation.navigate("HomeScreen");
+    } catch (error) {
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Animated values
   const headerHeight = scrollY.interpolate({
@@ -145,163 +156,166 @@ const CartScreen: React.FC<Props> = ({ route, navigation }) => {
   });
 
   return (
-    <View style={s.container}>
-      <MainBackground width={width} height={height} style={s.background} />
+    <>
+      {isLoading && Loading("Placing Your Orders...")}
+      <View style={s.container}>
+        <MainBackground width={width} height={height} style={s.background} />
 
-      {/* Animated Header */}
-      <Animated.View style={[s.animatedHeader, { height: headerHeight }]}>
-        <Animated.View
-          style={[
-            s.headerImageContainer,
-            {
-              opacity: imageOpacity,
-              transform: [{ translateY: imageTranslate }],
-            },
-          ]}
-        >
-          <Image
-            source={require("../assets/images/tavernasia-bg.jpg")}
-            style={s.headerImage}
-            resizeMode="cover"
-          />
-        </Animated.View>
-        <Animated.View
-          style={[s.headerDarkOverlay, { opacity: headerBackgroundOpacity }]}
-        />
-        <View style={s.headerOverlay}>
-          <TouchableOpacity
-            style={s.backButton}
-            onPress={() => navigation.goBack()}
+        {/* Animated Header */}
+        <Animated.View style={[s.animatedHeader, { height: headerHeight }]}>
+          <Animated.View
+            style={[
+              s.headerImageContainer,
+              {
+                opacity: imageOpacity,
+                transform: [{ translateY: imageTranslate }],
+              },
+            ]}
           >
-            <Text style={s.backArrow}>‹</Text>
-          </TouchableOpacity>
-          <Text style={s.headerTitle}>Cart</Text>
-        </View>
-      </Animated.View>
+            <Image
+              source={require("../assets/images/tavernasia-bg.jpg")}
+              style={s.headerImage}
+              resizeMode="cover"
+            />
+          </Animated.View>
+          <Animated.View
+            style={[s.headerDarkOverlay, { opacity: headerBackgroundOpacity }]}
+          />
+          <View style={s.headerOverlay}>
+            <TouchableOpacity
+              style={s.backButton}
+              onPress={() => navigation.goBack()}
+            >
+              <Text style={s.backArrow}>‹</Text>
+            </TouchableOpacity>
+            <Text style={s.headerTitle}>Cart</Text>
+          </View>
+        </Animated.View>
 
-      <Animated.ScrollView
-        style={s.scrollContainer}
-        showsVerticalScrollIndicator={false}
-        scrollEventThrottle={16}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: false }
-        )}
-        contentContainerStyle={{ paddingTop: HEADER_MAX_HEIGHT }}
-      >
-        <View style={s.contentContainer}>
-          <View style={s.orderSummaryHeader}>
-            <Text style={s.orderSummaryTitle}>Order Summary</Text>
+        <Animated.ScrollView
+          style={s.scrollContainer}
+          showsVerticalScrollIndicator={false}
+          scrollEventThrottle={16}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: false }
+          )}
+          contentContainerStyle={{ paddingTop: HEADER_MAX_HEIGHT }}
+        >
+          <View style={s.contentContainer}>
+            <View style={s.orderSummaryHeader}>
+              <Text style={s.orderSummaryTitle}>Order Summary</Text>
 
-            {orders.orderItems.length > 0 && (
-              <TouchableOpacity onPress={handleAddItems}>
-                <Text style={s.addItemsText}>Add Items</Text>
-              </TouchableOpacity>
+              {orders.orderItems.length > 0 && (
+                <TouchableOpacity onPress={handleAddItems}>
+                  <Text style={s.addItemsText}>Add Items</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+
+            {/* no orders  */}
+            {orders.orderItems.length === 0 ? (
+              <View style={s.emptyContainer}>
+                <Text style={s.emptyTitle}>Your Basket is Empty</Text>
+                <Text style={s.emptySubtitle}>
+                  Add some delicious items to get started!
+                </Text>
+                <TouchableOpacity
+                  style={s.browseButton}
+                  onPress={() => navigation.navigate("OrderHomeScreen")}
+                >
+                  <Text style={s.browseButtonText}>Browse Menu</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={s.itemsContainer}>
+                {orders.orderItems.map((item: any, index) => (
+                  <View key={`${item.orderName}-${index}`} style={s.cartItem}>
+                    <Image source={item.image} style={s.itemImage} />
+                    <View style={s.itemDetails}>
+                      <Text style={s.itemName}>{item.orderName}</Text>
+                      <View style={s.buttonRow}>
+                        <TouchableOpacity
+                          style={s.editButton}
+                          onPress={() => editItem(item)}
+                        >
+                          <Text style={s.buttonText}>Edit</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={s.deleteButton}
+                          onPress={() => removeItem(item.orderName)}
+                        >
+                          <Text style={s.buttonText}>🗑</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                    <View style={s.itemActions}>
+                      <Text style={s.itemPrice}>₱{item.total.toFixed(2)}</Text>
+                      <View style={s.quantityBadge}>
+                        <Text style={s.quantityText}>{item.quantity}</Text>
+                      </View>
+                    </View>
+                  </View>
+                ))}
+              </View>
             )}
           </View>
+        </Animated.ScrollView>
 
-          {/* no orders  */}
-          {orders.orderItems.length === 0 ? (
-            <View style={s.emptyContainer}>
-              <Text style={s.emptyTitle}>Your Basket is Empty</Text>
-              <Text style={s.emptySubtitle}>
-                Add some delicious items to get started!
+        {orders.orderItems.length > 0 && (
+          <View style={s.bottomSection}>
+            <View style={s.totalContainer}>
+              <Text style={s.totalLabel}>Total</Text>
+              <Text style={s.totalAmount}>
+                ₱ {orders.total?.toFixed(2).toLocaleString()}
               </Text>
-              <TouchableOpacity
-                style={s.browseButton}
-                onPress={() => navigation.navigate("OrderHomeScreen")}
-              >
-                <Text style={s.browseButtonText}>Browse Menu</Text>
-              </TouchableOpacity>
             </View>
-          ) : (
-            <View style={s.itemsContainer}>
-              {orders.orderItems.map((item: any, index) => (
-                <View key={`${item.orderName}-${index}`} style={s.cartItem}>
-                  <Image source={item.image} style={s.itemImage} />
-                  <View style={s.itemDetails}>
-                    <Text style={s.itemName}>{item.orderName}</Text>
-                    <View style={s.buttonRow}>
-                      <TouchableOpacity
-                        style={s.editButton}
-                        onPress={() => editItem(item)}
-                      >
-                        <Text style={s.buttonText}>Edit</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        style={s.deleteButton}
-                        onPress={() => removeItem(item.orderName)}
-                      >
-                        <Text style={s.buttonText}>🗑</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                  <View style={s.itemActions}>
-                    <Text style={s.itemPrice}>₱{item.total.toFixed(2)}</Text>
-                    <View style={s.quantityBadge}>
-                      <Text style={s.quantityText}>{item.quantity}</Text>
-                    </View>
-                  </View>
-                </View>
-              ))}
-            </View>
-          )}
-        </View>
-      </Animated.ScrollView>
-
-      {orders.orderItems.length > 0 && (
-        <View style={s.bottomSection}>
-          <View style={s.totalContainer}>
-            <Text style={s.totalLabel}>Total</Text>
-            <Text style={s.totalAmount}>
-              ₱ {orders.total?.toFixed(2).toLocaleString()}
-            </Text>
+            <TouchableOpacity
+              style={[
+                s.placeOrderButton,
+                isTotalLessThanSpendLimit && { opacity: 0.3 },
+              ]}
+              onPress={handlePlaceOrder}
+              disabled={isTotalLessThanSpendLimit}
+            >
+              <Text style={s.placeOrderText}>Place Order</Text>
+            </TouchableOpacity>
+            {getSpendStatusMessage()}
           </View>
-          <TouchableOpacity
-            style={[
-              s.placeOrderButton,
-              isTotalLessThanSpendLimit && { opacity: 0.3 },
-            ]}
-            onPress={handlePlaceOrder}
-            disabled={isTotalLessThanSpendLimit}
-          >
-            <Text style={s.placeOrderText}>Place Order</Text>
-          </TouchableOpacity>
-          {getSpendStatusMessage()}
-        </View>
-      )}
+        )}
 
-      {/* Custom Delete Modal */}
-      <Modal
-        visible={deleteModalVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={cancelDelete}
-      >
-        <View style={s.modalOverlay}>
-          <View style={s.modalContainer}>
-            <Text style={s.modalTitle}>Remove Item</Text>
-            <Text style={s.modalMessage}>
-              Are you sure you want to remove this item from your basket?
-            </Text>
-            <View style={s.modalButtons}>
-              <TouchableOpacity
-                style={s.modalButtonCancel}
-                onPress={cancelDelete}
-              >
-                <Text style={s.modalButtonCancelText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={s.modalButtonRemove}
-                onPress={confirmDelete}
-              >
-                <Text style={s.modalButtonRemoveText}>Remove</Text>
-              </TouchableOpacity>
+        {/* Custom Delete Modal */}
+        <Modal
+          visible={deleteModalVisible}
+          transparent
+          animationType="fade"
+          onRequestClose={cancelDelete}
+        >
+          <View style={s.modalOverlay}>
+            <View style={s.modalContainer}>
+              <Text style={s.modalTitle}>Remove Item</Text>
+              <Text style={s.modalMessage}>
+                Are you sure you want to remove this item from your basket?
+              </Text>
+              <View style={s.modalButtons}>
+                <TouchableOpacity
+                  style={s.modalButtonCancel}
+                  onPress={cancelDelete}
+                >
+                  <Text style={s.modalButtonCancelText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={s.modalButtonRemove}
+                  onPress={confirmDelete}
+                >
+                  <Text style={s.modalButtonRemoveText}>Remove</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
-    </View>
+        </Modal>
+      </View>
+    </>
   );
 };
 

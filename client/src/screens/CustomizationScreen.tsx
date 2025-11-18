@@ -36,7 +36,7 @@ interface Props {
 
 const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
   const { order, from } = route.params;
-  const { addOrders, updateOrder } = useOrderStore();
+  const { addOrders, updateOrder, orders } = useOrderStore();
 
   const orderName = order.name || order.orderName;
   const buttonLabel = from === "CartScreen" ? "Update Basket" : "Add to Cart";
@@ -70,6 +70,7 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
   }, [quantity, selectedServing]);
 
   // Functions
+
   function getCategory(result: any) {
     if (
       appetizers.find((item) => item.name === (result.name || result.orderName))
@@ -124,7 +125,6 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
     };
 
     if (from === "CartScreen") {
-      console.log("ito ang aking order name: ", orderName);
       updateOrder(orderName, newOrderItem);
     } else {
       addOrders({ orderItems: [newOrderItem] });

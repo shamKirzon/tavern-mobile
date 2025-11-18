@@ -5,6 +5,7 @@ import { getEmailByToken } from "./token";
 
 export const createOrder = async (order: ordersData) => {
   try {
+    console.log("from create order: ", order);
     const email = await getEmailByToken();
     const reservationId = await getReservationIdByToken();
     const res = await axiosInstance.post("/order/create-order", {
@@ -14,8 +15,9 @@ export const createOrder = async (order: ordersData) => {
     });
     if (!res) return console.error("can't create a reservation");
 
-    console.log("order.ts/createOrder: res from be: ", res.data.orderId);
     await updateToken({ orderId: res.data.orderId });
+
+    return res.data.orderId;
   } catch (error) {
     console.error("services/orders/error in createOrder() Error: ", error);
   }
@@ -23,10 +25,11 @@ export const createOrder = async (order: ordersData) => {
 
 export const getOrderData = async (orderId: string) => {
   try {
-    const res = await axiosInstance.get("/order/get-order-data/${orderId}");
+    const res = await axiosInstance.get(`/order/get-order-data/${orderId}`);
     if (!res) return console.error("can't create a reservation");
 
-    console.info("orders data: ", res);
+    console.log("MY DATA FROM BACKEND: ", res.data.result);
+    return res.data.result;
   } catch (error) {
     console.error("services/orders/getOrderData() Error:", error);
   }

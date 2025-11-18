@@ -77,11 +77,16 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   // testing part:
-  useEffect(() => {
-    console.info("updated orders", orders);
-  }, [orders]);
+  // useEffect(() => {
+  //   console.info("updated orders", orders);
+  // }, [orders]);
 
   // functions:
+
+  function isOrderExisting(name: string): boolean {
+    return orders.orderItems.some((item) => item.orderName === name);
+  }
+
   const handleSearch = (text: string) => {
     setQuery(text);
     if (text.trim() === "") {
@@ -93,9 +98,6 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
 
       setFilteredData(result);
     }
-
-    console.log(`Searching for ${text}`);
-    console.log(`data: `, filteredData);
   };
 
   const onSearchResultPress = (result: any) => {
@@ -113,7 +115,6 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   const handleCustomizeOrder = (order: any) => {
-    console.log("orderhomescreen/handleCustomerOrder: ", order);
     navigation.navigate("CustomizationScreen", {
       order,
       from: "OrderHomeScreen",
@@ -279,7 +280,11 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
                     <View>
                       <Image source={item.image} style={styles.menuImage} />
                       <TouchableOpacity
-                        style={styles.plusButton}
+                        style={[
+                          styles.plusButton,
+                          isOrderExisting(item.name) && { opacity: 0.5 },
+                        ]}
+                        disabled={isOrderExisting(item.name)}
                         onPress={() => handleCustomizeOrder(item)}
                       >
                         <Text style={styles.plusText}>+</Text>
@@ -313,7 +318,11 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
                     <View>
                       <Image source={item.image} style={styles.menuImage} />
                       <TouchableOpacity
-                        style={styles.plusButton}
+                        style={[
+                          styles.plusButton,
+                          isOrderExisting(item.name) && { opacity: 0.5 },
+                        ]}
+                        disabled={isOrderExisting(item.name)}
                         onPress={() => handleCustomizeOrder(item)}
                       >
                         <Text style={styles.plusText}>+</Text>
@@ -347,7 +356,11 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
                     <View>
                       <Image source={item.image} style={styles.menuImage} />
                       <TouchableOpacity
-                        style={styles.plusButton}
+                        style={[
+                          styles.plusButton,
+                          isOrderExisting(item.name) && { opacity: 0.5 },
+                        ]}
+                        disabled={isOrderExisting(item.name)}
                         onPress={() => handleCustomizeOrder(item)}
                       >
                         <Text style={styles.plusText}>+</Text>
@@ -384,7 +397,11 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
                       <View>
                         <Image source={item.image} style={styles.menuImage} />
                         <TouchableOpacity
-                          style={styles.plusButton}
+                          style={[
+                            styles.plusButton,
+                            isOrderExisting(item.name) && { opacity: 0.5 },
+                          ]}
+                          disabled={isOrderExisting(item.name)}
                           onPress={() => handleCustomizeOrder(item)}
                         >
                           <Text style={styles.plusText}>+</Text>
