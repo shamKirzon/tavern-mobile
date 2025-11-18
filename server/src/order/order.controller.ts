@@ -31,6 +31,7 @@ class OrderController {
     try {
       const { orderId } = req.params;
 
+      console.log("MY ORDER ID: ", orderId);
       if (!orderId)
         return res.status(400).json({ message: "must have an order id " });
 
