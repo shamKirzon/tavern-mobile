@@ -1,7 +1,11 @@
 import { create } from "zustand";
 import { orderStore } from "../types/orders";
+import { useReservationStore } from "./useReservationStore";
 
 export const useOrderStore = create<orderStore>((set) => ({
+  spendLimit: "",
+  setSpendLimit: (data: number) =>
+    set({ spendLimit: (data / 2).toLocaleString() }),
   orders: { orderItems: [], total: 0 },
 
   addOrders: (data) =>

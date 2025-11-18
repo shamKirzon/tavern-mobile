@@ -17,6 +17,7 @@ import Rejected from "../assets/icons/rejected.svg";
 import OrderPolicyScreen from "./OrderPolicyScreen";
 import { useReservationStore } from "../stores/useReservationStore";
 import { updateToken } from "../services/token";
+import { useOrderStore } from "../stores/useOrderStore";
 type ReservationStatusScreenRouteProp = RouteProp<
   RootStackParamLists,
   "ReservationStatusScreen"
@@ -35,12 +36,10 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const { reservationStatus } = route.params;
   const { reservationAmount } = useReservationStore();
-
+  const { spendLimit } = useOrderStore();
   const [title, setTitle] = useState("");
   const [header, setHeader] = useState("");
   const [description, setDescription] = useState("");
-
-  const spendLimit = (reservationAmount / 2).toLocaleString();
 
   const statusText = {
     pending: {

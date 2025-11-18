@@ -17,6 +17,8 @@ export type ordersData = {
 
 export interface orderStore {
   orders: ordersData;
+  spendLimit: string;
+  setSpendLimit: (data: number) => void;
   addOrders: (data: Partial<ordersData>) => void;
   removeOrders: (id: string) => void; // remove by unique id
   updateOrder: (

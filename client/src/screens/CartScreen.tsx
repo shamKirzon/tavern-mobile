@@ -32,13 +32,17 @@ const HEADER_MIN_HEIGHT = 90;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
 const CartScreen: React.FC<Props> = ({ route, navigation }) => {
-  const { orders, removeOrders } = useOrderStore();
+  const { orders, removeOrders, spendLimit } = useOrderStore();
+
   const scrollY = useRef(new Animated.Value(0)).current;
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
 
-  // functions:
+  const numericSpendLimit = Number(spendLimit.replace(/,/g, ""));
 
+  const isTotalLessThanSpendLimit = orders.total! < numericSpendLimit;
+
+  // functions:
   const removeItem = (orderName: string) => {
     setItemToDelete(orderName);
     setDeleteModalVisible(true);
@@ -57,7 +61,6 @@ const CartScreen: React.FC<Props> = ({ route, navigation }) => {
     setItemToDelete(null);
   };
 
-  // kunin mo yung order from mapping
   const editItem = (order: any) => {
     console.log("order information: ", order);
     navigation.navigate("CustomizationScreen", {
@@ -66,6 +69,53 @@ const CartScreen: React.FC<Props> = ({ route, navigation }) => {
     });
   };
 
+  // Please add additional items to reach the minimum spend of ₱{variable}.
+
+  const getSpendStatusMessage = (): React.JSX.Element | null => {
+    if (!orders.total) return null;
+
+    const spendMessage =
+      orders.total < numericSpendLimit
+        ? `You must add more items to reach the minimum spend of ₱${spendLimit}. Any excess amount will be paid at the counter on your reservation date.`
+        : `You already achieved the minimum spend of ₱${spendLimit}. Any additional charges will be paid at the counter on the reservation date.`;
+
+    return (
+      <>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "flex-start",
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 14,
+              color: "#fff",
+              marginRight: 8,
+              marginTop: 2,
+            }}
+          ></Text>
+
+          <Text
+            style={[
+              {
+                flex: 1,
+                fontSize: 11,
+                color: "rgba(255, 255, 255, 0.6)",
+                fontFamily: "Poppins",
+                lineHeight: 16,
+              },
+              isTotalLessThanSpendLimit && {
+                color: "rgba(255, 100, 100, 0.6)",
+              },
+            ]}
+          >
+            {spendMessage}
+          </Text>
+        </View>
+      </>
+    );
+  };
   const handleAddItems = () => navigation.goBack();
   const handlePlaceOrder = () => console.log("Place order");
 
@@ -208,18 +258,16 @@ const CartScreen: React.FC<Props> = ({ route, navigation }) => {
             </Text>
           </View>
           <TouchableOpacity
-            style={s.placeOrderButton}
+            style={[
+              s.placeOrderButton,
+              isTotalLessThanSpendLimit && { opacity: 0.3 },
+            ]}
             onPress={handlePlaceOrder}
+            disabled={isTotalLessThanSpendLimit}
           >
             <Text style={s.placeOrderText}>Place Order</Text>
           </TouchableOpacity>
-          <View style={s.noticeContainer}>
-            <Text style={s.noticeIcon}>⏱</Text>
-            <Text style={s.noticeText}>
-              Minimum spend is ₱15,000.00. Lorem ipsum dolor sit amet,
-              consectetuer adipiscing.
-            </Text>
-          </View>
+          {getSpendStatusMessage()}
         </View>
       )}
 

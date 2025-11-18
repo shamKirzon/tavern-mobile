@@ -28,6 +28,7 @@ import {
 } from "../services/reservation";
 import Loading from "./ui/Loading";
 import { useReservationStore } from "../stores/useReservationStore";
+import { useOrderStore } from "../stores/useOrderStore";
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamLists,
@@ -49,6 +50,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const { showEmailVerifiedToggle, setShowEmailVerifiedToggle } =
     useAuthStore();
   const { setReservationAmount, reservationAmount } = useReservationStore();
+  const { setSpendLimit } = useOrderStore();
   const [email, setEmail] = useState("");
   const [isEmailInvalid, setIsEmailInvalid] = useState<boolean>(false);
   const [showToaster, setShowToaster] = useState(false);
@@ -115,6 +117,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       if (!hasReservation) return;
       const amount = await getReservationAmount(hasReservation);
       setReservationAmount(amount);
+      setSpendLimit(amount);
     };
 
     getTotal();
