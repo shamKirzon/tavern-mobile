@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { orderStore } from "../types/orders";
-import { useReservationStore } from "./useReservationStore";
 
 export const useOrderStore = create<orderStore>((set) => ({
   spendLimit: "",
