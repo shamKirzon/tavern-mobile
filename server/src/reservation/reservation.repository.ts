@@ -56,16 +56,10 @@ class ReservationRepository {
   }
   async getReservationData(reservationId: string) {
     try {
-      const customerId = await supabase
-        .from("customers")
-        .select("customer_id")
-        .eq("reservation_id", reservationId)
-        .single();
-
       const { data, error } = await supabase
         .from("reservations")
         .select("*")
-        .eq("customer_id", customerId.data?.customer_id);
+        .eq("reservation_id", reservationId);
 
       if (error) throw error;
 

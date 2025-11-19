@@ -26,6 +26,8 @@ class ReservationController {
     try {
       const { reservationId } = req.params;
 
+      console.log("reservation id: ", reservationId);
+
       if (!reservationId)
         return res.status(400).json({ message: "must have reservation id " });
 

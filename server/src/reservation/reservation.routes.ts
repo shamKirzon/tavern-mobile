@@ -9,7 +9,7 @@ reservationRoutes.post(
   reservationController.createReservation
 );
 
-reservationRoutes.post(
+reservationRoutes.get(
   "/get-reservation-data/:reservationId",
   reservationController.getReservationData
 );
