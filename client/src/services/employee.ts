@@ -20,7 +20,9 @@ export const validatePin = async (
 
 export const getEmployeeRole = async (employeeId: string) => {
   try {
-    const res = await axiosInstance.get(`/employee/validate-pin/${employeeId}`);
+    const res = await axiosInstance.get(
+      `/employee/get-employee-role/${employeeId}`
+    );
     if (!res) return console.error("Can't perform setting status to inactive");
 
     return res.data;

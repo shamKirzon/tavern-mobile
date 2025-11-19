@@ -1,4 +1,4 @@
-import React, { use, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Logo from "../assets/icons/neon-logo.svg";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamLists } from "../types/rootStackParamLists";
@@ -21,10 +21,11 @@ import {
 } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { validatePin } from "../services/employee";
+import { getEmployeeRole, validatePin } from "../services/employee";
 import { EmployeeRole } from "../types/employee";
 import Loading from "./ui/Loading";
-import { updateToken } from "../services/token";
+import { getEmployeeIdByToken, updateToken } from "../services/token";
+import { useEmployeeStore } from "../stores/useEmployeeStore";
 
 type StaffHomeScreenRouteProps = RouteProp<
   RootStackParamLists,
@@ -41,6 +42,7 @@ interface Props {
 }
 
 const StaffHomeScreen: React.FC<Props> = ({ navigation }) => {
+  const { employeeRole, setEmployeeRole } = useEmployeeStore();
   const [modalVisible, setModalVisible] = useState(false);
   const [enteredCode, setEnteredCode] = useState("");
   const [selectedRole, setSelectedRole] = useState<EmployeeRole | undefined>(
@@ -53,8 +55,39 @@ const StaffHomeScreen: React.FC<Props> = ({ navigation }) => {
 
   const [digitValues, setDigitValues] = useState(["", "", "", "", ""]);
 
-  // functions:
+  useEffect(() => {
+    const initialize = async () => {
+      try {
+        setIsLoading(true);
 
+        const employeeId = await getEmployeeIdByToken();
+        if (!employeeId) return;
+
+        const role = await getEmployeeRole(employeeId);
+        console.log("role: ", role);
+
+        setEmployeeRole(role);
+
+        // Navigate after role is set
+        if (role) {
+          navigation.navigate("StaffQRScannerScreen");
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initialize();
+  }, []);
+
+  // testing:
+  useEffect(() => {
+    console.log("NEW EMPLOYEE ROLE BURATSKI HAHAHH: ", employeeRole);
+  }, [employeeRole]);
+
+  // functions:
   const showPINError = () => {
     setIsPinError(true);
 
@@ -132,6 +165,8 @@ const StaffHomeScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <>
+      {isLoading && Loading("")}
+
       <View style={{ flex: 1 }}>
         <StatusBar barStyle="light-content" />
 
