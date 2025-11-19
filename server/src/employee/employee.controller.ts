@@ -25,7 +25,7 @@ class EmployeeController {
       const role = await employeeService.getEmployeeRole(employeeId);
       console.log("EMPLOYEE ROLE", role);
 
-      // res.status(200).json(employeeInfo);
+      res.status(200).json(role?.employee_role);
     } catch (error: any) {
       console.error(error.message || `Error in validating pin `);
     }

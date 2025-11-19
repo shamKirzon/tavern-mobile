@@ -23,9 +23,8 @@ class EmployeeRepository {
     try {
       const { data, error } = await supabase
         .from("employees")
-        .select("*")
-        .eq("employee_role", role)
-        .eq("pin", pin)
+        .select("employee_role")
+        .eq("employee_id", employeeId)
         .single();
 
       if (error) throw error;
