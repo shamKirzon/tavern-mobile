@@ -20,6 +20,9 @@ import { checkToken } from "./src/services/token";
 import { useFonts } from "expo-font";
 import { deleteToken, getToken, getTokenInformation } from "./src/utils/token";
 import ReservationStatusScreen from "./src/screens/ReservationStatusScreen";
+import StaffHomeScreen from "./src/screens/StaffHomeScreen";
+import StaffQRScannerScreen from "./src/screens/StaffQRScannerScreen";
+import StaffQRResultScreen from "./src/screens/StaffQRResultScreen";
 
 const App = () => {
   const [fontsLoaded] = useFonts({
@@ -48,7 +51,7 @@ const App = () => {
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
-          initialRouteName="OrderStatusScreen"
+          initialRouteName="WelcomeScreen"
           screenOptions={{ headerShown: false, animation: "none" }}
         >
           <Stack.Screen
@@ -99,6 +102,18 @@ const App = () => {
           <Stack.Screen
             name="OrderStatusScreen"
             component={OrderStatusScreen}
+          />
+
+          {/* Staff Screens */}
+
+          <Stack.Screen name="StaffHomeScreen" component={StaffHomeScreen} />
+          <Stack.Screen
+            name="StaffQRScannerScreen"
+            component={StaffQRScannerScreen}
+          />
+          <Stack.Screen
+            name="StaffQRResultScreen"
+            component={StaffQRResultScreen}
           />
         </Stack.Navigator>
       </NavigationContainer>

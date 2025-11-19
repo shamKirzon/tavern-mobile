@@ -4,13 +4,14 @@ import {
   Text,
   TouchableOpacity,
   Image,
-  StyleSheet,
   ScrollView,
   Animated,
-  Platform,
-  PermissionsAndroid,
   Alert,
+  ActivityIndicator,
 } from "react-native";
+
+import * as FileSystem from "expo-file-system";
+import * as MediaLibrary from "expo-media-library";
 
 import Loading from "./ui/Loading";
 import { width, height } from "../utils/dimensions";
@@ -19,8 +20,14 @@ import { RootStackParamLists } from "../types/rootStackParamLists";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import MainBackground from "../assets/backgrounds/main-background.svg";
 import { getOrderData } from "../services/order";
-import { getOrderIdByToken } from "../services/token";
-
+import {
+  getEmailByToken,
+  getOrderIdByToken,
+  getReservationIdByToken,
+} from "../services/token";
+import { ReservationData } from "../types/reservation";
+import { getReservationData } from "../services/reservation";
+import { formatReadableDate } from "../utils/formatReadableDate";
 type OrderStatusScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamLists,
   "OrderStatusScreen"
@@ -41,11 +48,21 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
   const slideAnim = useRef(new Animated.Value(10)).current;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isDownloading, setIsDownloading] = useState<boolean>(false);
   const [orderData, setOrderData] = useState<{
     items: [{ orderName: string; price: number }];
     total: number;
     QRCodeUrl: any;
   }>({ items: [{ orderName: "", price: 0 }], total: 0, QRCodeUrl: "" });
+
+  const [reservationData, setReservationData] = useState<ReservationData>({
+    firstName: "",
+    lastName: "",
+    date: new Date(),
+    reservationType: "",
+    pax: 9,
+    reservationAmount: 30000,
+  });
 
   // main useEffect:
   useEffect(() => {
@@ -54,6 +71,7 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
 
       try {
         const orderId = await getOrderIdByToken();
+        const reservationId = await getReservationIdByToken();
 
         const {
           created_at: createdAt,
@@ -61,6 +79,26 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
           qr_code_url: QRCodeUrl,
           total,
         } = await getOrderData(orderId);
+
+        const [
+          {
+            first_name: firstName,
+            last_name: lastName,
+            reservation_amount: reservationAmount,
+            reservation_type: reservationType,
+            pax,
+            date,
+          },
+        ] = await getReservationData(reservationId);
+
+        setReservationData({
+          date,
+          firstName,
+          lastName,
+          reservationType,
+          pax,
+          reservationAmount,
+        });
 
         setOrderData({
           items: orderItems.map((item: any) => ({
@@ -72,14 +110,16 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
         });
       } catch (error) {
         console.log(error);
+        Alert.alert("Error", "Failed to load order data");
       } finally {
-        setIsLoading(false); // ✔ now runs AFTER all awaits finish
+        setIsLoading(false);
       }
     };
 
     load();
   }, []);
 
+  // anim
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
@@ -94,9 +134,46 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
     }).start();
   }, []);
 
-  // functions:
-
-  const downloadImage = () => {};
+  // Download function
+  // const downloadImage = async () => {
+  //   try {
+  //     setIsDownloading(true);
+  //     // Step 1: Get email for filename
+  //     const email = await getEmailByToken();
+  //     const emailName = email.split("@")[0];
+  //     const fileName = `QRCode-${emailName}-${Date.now()}.jpg`;
+  //     // Step 2: Use the cacheDirectory constant properly
+  //     const cacheDir = FileSystem.cacheDirectory;
+  //     if (!cacheDir) {
+  //       throw new Error("Cache directory not available");
+  //     }
+  //     const localPath = cacheDir + fileName;
+  //     // Step 3: Download the image from URL to local storage
+  //     const downloadResult = await FileSystem.downloadAsync(
+  //       orderData.QRCodeUrl,
+  //       localPath
+  //     );
+  //     // Step 4: Request media library permissions
+  //     const permission = await MediaLibrary.requestPermissionsAsync();
+  //     if (!permission.granted) {
+  //       Alert.alert(
+  //         "Permission Required",
+  //         "Please allow access to your photo library to save the QR code."
+  //       );
+  //       setIsDownloading(false);
+  //       return;
+  //     }
+  //     // Step 5: Save to photo library
+  //     await MediaLibrary.saveToLibraryAsync(downloadResult.uri);
+  //     Alert.alert("Success!", "QR code has been saved to your photo library.");
+  //     console.log("File saved to:", downloadResult.uri);
+  //   } catch (error) {
+  //     console.log("Download error:", error);
+  //     Alert.alert("Error", "Failed to download QR code. Please try again.");
+  //   } finally {
+  //     setIsDownloading(false);
+  //   }
+  // };
 
   return (
     <>
@@ -192,25 +269,33 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
                 resizeMode="contain"
               />
 
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 onPress={downloadImage}
+                disabled={isDownloading}
                 style={{
-                  backgroundColor: "white",
+                  backgroundColor: isDownloading ? "#cccccc" : "white",
                   paddingVertical: 12,
                   paddingHorizontal: 40,
                   borderRadius: 25,
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
               >
-                <Text
-                  style={{
-                    color: "black",
-                    fontSize: width * 0.04,
-                    fontWeight: "bold",
-                  }}
-                >
-                  Download QR
-                </Text>
-              </TouchableOpacity>
+                {isDownloading ? (
+                  <ActivityIndicator size="small" color="black" />
+                ) : (
+                  <Text
+                    style={{
+                      color: "black",
+                      fontSize: width * 0.04,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Download QR
+                  </Text>
+                )}
+              </TouchableOpacity> */}
             </View>
           </View>
 
@@ -253,7 +338,7 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
                     fontWeight: "600",
                   }}
                 >
-                  shammy pogi
+                  {reservationData.firstName} {reservationData.lastName}
                 </Text>
               </View>
 
@@ -280,7 +365,7 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
                     fontWeight: "600",
                   }}
                 >
-                  ngayon lang po
+                  {formatReadableDate(reservationData.date!)}
                 </Text>
               </View>
 
@@ -307,7 +392,8 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
                     fontWeight: "600",
                   }}
                 >
-                  pogi
+                  {reservationData.reservationType?.charAt(0).toUpperCase()}
+                  {reservationData.reservationType?.slice(1)}
                 </Text>
               </View>
 
@@ -334,7 +420,7 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
                     fontWeight: "600",
                   }}
                 >
-                  90
+                  {reservationData.pax}
                 </Text>
               </View>
 
@@ -361,7 +447,7 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
                     fontWeight: "600",
                   }}
                 >
-                  30000
+                  ₱ {reservationData.reservationAmount}
                 </Text>
               </View>
             </View>
@@ -404,7 +490,7 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
                     fontWeight: "600",
                   }}
                 >
-                  {item.price}
+                  ₱ {item.price.toFixed(2)}
                 </Text>
               </View>
             ))}

@@ -35,7 +35,6 @@ interface Props {
 const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const { reservationStatus } = route.params;
-  const { reservationAmount } = useReservationStore();
   const { spendLimit } = useOrderStore();
   const [title, setTitle] = useState("");
   const [header, setHeader] = useState("");

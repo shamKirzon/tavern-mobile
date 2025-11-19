@@ -12,6 +12,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamLists } from "../types/rootStackParamLists";
 import { height, width } from "../utils/dimensions";
+import { formatReadableDate } from "../utils/formatReadableDate";
 
 type BookingSummaryScreenNavigationProps = NativeStackNavigationProp<
   RootStackParamLists,
@@ -31,13 +32,6 @@ type Props = {
 const BookingSummaryScreen: React.FC<Props> = ({ navigation, route }) => {
   const [isChecked, setIsChecked] = useState(false);
   const { name, date, guests, reservationType, reservationFee } = route.params;
-  const convertStringToDate = new Date(date);
-
-  const readableDate = convertStringToDate.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
 
   return (
     <View style={{ flex: 1 }}>
@@ -73,7 +67,7 @@ const BookingSummaryScreen: React.FC<Props> = ({ navigation, route }) => {
             </View>
             <View style={styles.row}>
               <Text style={styles.label}>Date:</Text>
-              <Text style={styles.value}>{readableDate}</Text>
+              <Text style={styles.value}>{formatReadableDate(date)}</Text>
             </View>
             <View style={styles.row}>
               <Text style={styles.label}>Type:</Text>

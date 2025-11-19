@@ -7,8 +7,9 @@ import MainBackground from "../assets/backgrounds/main-background.svg";
 import ScheduleIcon from "../assets/icons/schedule-icon.svg";
 import LocationIcon from "../assets/icons/location-icon.svg";
 
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, StatusBar } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import ResizableSidebar from "./ui/ResizableSidebar";
 
 type WelcomeSceenRouteProps = RouteProp<RootStackParamLists, "WelcomeScreen">;
 type WelcomeScreenNavigationProps = NativeStackNavigationProp<
@@ -21,14 +22,19 @@ interface Props {
   navigation: WelcomeScreenNavigationProps;
 }
 
-const WelcomeScreen: React.FC<Props> = ({ navigation, route }) => {
+const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
-    <View style={{ width, height, flex: 1 }}>
+    <View style={{ flex: 1 }}>
+      <StatusBar barStyle="light-content" />
+
+      {/* Main background */}
       <MainBackground
-        style={{ position: "absolute", height: "100%" }} // ⬅️ Makes it a background layer
+        style={{ position: "absolute", width: "100%", height: "100%" }}
       />
 
-      {/* Foreground content */}
+      {/* Main content */}
       <View
         style={{
           flex: 1,
@@ -107,6 +113,63 @@ const WelcomeScreen: React.FC<Props> = ({ navigation, route }) => {
           </Text>
         </TouchableOpacity>
       </View>
+
+      {/* Dim overlay when sidebar is open */}
+      {isSidebarOpen && (
+        <TouchableOpacity
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.3)",
+            zIndex: 50,
+          }}
+          onPress={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar overlay */}
+      <ResizableSidebar
+        minWidth={0}
+        maxWidth={300}
+        initialOpen={false}
+        animationDuration={200}
+        open={isSidebarOpen}
+        onToggle={setIsSidebarOpen}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          bottom: 0,
+          zIndex: 100,
+        }}
+      >
+        {["Customer", "Staff"].map((item, index) => (
+          <>
+            <TouchableOpacity
+              key={index}
+              onPress={() => {
+                item === "Customer"
+                  ? navigation.navigate("WelcomeScreen")
+                  : navigation.navigate("StaffHomeScreen");
+              }}
+            >
+              <Text
+                style={{
+                  padding: 16,
+                  fontSize: width * 0.05,
+                  fontWeight: "bold",
+                  color: "#FFF",
+                }}
+              >
+                {item}
+              </Text>
+            </TouchableOpacity>
+          </>
+        ))}
+      </ResizableSidebar>
     </View>
   );
 };

@@ -23,4 +23,9 @@ export type RootStackParamLists = {
   ReservationStatusScreen: { reservationStatus: string };
   OrderStatusScreen: undefined;
   CartScreen: undefined;
+
+  // staff:
+  StaffQRScannerScreen: undefined;
+  StaffHomeScreen: undefined;
+  StaffQRResultScreen: undefined;
 };
