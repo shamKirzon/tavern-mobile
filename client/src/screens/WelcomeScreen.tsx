@@ -146,29 +146,34 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
           zIndex: 100,
         }}
       >
-        {["Customer", "Staff"].map((item, index) => (
-          <>
-            <TouchableOpacity
-              key={index}
-              onPress={() => {
-                item === "Customer"
-                  ? navigation.navigate("WelcomeScreen")
-                  : navigation.navigate("StaffHomeScreen");
-              }}
-            >
-              <Text
-                style={{
-                  padding: 16,
-                  fontSize: width * 0.05,
-                  fontWeight: "bold",
-                  color: "#FFF",
-                }}
-              >
-                {item}
-              </Text>
-            </TouchableOpacity>
-          </>
-        ))}
+        {/* resizable side bar content:  */}
+        <TouchableOpacity onPress={() => setIsSidebarOpen(false)}>
+          <Text
+            style={{
+              padding: 16,
+              fontSize: width * 0.05,
+              fontWeight: "bold",
+              color: "#FFF",
+            }}
+          >
+            Customer
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => navigation.navigate("StaffHomeScreen")}
+        >
+          <Text
+            style={{
+              padding: 16,
+              fontSize: width * 0.05,
+              fontWeight: "bold",
+              color: "#FFF",
+            }}
+          >
+            Staff
+          </Text>
+        </TouchableOpacity>
       </ResizableSidebar>
     </View>
   );

@@ -30,6 +30,8 @@ const App = () => {
     "DMSerif-Italic": require("./src/assets/fonts/DMSerifText-Italic.ttf"),
     Poppins: require("./src/assets/fonts/Poppins-Regular.ttf"),
     "Poppins-Bold": require("./src/assets/fonts/Poppins-Bold.ttf"),
+    "Poppins-ExtraBoldItalic": require("./src/assets/fonts/Poppins-ExtraBoldItalic.ttf"),
+
     "Poppins-Italic": require("./src/assets/fonts/Poppins-Italic.ttf"),
   });
 
@@ -51,7 +53,7 @@ const App = () => {
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
-          initialRouteName="WelcomeScreen"
+          initialRouteName="StaffHomeScreen"
           screenOptions={{ headerShown: false, animation: "none" }}
         >
           <Stack.Screen

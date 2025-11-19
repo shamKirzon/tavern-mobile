@@ -86,9 +86,6 @@ const EmailVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const handleContinue = async () => {
     const otpCode = otp.join("");
-
-    // otp validation part:
-    // result = isValidOtp & message
     const result = await validateOtp(email, otpCode);
     if (!result?.isValidOtp) {
       showOtpError();
