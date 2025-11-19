@@ -35,6 +35,7 @@ export const getTokenInformation = async () => {
     email: decodedToken.email,
     reservationId: decodedToken.reservationId,
     orderId: decodedToken.orderId,
+    employeeId: decodedToken.employeeId,
     id: decodedToken.jti,
   };
 };
@@ -69,6 +70,7 @@ export const refreshToken = async () => {
     console.info("Current Email:", decodedToken.email);
     console.info("Current Reservation Id:", decodedToken.reservationId);
     console.info("Current Order Id:", decodedToken.orderId);
+    console.info("Current Employee Id:", decodedToken.employeeId);
 
     const res = await axiosInstance.post("/auth/token/refresh", {
       decodedToken,

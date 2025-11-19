@@ -45,6 +45,12 @@ export const getOrderIdByToken = async (): Promise<any> => {
 
   return tokenInfo.orderId;
 };
+export const getEmployeeIdByToken = async (): Promise<any> => {
+  const tokenInfo = await getTokenInformation();
+  if (!tokenInfo) return null;
+
+  return tokenInfo.employeeId;
+};
 
 export const updateToken = async (update: any) => {
   try {
@@ -69,6 +75,7 @@ export const updateToken = async (update: any) => {
       email: decodedToken.email,
       reservationId: decodedToken.reservationId,
       orderId: decodedToken.orderId,
+      employeeId: decodedToken.employeeId,
       id: decodedToken.jti,
     };
 

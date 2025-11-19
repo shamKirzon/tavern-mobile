@@ -1,0 +1,30 @@
+import { axiosInstance } from "../api/axiosInstance";
+import { EmployeeRole } from "../types/employee";
+
+export const validatePin = async (
+  pin: string,
+  role: EmployeeRole | undefined
+) => {
+  try {
+    const res = await axiosInstance.post("/employee/validate-pin", {
+      pin,
+      role,
+    });
+    if (!res) return console.error("Can't perform setting status to inactive");
+
+    return res.data;
+  } catch (error: any) {
+    console.error("services/employee/isPinValid() error:", error);
+  }
+};
+
+export const getEmployeeRole = async (employeeId: string) => {
+  try {
+    const res = await axiosInstance.get(`/employee/validate-pin/${employeeId}`);
+    if (!res) return console.error("Can't perform setting status to inactive");
+
+    return res.data;
+  } catch (error: any) {
+    console.error("services/employee/isPinValid() error:", error);
+  }
+};
