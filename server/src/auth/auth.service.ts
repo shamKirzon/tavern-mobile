@@ -9,6 +9,7 @@ type TokenPayload = {
   email: string;
   reservationId?: string | null;
   orderId?: string | null;
+  employeeId?: string | null;
 };
 
 class AuthService {
@@ -44,6 +45,7 @@ class AuthService {
       email: data.email,
       reservationId: data.reservationId,
       orderId: data.orderId,
+      employeeId: data.employeeId,
     };
 
     const token = jwt.sign(payload, process.env.TOKEN_SECRET_KEY!, {

@@ -1,4 +1,4 @@
-import { ReservationData, ReservationImageType } from "../types/Reservation";
+import { ReservationData, ReservationImageType } from "../types/reservation";
 import { reservationRepository } from "./reservation.repository";
 
 class ReservationService {

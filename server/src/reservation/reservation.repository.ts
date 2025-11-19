@@ -1,5 +1,5 @@
 import { supabase } from "../lib/supabase-client";
-import { ReservationData } from "../types/Reservation";
+import { ReservationData } from "../types/reservation";
 
 class ReservationRepository {
   async createReservation(reservationData: ReservationData) {
