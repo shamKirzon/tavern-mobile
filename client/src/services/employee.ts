@@ -30,3 +30,15 @@ export const getEmployeeRole = async (employeeId: string) => {
     console.error("services/employee/isPinValid() error:", error);
   }
 };
+export const decryptQr = async (encryptedQr: string) => {
+  try {
+    const res = await axiosInstance.post(`/employee/decrypt-qr`, {
+      encryptedQr,
+    });
+    if (!res) return console.error("can't perform decryption of qr");
+
+    return res.data;
+  } catch (error: any) {
+    console.error("services/employee/isPinValid() error:", error);
+  }
+};

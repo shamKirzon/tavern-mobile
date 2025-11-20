@@ -16,7 +16,7 @@ import CustomizationScreen from "./src/screens/CustomizationScreen";
 import OrderHomeScreen from "./src/screens/OrderHomeScreen";
 import OrderStatusScreen from "./src/screens/OrderStatusScreen";
 import CartScreen from "./src/screens/CartScreen";
-import { checkToken } from "./src/services/token";
+import { checkToken, updateToken } from "./src/services/token";
 import { useFonts } from "expo-font";
 import { deleteToken, getToken, getTokenInformation } from "./src/utils/token";
 import ReservationStatusScreen from "./src/screens/ReservationStatusScreen";
@@ -37,10 +37,9 @@ const App = () => {
 
   useEffect(() => {
     const verifyToken = async () => {
-      const token = await getToken();
-
       // await deleteToken();
 
+      // await updateToken({ orderId: null });
       await checkToken();
     };
 
@@ -53,7 +52,7 @@ const App = () => {
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
-          initialRouteName="WelcomeScreen"
+          initialRouteName="StaffHomeScreen"
           screenOptions={{ headerShown: false, animation: "none" }}
         >
           <Stack.Screen
