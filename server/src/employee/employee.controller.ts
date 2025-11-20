@@ -30,6 +30,25 @@ class EmployeeController {
       console.error(error.message || `Error in validating pin `);
     }
   }
+
+  async decryptQr(req: Request, res: Response) {
+    try {
+      const { encryptedQr } = req.body;
+
+      console.log("encrypted qr: ", encryptedQr);
+      if (!encryptedQr)
+        return res
+          .status(400)
+          .json({ message: "it must have an encrypted Qr" });
+
+      const decryptedQr = await employeeService.decryptQr(encryptedQr);
+      console.log("decrypted qr;", decryptedQr);
+
+      res.status(200).json(decryptedQr);
+    } catch (error: any) {
+      console.error(error.message || `Error in decrypting qr  `);
+    }
+  }
 }
 
 export const employeeController = new EmployeeController();

@@ -9,4 +9,6 @@ employeeRoutes.get(
   employeeController.getEmployeeRole
 );
 
+employeeRoutes.post("/decrypt-qr", employeeController.decryptQr);
+
 export default employeeRoutes;

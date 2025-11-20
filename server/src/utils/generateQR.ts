@@ -14,7 +14,7 @@ export const generateQR = async (data: QRData, email: string) => {
     const encrypted = encrypt(jsonData);
     const filePath = `./reservation-order-qr.png`;
 
-    await QRCode.toFile(filePath, jsonData, {
+    await QRCode.toFile(filePath, encrypted, {
       errorCorrectionLevel: "M",
       width: 400,
     });
