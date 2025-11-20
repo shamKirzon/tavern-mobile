@@ -27,5 +27,5 @@ export type RootStackParamLists = {
   // staff:
   StaffQRScannerScreen: undefined;
   StaffHomeScreen: undefined;
-  StaffQRResultScreen: undefined;
+  StaffQRResultScreen: { qrResult: { reservationId: string; orderId: string } };
 };

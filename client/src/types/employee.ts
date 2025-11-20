@@ -3,4 +3,4 @@ export interface EmployeeStore {
   setEmployeeRole: (role: EmployeeRole) => void;
 }
 
-export type EmployeeRole = "cashier" | "security";
+export type EmployeeRole = "cashier" | "security" | undefined;

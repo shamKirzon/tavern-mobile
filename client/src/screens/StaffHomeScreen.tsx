@@ -139,8 +139,9 @@ const StaffHomeScreen: React.FC<Props> = ({ navigation }) => {
       };
 
       if (res) {
-        Alert.alert(`${selectedRole} Verified!`, `Code entered: ${code}`);
-        updateToken({ employeeId: res.employee_id });
+        navigation.navigate("StaffQRScannerScreen");
+        setEmployeeRole(selectedRole);
+        await updateToken({ employeeId: res.employee_id });
         setModalVisible(false);
         setDigitValues(["", "", "", "", ""]);
         setIsPinError(false);
