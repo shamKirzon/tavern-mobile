@@ -35,12 +35,12 @@ class ReservationService {
     } catch (error) {}
   }
 
-  async assignEmployeeId(
+  async assignSecurityId(
     employeeId: string,
     reservationId: string
   ): Promise<any> {
     try {
-      const result = await reservationRepository.assignEmployeeId(
+      const result = await reservationRepository.assignSecurityId(
         employeeId,
         reservationId
       );

@@ -3,6 +3,7 @@ import { axiosInstance } from "../api/axiosInstance";
 import { ReservationData, ReservationImageType } from "../types/reservation";
 import { getEmailByToken } from "./token";
 import { updateToken } from "./token";
+import { EmployeeRole } from "../types/employee";
 
 export const createReservation = async (data: ReservationData) => {
   try {
@@ -58,7 +59,6 @@ export const getReservationData = async (reservationId: string) => {
       `/reservation/get-reservation-data/${reservationId}`
     );
     if (!res) return console.error("can't get reservation data ");
-    console.log("getReservationData information: ", res.data.result);
 
     return res.data.result;
   } catch (error) {
@@ -99,5 +99,25 @@ export const uploadImage = async (
     return res.data.imageUrl;
   } catch (error: any) {
     console.error("services/reservation/uploadImage()", error.message);
+  }
+};
+
+export const assignSecurityId = async (
+  employeeId: string,
+  reservationId: string
+) => {
+  try {
+    const res = await axiosInstance.post("/reservation/assign-security-id", {
+      employeeId,
+      reservationId,
+    });
+    if (!res)
+      return console.error("error in service/reservation/assignEmployeeId");
+
+    console.log({ message: res.data.message });
+
+    return res.data.result;
+  } catch (error) {
+    console.error("services/reservation/getReservationData(). Error: ", error);
   }
 };

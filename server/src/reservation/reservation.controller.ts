@@ -112,14 +112,14 @@ class ReservationController {
     }
   }
 
-  async assignEmployeeId(req: Request, res: Response) {
+  async assignSecurityId(req: Request, res: Response) {
     try {
       const { employeeId, reservationId } = req.body;
 
       if (!reservationId)
         return res.status(400).json({ message: "must have reservation id" });
 
-      const result = await reservationService.assignEmployeeId(
+      const result = await reservationService.assignSecurityId(
         employeeId,
         reservationId
       );

@@ -87,7 +87,6 @@ const StaffQRScannerScreen: React.FC<Props> = ({ navigation }) => {
 
     try {
       if (!scannedData) {
-        console.log("Scanned QR Information:", barcode.data);
         const encrypted = barcode.data;
 
         // setIsLoading(true);

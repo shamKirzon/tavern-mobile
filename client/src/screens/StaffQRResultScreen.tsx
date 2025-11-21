@@ -17,11 +17,16 @@ import { RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamLists } from "../types/rootStackParamLists";
 import { useEmployeeStore } from "../stores/useEmployeeStore";
-import { getOrderIdByToken, getReservationIdByToken } from "../services/token";
+import {
+  getEmployeeIdByToken,
+  getOrderIdByToken,
+  getReservationIdByToken,
+} from "../services/token";
 import { getOrderData } from "../services/order";
-import { getReservationData } from "../services/reservation";
+import { assignSecurityId, getReservationData } from "../services/reservation";
 import { formatReadableDate } from "../utils/formatReadableDate";
 import Loading from "./ui/Loading";
+import { useReservationStore } from "../stores/useReservationStore";
 
 type StaffQRResultScreenRouteProps = RouteProp<
   RootStackParamLists,
@@ -39,6 +44,8 @@ interface Props {
 
 const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [employeeId, setEmployeeId] = useState<string>("");
+  const [reservationId, setReservationId] = useState<string>("");
   const { qrResult, isValid } = route.params;
   const [qrIdKey, setQrIdKey] = useState<string | null>("");
   const [qrIdValue, setQrIdValue] = useState<string | null>("");
@@ -55,8 +62,6 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
     if (!qrIdValue) return;
 
     const fetchData = async () => {
-      console.log("QR ID VALUE: ", qrIdValue);
-
       try {
         setIsLoading(true);
 
@@ -67,7 +72,6 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
 
         // check if the reservation status is valid or not:
         if (reservationInformation.reservationStatus === "done") {
-          console.log("DONE NA YUNG RESERVATION MO BOI");
           setIsReservationInvalid(true);
         }
       } catch (error) {
@@ -99,8 +103,22 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
   // functions:
 
   const handleDone = async () => {
-    //  add the staff id inside of owner's info
-    navigation.navigate("StaffQRScannerScreen");
+    try {
+      // add conditional statement depends on the role of the staff:
+      // if(employeeRole === "security") // this logic: else if (employeeRole ==="cashier")// some logic else return (to avoid the null)
+      const employeeId = await getEmployeeIdByToken();
+
+      if (!qrIdValue) return;
+
+      const result = await assignSecurityId(employeeId, qrIdValue);
+
+      if (!result)
+        throw new Error("Error in assigning employee id in reservation");
+
+      navigation.navigate("StaffQRScannerScreen");
+    } catch (error) {
+      console.error("error in handleDone: ", error);
+    }
   };
 
   const getCurrentDateAndTime = (): string => {

@@ -14,7 +14,7 @@ export const validatePin = async (
 
     return res.data;
   } catch (error: any) {
-    console.error("services/employee/isPinValid() error:", error);
+    console.error("services/employee/validatePin() error:", error);
   }
 };
 
@@ -27,7 +27,7 @@ export const getEmployeeRole = async (employeeId: string) => {
 
     return res.data;
   } catch (error: any) {
-    console.error("services/employee/isPinValid() error:", error);
+    console.error("services/employee/getEmployeeRole() error:", error);
   }
 };
 export const decryptQr = async (encryptedQr: string) => {
@@ -39,6 +39,6 @@ export const decryptQr = async (encryptedQr: string) => {
 
     return res.data;
   } catch (error: any) {
-    console.error("services/employee/isPinValid() error:", error);
+    console.error("services/employee/decrypQr() error:", error);
   }
 };

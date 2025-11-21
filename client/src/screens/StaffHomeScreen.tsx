@@ -83,7 +83,7 @@ const StaffHomeScreen: React.FC<Props> = ({ navigation }) => {
 
   // testing:
   useEffect(() => {
-    console.log("employeeRole from useEmployeeStore():", employeeRole);
+    console.log("Current Employee Role:", employeeRole);
   }, [employeeRole]);
 
   // functions:

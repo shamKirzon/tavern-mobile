@@ -103,7 +103,7 @@ class ReservationRepository {
     }
   }
 
-  async assignEmployeeId(employeeId: string, reservationId: string) {
+  async assignSecurityId(employeeId: string, reservationId: string) {
     try {
       // modify this:
       const { data, error } = await supabase

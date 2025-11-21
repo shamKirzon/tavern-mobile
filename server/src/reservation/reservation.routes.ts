@@ -25,8 +25,8 @@ reservationRoutes.get(
 );
 
 reservationRoutes.post(
-  "/assign-employee-id",
-  reservationController.assignEmployeeId
+  "/assign-security-id",
+  reservationController.assignSecurityId
 );
 
 // for contentType: multipart/form-data
