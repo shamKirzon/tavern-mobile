@@ -38,7 +38,7 @@ const AdditionalOrderCustomizationScreen: React.FC<Props> = ({
   route,
   navigation,
 }) => {
-  const { order, from } = route.params;
+  const { order, from, qrResult, isValid } = route.params;
   const { addOrders, updateOrder } = useOrderStore();
 
   const orderName = order.name || order.orderName;

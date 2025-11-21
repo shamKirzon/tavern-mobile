@@ -44,6 +44,8 @@ interface Props {
 }
 
 const AdditionalOrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { qrResult, isValid } = route.params;
+
   const { orders } = useOrderStore();
   const allDrinks = Object.values(drinks).flat();
   const menuData = [...appetizers, ...mainCourse, ...desserts, ...allDrinks];
@@ -111,6 +113,8 @@ const AdditionalOrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
     navigation.navigate("AdditionalOrderCustomizationScreen", {
       order,
       from: "AdditionalOrderHome",
+      qrResult,
+      isValid,
     });
   };
 
@@ -443,7 +447,12 @@ const AdditionalOrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
       {/* 🟢 Fixed Basket Bar at bottom */}
       <TouchableOpacity
         style={styles.basketBar}
-        onPress={() => navigation.navigate("AdditionalOrderCartScreen")}
+        onPress={() =>
+          navigation.navigate("AdditionalOrderCartScreen", {
+            qrResult,
+            isValid,
+          })
+        }
       >
         <Basket width={28} height={28} style={{ marginRight: 8 }} />
         <Text style={styles.basketText}>Basket</Text>

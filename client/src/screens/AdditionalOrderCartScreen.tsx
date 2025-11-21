@@ -37,6 +37,8 @@ const HEADER_MIN_HEIGHT = height * 0.12;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
 const AdditionalOrderCartScreen: React.FC<Props> = ({ route, navigation }) => {
+  const { qrResult, isValid } = route.params;
+
   const { orders, removeOrders, spendLimit } = useOrderStore();
   const scrollY = useRef(new Animated.Value(0)).current;
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
@@ -113,7 +115,11 @@ const AdditionalOrderCartScreen: React.FC<Props> = ({ route, navigation }) => {
 
   const handlePlaceOrder = async () => {
     try {
-      console.log("orders: ", orders);
+      navigation.navigate("StaffQRResultScreen", {
+        additionalOrder: orders,
+        isValid,
+        qrResult,
+      });
       //   setIsLoading(true);
       // const res = await createOrder(orders);
       // if (!res) return;

@@ -32,6 +32,7 @@ import Loading from "./ui/Loading";
 import { OrderStatus } from "../types/orders";
 import DottedDivider from "./ui/DottedDivider";
 import { formatCurrency } from "../utils/formatCurrency";
+import { useOrderStore } from "../stores/useOrderStore";
 
 type StaffQRResultScreenRouteProps = RouteProp<
   RootStackParamLists,
@@ -48,10 +49,11 @@ interface Props {
 }
 
 const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { qrResult, isValid, additionalOrder } = route.params;
+  const { orders } = useOrderStore();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [employeeId, setEmployeeId] = useState<string>("");
   const [reservationId, setReservationId] = useState<string>("");
-  const { qrResult, isValid } = route.params;
   const [qrIdKey, setQrIdKey] = useState<string | null>("");
   const [qrIdValue, setQrIdValue] = useState<string | null>("");
 
@@ -62,7 +64,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
 
   // order
   const [orderData, setOrderData] = useState<{
-    items: { orderName: string; price: number }[];
+    items: { orderName: string; price: number; total: number }[];
     total: number;
     orderStatus: OrderStatus;
     reservationId: string;
@@ -107,11 +109,17 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
           if (!orderInformation)
             throw new Error("No returned order information");
 
+          // validation of order qr:
+          if (orderInformation.orderStatus === "done") {
+            setIsReservationInvalid(true);
+          }
+
           // for order data:
           setOrderData({
             items: orderInformation.orderItems.map((item: any) => ({
               orderName: item.orderName,
               price: item.price,
+              total: item.total,
             })),
             total: orderInformation.total,
             orderStatus: orderInformation.orderStatus,
@@ -152,6 +160,8 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
       setQrIdValue(qrResult.orderId);
     }
   }, [qrResult]);
+
+  // if it has an additional order:
 
   // functions:
   const handleDone = async () => {
@@ -536,9 +546,27 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   const orderValid = (): React.JSX.Element => {
-    const calculatedPayable = 390230;
+    // orderData.total = base orders total
+    // additionalOrder.total = additional order total
+
+    const calculatedTotal = () => {
+      const calculatedTotalResult = additionalOrder?.total
+        ? orderData.total + additionalOrder.total
+        : orderData.total;
+
+      return formatCurrency(calculatedTotalResult);
+    };
+    const calculatedPayable = () => {
+      const calculatedAmount = additionalOrder?.total
+        ? additionalOrder.total +
+          (orderData.total - reservationData.reservationAmount / 2)
+        : orderData.total - reservationData.reservationAmount / 2;
+
+      return formatCurrency(calculatedAmount);
+    };
     const handleAdditionalOrder = () => {
-      navigation.navigate("AdditionalOrderHomeScreen");
+      if (!qrResult) return;
+      navigation.navigate("AdditionalOrderHomeScreen", { isValid, qrResult });
     };
 
     return (
@@ -710,7 +738,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
 
               {<DottedDivider />}
 
-              {/* order items:  */}
+              {/* order item - base orders */}
               <View
                 style={{
                   width: "100%",
@@ -754,13 +782,138 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                         marginLeft: 10,
                       }}
                     >
-                      {order.price.toFixed(2).toLocaleString()}
+                      {order.total.toFixed(2).toLocaleString()}
                     </Text>
                   </View>
                 ))}
 
+                {/* base order total*/}
+                <View
+                  style={{
+                    paddingTop: height * 0.02,
+                    flexDirection: "row",
+                    marginBottom: 6,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontWeight: "700",
+                      fontSize: width * 0.047,
+                      flex: 1,
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    Total
+                  </Text>
+
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontWeight: "700",
+                      fontSize: width * 0.047,
+                      marginLeft: 10,
+                    }}
+                  >
+                    {formatCurrency(orderData.total)}
+                  </Text>
+                </View>
+
                 <DottedDivider />
 
+                {additionalOrder?.total && (
+                  <>
+                    <Text
+                      style={{
+                        color: "#FFFFFF",
+                        fontWeight: "700",
+                        fontSize: width * 0.05,
+                        alignSelf: "center",
+                        paddingBottom: height * 0.02,
+                      }}
+                    >
+                      Additional Orders
+                    </Text>
+                    {additionalOrder?.orderItems.map((order, index) => (
+                      <View
+                        key={index}
+                        style={{
+                          flexDirection: "row",
+                          marginBottom: 6,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color: "#FFFFFF",
+                            fontSize: width * 0.04,
+                            flex: 1,
+                            flexWrap: "wrap",
+                          }}
+                        >
+                          {order.orderName}
+                        </Text>
+
+                        <Text
+                          style={{
+                            color: "#FFFFFF",
+                            fontSize: width * 0.045,
+                            marginLeft: 10,
+                          }}
+                        >
+                          {formatCurrency(order.total)}
+                        </Text>
+                      </View>
+                    ))}
+
+                    {/* additional orders total*/}
+                    <View
+                      style={{
+                        paddingTop: height * 0.02,
+                        flexDirection: "row",
+                        marginBottom: 6,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "#FFFFFF",
+                          fontWeight: "700",
+                          fontSize: width * 0.047,
+                          flex: 1,
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        Total
+                      </Text>
+
+                      <Text
+                        style={{
+                          color: "#FFFFFF",
+                          fontWeight: "700",
+                          fontSize: width * 0.047,
+                          marginLeft: 10,
+                        }}
+                      >
+                        {additionalOrder?.total
+                          ? formatCurrency(additionalOrder?.total)
+                          : null}
+                      </Text>
+                    </View>
+
+                    <DottedDivider />
+                  </>
+                )}
+
+                <Text
+                  style={{
+                    color: "#FFFFFF",
+                    fontWeight: "700",
+                    fontSize: width * 0.05,
+                    alignSelf: "center",
+                    paddingBottom: height * 0.02,
+                  }}
+                >
+                  Summmary
+                </Text>
                 {/* total: */}
                 <View
                   style={{
@@ -788,7 +941,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                       marginLeft: 10,
                     }}
                   >
-                    {formatCurrency(orderData.total)}
+                    {calculatedTotal()}
                   </Text>
                 </View>
 
@@ -828,10 +981,20 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                         maximumFractionDigits: 2,
                       }
                     )} */}
-
-                    {formatCurrency(reservationData.reservationAmount / 2)}
+                    - {formatCurrency(reservationData.reservationAmount / 2)}
                   </Text>
                 </View>
+
+                {/* divider solid line */}
+                <View
+                  style={{
+                    height: width * 0.001, // thickness of the line
+                    alignSelf: "center",
+                    backgroundColor: "rgba(150,150,150,0.6)", // grey with some transparency
+                    width: "100%", // full width
+                    marginVertical: 10, // optional spacing above and below
+                  }}
+                />
 
                 {/* payable*/}
                 <View
@@ -861,7 +1024,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                       marginLeft: 10,
                     }}
                   >
-                    {formatCurrency(calculatedPayable)}
+                    {calculatedPayable()}
                   </Text>
                 </View>
               </View>
