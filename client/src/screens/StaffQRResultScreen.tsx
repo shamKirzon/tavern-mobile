@@ -9,6 +9,8 @@ import {
 } from "react-native";
 import React, { use, useEffect, useState } from "react";
 import { width, height } from "../utils/dimensions";
+
+import AdditionalOrders from "../assets/icons/additional-order.svg";
 import MainBackground from "../assets/backgrounds/main-background.svg";
 import ReservationVerified from "../assets/icons/reservation-verified.svg";
 import OrderSummaryReceipt from "../assets/icons/order-summary-receipt.svg";
@@ -29,6 +31,7 @@ import { formatReadableDate } from "../utils/formatReadableDate";
 import Loading from "./ui/Loading";
 import { OrderStatus } from "../types/orders";
 import DottedDivider from "./ui/DottedDivider";
+import { formatCurrency } from "../utils/formatCurrency";
 
 type StaffQRResultScreenRouteProps = RouteProp<
   RootStackParamLists,
@@ -76,6 +79,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
   //   console.log("reservation data: ", reservationData);
   // }, [orderData, reservationData]);
 
+  // fetching order and reservation data
   useEffect(() => {
     if (!qrIdValue) return;
     if (!qrIdKey) return;
@@ -132,6 +136,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
     fetchData();
   }, [qrIdValue]);
 
+  // set qr key and value to state
   useEffect(() => {
     if (!qrResult) {
       setQrIdKey(null);
@@ -531,6 +536,11 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   const orderValid = (): React.JSX.Element => {
+    const calculatedPayable = 390230;
+    const handleAdditionalOrder = () => {
+      navigation.navigate("AdditionalOrderHomeScreen");
+    };
+
     return (
       <View style={{ flex: 1 }}>
         {/* Scrollable main content */}
@@ -707,6 +717,17 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                   borderRadius: 12,
                 }}
               >
+                <Text
+                  style={{
+                    color: "#FFFFFF",
+                    fontWeight: "700",
+                    fontSize: width * 0.05,
+                    alignSelf: "center",
+                    paddingBottom: height * 0.02,
+                  }}
+                >
+                  Base Orders
+                </Text>
                 {orderData.items.map((order, index) => (
                   <View
                     key={index}
@@ -738,10 +759,11 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                   </View>
                 ))}
 
+                <DottedDivider />
+
                 {/* total: */}
                 <View
                   style={{
-                    marginTop: height * 0.012,
                     flexDirection: "row",
                     marginBottom: 6,
                   }}
@@ -766,7 +788,80 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                       marginLeft: 10,
                     }}
                   >
-                    {orderData.total}
+                    {formatCurrency(orderData.total)}
+                  </Text>
+                </View>
+
+                {/* total: */}
+                <View
+                  style={{
+                    marginTop: height * 0.012,
+                    flexDirection: "row",
+                    marginBottom: 6,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontWeight: "700",
+                      fontSize: width * 0.047,
+                      flex: 1,
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    Already Covered
+                  </Text>
+
+                  {/* Already Covered*/}
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontWeight: "700",
+                      fontSize: width * 0.047,
+                      marginLeft: 10,
+                    }}
+                  >
+                    {/* {(reservationData.reservationAmount / 2).toLocaleString(
+                      undefined,
+                      {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      }
+                    )} */}
+
+                    {formatCurrency(reservationData.reservationAmount / 2)}
+                  </Text>
+                </View>
+
+                {/* payable*/}
+                <View
+                  style={{
+                    marginTop: height * 0.012,
+                    flexDirection: "row",
+                    marginBottom: 6,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontWeight: "700",
+                      fontSize: width * 0.047,
+                      flex: 1,
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    Payable
+                  </Text>
+
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontWeight: "700",
+                      fontSize: width * 0.047,
+                      marginLeft: 10,
+                    }}
+                  >
+                    {formatCurrency(calculatedPayable)}
                   </Text>
                 </View>
               </View>
@@ -774,22 +869,40 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
           )}
         </ScrollView>
 
-        {/* Done button fixed at bottom */}
+        {/* additional order, done  */}
         <View
           style={{
+            flexDirection: "row",
             paddingHorizontal: height * 0.02,
             position: "absolute",
-            bottom: height * 0.04,
+            bottom: height * 0.035,
             left: width * 0.04,
             right: width * 0.04,
+            gap: 12,
           }}
         >
+          {/* additional */}
           <TouchableOpacity
-            // onPress={(handleDone)}
+            onPress={handleAdditionalOrder}
+            style={{
+              paddingHorizontal: width * 0.02,
+              backgroundColor: "#EFD974",
+              justifyContent: "center",
+              borderRadius: width * 0.05,
+              alignItems: "center",
+            }}
+          >
+            <AdditionalOrders width={width * 0.2} height={width * 0.1} />
+          </TouchableOpacity>
+
+          {/* done */}
+          <TouchableOpacity
+            // onPress = {handleDone}
             onPress={() => navigation.navigate("StaffHomeScreen")}
             style={{
+              flex: 1,
               backgroundColor: "#8A1717",
-              paddingVertical: height * 0.026,
+              paddingVertical: height * 0.02,
               borderRadius: width * 0.05,
               alignItems: "center",
             }}

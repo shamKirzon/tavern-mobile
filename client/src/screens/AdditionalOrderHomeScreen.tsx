@@ -28,22 +28,22 @@ import Basket from "../assets/images/basket.svg";
 import { appetizers, mainCourse, desserts, drinks } from "../data/menu";
 import { useOrderStore } from "../stores/useOrderStore";
 
-type OrderHomeScreenNavigationProp = NativeStackNavigationProp<
+type AdditionalOrderHomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamLists,
-  "OrderHomeScreen"
+  "AdditionalOrderHomeScreen"
 >;
 
-type OrderHomeScreenRouteProp = RouteProp<
+type AdditionalOrderHomeScreenRouteProp = RouteProp<
   RootStackParamLists,
-  "OrderHomeScreen"
+  "AdditionalOrderHomeScreen"
 >;
 
 interface Props {
-  navigation: OrderHomeScreenNavigationProp;
-  route: OrderHomeScreenRouteProp;
+  navigation: AdditionalOrderHomeScreenNavigationProp;
+  route: AdditionalOrderHomeScreenRouteProp;
 }
 
-const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
+const AdditionalOrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
   const { orders } = useOrderStore();
   const allDrinks = Object.values(drinks).flat();
   const menuData = [...appetizers, ...mainCourse, ...desserts, ...allDrinks];
@@ -108,9 +108,9 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   const handleCustomizeOrder = (order: any) => {
-    navigation.navigate("CustomizationScreen", {
+    navigation.navigate("AdditionalOrderCustomizationScreen", {
       order,
-      from: "OrderHomeScreen",
+      from: "AdditionalOrderHome",
     });
   };
 
@@ -129,10 +129,38 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
         keyboardShouldPersistTaps="handled" // para maclick muna yung content nang di umaalis sa keyboard
         contentContainerStyle={{ alignItems: "center", paddingBottom: 100 }}
       >
+        {/* HEADER */}
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginTop: height * 0.08,
+            marginBottom: height * 0.02,
+            paddingHorizontal: width * 0.05,
+            width: "100%",
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={{ marginRight: width * 0.03, padding: width * 0.01 }}
+          >
+            <Text style={{ color: "#FFF", fontSize: width * 0.08 }}>‹</Text>
+          </TouchableOpacity>
+          <Text
+            style={{
+              color: "#FFF",
+              fontSize: width * 0.065,
+              fontWeight: "700",
+            }}
+          >
+            Back
+          </Text>
+        </View>
+
         <View style={styles.content}>
-          <Text style={styles.menuTitle}>Welcome to Tavern Asia!</Text>
+          {/* <Text style={styles.menuTitle}>Welcome to Tavern Asia!</Text> */}
           {/* search bar */}
-          <View style={styles.searchContainer}>
+          {/* <View style={styles.searchContainer}>
             <SearchIcon width={22} height={22} style={{ marginRight: 1 }} />
             <TextInput
               placeholder="What food do you crave?"
@@ -148,10 +176,10 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
                 },
               ]}
             />
-          </View>
+          </View> */}
 
           {/* search results */}
-          {query.trim() !== "" && (
+          {/* {query.trim() !== "" && (
             <View style={styles.dropdownContainer}>
               {filteredData.length > 0 ? (
                 filteredData.map((item, index) => (
@@ -173,10 +201,10 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
                 <Text style={styles.noResult}>No results found</Text>
               )}
             </View>
-          )}
+          )} */}
 
           {/* special promos */}
-          <Text style={styles.menuTitle}>Special Promos</Text>
+          {/* <Text style={styles.menuTitle}>Special Promos</Text>
           <View style={{ width: "100%", height: 147, marginBottom: 25 }}>
             <ScrollView
               horizontal
@@ -194,7 +222,7 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
                 <Promo2 width="100%" height="100%" />
               </View>
             </ScrollView>
-          </View>
+          </View> */}
           {/* Category Icons */}
           <View style={styles.categoryContainer}>
             <TouchableOpacity
@@ -415,7 +443,7 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
       {/* 🟢 Fixed Basket Bar at bottom */}
       <TouchableOpacity
         style={styles.basketBar}
-        onPress={() => navigation.navigate("CartScreen")}
+        onPress={() => navigation.navigate("AdditionalOrderCartScreen")}
       >
         <Basket width={28} height={28} style={{ marginRight: 8 }} />
         <Text style={styles.basketText}>Basket</Text>
@@ -445,7 +473,6 @@ const styles = StyleSheet.create({
   content: {
     width: "90%",
     alignItems: "center",
-    marginTop: height * 0.08,
   },
   input: {
     width: "100%",
@@ -638,4 +665,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default OrderHomeScreen;
+export default AdditionalOrderHomeScreen;

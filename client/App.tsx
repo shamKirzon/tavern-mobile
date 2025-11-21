@@ -23,6 +23,9 @@ import ReservationStatusScreen from "./src/screens/ReservationStatusScreen";
 import StaffHomeScreen from "./src/screens/StaffHomeScreen";
 import StaffQRScannerScreen from "./src/screens/StaffQRScannerScreen";
 import StaffQRResultScreen from "./src/screens/StaffQRResultScreen";
+import AdditionalOrderHomeScreen from "./src/screens/AdditionalOrderHomeScreen";
+import AdditionalOrderCustomizationScreen from "./src/screens/AdditionalOrderCustomizationScreen";
+import AdditionalOrderCartScreen from "./src/screens/AdditionalOrderCartScreen";
 
 const App = () => {
   const [fontsLoaded] = useFonts({
@@ -38,7 +41,7 @@ const App = () => {
   useEffect(() => {
     const verifyToken = async () => {
       // await deleteToken();
-      // await updateToken({ orderId: null });
+      // await updateToken({ orderId: "752a6f8a-1c7f-4294-8649-b8a2b8bce249" });
       await checkToken();
     };
 
@@ -114,6 +117,21 @@ const App = () => {
           <Stack.Screen
             name="StaffQRResultScreen"
             component={StaffQRResultScreen}
+          />
+
+          <Stack.Screen
+            name="AdditionalOrderHomeScreen"
+            component={AdditionalOrderHomeScreen}
+          />
+
+          <Stack.Screen
+            name="AdditionalOrderCustomizationScreen"
+            component={AdditionalOrderCustomizationScreen}
+          />
+
+          <Stack.Screen
+            name="AdditionalOrderCartScreen"
+            component={AdditionalOrderCartScreen}
           />
         </Stack.Navigator>
       </NavigationContainer>

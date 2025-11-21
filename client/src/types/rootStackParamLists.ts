@@ -31,4 +31,11 @@ export type RootStackParamLists = {
     qrResult?: { reservationId: string } | { orderId: string };
     isValid: boolean;
   };
+
+  AdditionalOrderHomeScreen: undefined;
+  AdditionalOrderCustomizationScreen: {
+    order?: any;
+    from: "AdditionalOrderHome" | "AdditionalOrderCart";
+  };
+  AdditionalOrderCartScreen: undefined;
 };
