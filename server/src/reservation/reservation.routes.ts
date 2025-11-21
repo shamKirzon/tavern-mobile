@@ -24,6 +24,11 @@ reservationRoutes.get(
   reservationController.getReservationAmount
 );
 
+reservationRoutes.post(
+  "/assign-employee-id",
+  reservationController.assignEmployeeId
+);
+
 // for contentType: multipart/form-data
 reservationRoutes.post(
   "/upload-image",
