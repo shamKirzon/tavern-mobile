@@ -430,10 +430,10 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
               textAlign: "center",
             }}
           >
-            QR Code Error
+            {isValid == false ? "QR Code Invalid" : "QR Code Expired"}
           </Text>
 
-          <View style={{ paddingHorizontal: width * 0.05 }}>
+          <View style={{ paddingHorizontal: width * 0.01 }}>
             <Text
               style={{
                 marginTop: width * 0.02,
@@ -444,8 +444,9 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                 textAlign: "center",
               }}
             >
-              This QR code is no longer valid. It may have expired or has
-              already been used.
+              {isValid === false
+                ? "This QR code can't be recognized. It may be incorrect, not found, or not issued by the Tavern."
+                : "This QR code is no longer valid. It may have expired or has already been used."}
             </Text>
           </View>
         </ScrollView>
@@ -497,7 +498,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
           }}
         />
 
-        {isReservationStatusInvalid
+        {isReservationStatusInvalid || isValid == false // para makuha niya yung invalid galinlg sa scanner
           ? reservationInvalid()
           : isValid && qrIdKey === "reservationId"
           ? reservationValid()

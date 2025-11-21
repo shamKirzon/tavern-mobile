@@ -38,7 +38,6 @@ const App = () => {
   useEffect(() => {
     const verifyToken = async () => {
       // await deleteToken();
-
       // await updateToken({ orderId: null });
       await checkToken();
     };
@@ -52,7 +51,7 @@ const App = () => {
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
-          initialRouteName="StaffHomeScreen"
+          initialRouteName="WelcomeScreen"
           screenOptions={{ headerShown: false, animation: "none" }}
         >
           <Stack.Screen
