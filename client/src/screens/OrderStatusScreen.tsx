@@ -28,6 +28,7 @@ import {
 import { ReservationData } from "../types/reservation";
 import { getReservationData } from "../services/reservation";
 import { formatReadableDate } from "../utils/formatReadableDate";
+import DottedDivider from "./ui/DottedDivider";
 type OrderStatusScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamLists,
   "OrderStatusScreen"
@@ -210,27 +211,16 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
               </Text>
             </TouchableOpacity>
 
-            <Animated.Text
+            <Text
               style={{
                 color: "white",
                 fontSize: width * 0.08,
                 fontWeight: "bold",
-                opacity: fadeAnim,
-                transform: [{ translateY: slideAnim }],
               }}
             >
               Order Complete
-            </Animated.Text>
+            </Text>
           </View>
-
-          <View
-            style={{
-              height: 1,
-              backgroundColor: "white",
-              opacity: 0.3,
-              marginTop: 25,
-            }}
-          />
         </View>
 
         <ScrollView
@@ -314,7 +304,7 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
             </Text>
 
             {/* Reservation Details */}
-            <View style={{ marginBottom: 1 }}>
+            <View>
               <View
                 style={{
                   flexDirection: "row",
@@ -453,15 +443,7 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
             </View>
 
             {/* Dotted Divider */}
-            <View
-              style={{
-                borderTopWidth: 1,
-                borderColor: "white",
-                borderStyle: "dotted",
-                opacity: 0.4,
-                marginVertical: 15,
-              }}
-            />
+            <DottedDivider />
 
             {/* Order Items */}
             {orderData.items.map((item, index) => (

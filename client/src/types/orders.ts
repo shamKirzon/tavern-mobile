@@ -27,3 +27,5 @@ export interface orderStore {
   ) => void;
   clearOrders: () => void;
 }
+
+export type OrderStatus = "pending" | "cancelled" | "done";

@@ -11,6 +11,7 @@ import React, { use, useEffect, useState } from "react";
 import { width, height } from "../utils/dimensions";
 import MainBackground from "../assets/backgrounds/main-background.svg";
 import ReservationVerified from "../assets/icons/reservation-verified.svg";
+import OrderSummaryReceipt from "../assets/icons/order-summary-receipt.svg";
 import ReservationInvalid from "../assets/icons/reservation-invalid.svg";
 
 import { RouteProp } from "@react-navigation/native";
@@ -26,7 +27,8 @@ import { getOrderData } from "../services/order";
 import { assignSecurityId, getReservationData } from "../services/reservation";
 import { formatReadableDate } from "../utils/formatReadableDate";
 import Loading from "./ui/Loading";
-import { useReservationStore } from "../stores/useReservationStore";
+import { OrderStatus } from "../types/orders";
+import DottedDivider from "./ui/DottedDivider";
 
 type StaffQRResultScreenRouteProps = RouteProp<
   RootStackParamLists,
@@ -56,23 +58,69 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
     useState<boolean>(false);
 
   // order
-  const [orderData, setOrderData] = useState<any>();
+  const [orderData, setOrderData] = useState<{
+    items: { orderName: string; price: number }[];
+    total: number;
+    orderStatus: OrderStatus;
+    reservationId: string;
+  }>({
+    items: [],
+    total: 0,
+    orderStatus: "pending",
+    reservationId: "",
+  });
+
+  // testing
+  // useEffect(() => {
+  //   console.log("reservation Id", orderData.reservationId);
+  //   console.log("reservation data: ", reservationData);
+  // }, [orderData, reservationData]);
 
   useEffect(() => {
     if (!qrIdValue) return;
+    if (!qrIdKey) return;
 
     const fetchData = async () => {
       try {
+        // example:
         setIsLoading(true);
 
-        const reservationInformation = await getReservationInformation(
-          qrIdValue
-        );
-        setReservationData(reservationInformation);
+        if (qrIdKey === "reservationId") {
+          const reservationInformation = await getReservationInformation(
+            qrIdValue
+          );
+          setReservationData(reservationInformation);
 
-        // check if the reservation status is valid or not:
-        if (reservationInformation.reservationStatus === "done") {
-          setIsReservationInvalid(true);
+          // validation of registered qr:
+          if (reservationInformation.reservationStatus === "done") {
+            setIsReservationInvalid(true);
+          }
+        }
+
+        // Cashier
+        else if (qrIdKey === "orderId") {
+          const orderInformation = await getOrderInformation(qrIdValue);
+          if (!orderInformation)
+            throw new Error("No returned order information");
+
+          // for order data:
+          setOrderData({
+            items: orderInformation.orderItems.map((item: any) => ({
+              orderName: item.orderName,
+              price: item.price,
+            })),
+            total: orderInformation.total,
+            orderStatus: orderInformation.orderStatus,
+            reservationId: orderInformation.reservationId,
+          });
+
+          // getting the reservation data:
+          const reservationInformation = await getReservationInformation(
+            orderInformation.reservationId
+          );
+          setReservationData(reservationInformation);
+        } else {
+          throw new Error("Can't insert corresponding data in states");
         }
       } catch (error) {
         console.log("error in fetching data: ", error);
@@ -101,16 +149,20 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
   }, [qrResult]);
 
   // functions:
-
   const handleDone = async () => {
     try {
+      // if same button lang naman
       // add conditional statement depends on the role of the staff:
       // if(employeeRole === "security") // this logic: else if (employeeRole ==="cashier")// some logic else return (to avoid the null)
       const employeeId = await getEmployeeIdByToken();
 
       if (!qrIdValue) return;
 
+      // reservation: assigning securityid
       const result = await assignSecurityId(employeeId, qrIdValue);
+
+      // order: assigning cashierid
+      // reservation and order status = "done"
 
       if (!result)
         throw new Error("Error in assigning employee id in reservation");
@@ -165,16 +217,15 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
     };
   };
 
-  const getOrderInformation = async () => {
-    // to be continued... same format lang nung nasa order history natin
-    const orderId = await getOrderIdByToken();
-
+  const getOrderInformation = async (id: string) => {
     const {
-      created_at: createdAt,
       order_items: orderItems,
-      qr_code_url: QRCodeUrl,
       total,
-    } = await getOrderData(orderId);
+      order_status: orderStatus,
+      reservation_id: reservationId,
+    } = await getOrderData(id);
+
+    return { orderItems, total, orderStatus, reservationId };
   };
 
   // function jsx:
@@ -230,9 +281,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
             {getCurrentDateAndTime()}
           </Text>
 
-          {isLoading ? (
-            <Text style={{ color: "#fff", marginTop: 20 }}>Loading...</Text>
-          ) : reservationData ? (
+          {reservationData && (
             <View
               style={{
                 width: "100%",
@@ -251,7 +300,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                   marginBottom: 6,
                 }}
               >
-                <Text style={{ color: "#FFFFFF", fontSize: width * 0.045 }}>
+                <Text style={{ color: "#FFFFFF", fontSize: width * 0.04 }}>
                   Name:
                 </Text>
                 <Text
@@ -273,7 +322,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                   marginBottom: 6,
                 }}
               >
-                <Text style={{ color: "#FFFFFF", fontSize: width * 0.045 }}>
+                <Text style={{ color: "#FFFFFF", fontSize: width * 0.04 }}>
                   Date:
                 </Text>
                 <Text
@@ -295,7 +344,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                   marginBottom: 6,
                 }}
               >
-                <Text style={{ color: "#FFFFFF", fontSize: width * 0.045 }}>
+                <Text style={{ color: "#FFFFFF", fontSize: width * 0.04 }}>
                   Reservation Type:
                 </Text>
                 <Text
@@ -318,7 +367,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                   marginBottom: 6,
                 }}
               >
-                <Text style={{ color: "#FFFFFF", fontSize: width * 0.045 }}>
+                <Text style={{ color: "#FFFFFF", fontSize: width * 0.04 }}>
                   Guests:
                 </Text>
                 <Text
@@ -340,7 +389,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                   marginBottom: 6,
                 }}
               >
-                <Text style={{ color: "#FFFFFF", fontSize: width * 0.045 }}>
+                <Text style={{ color: "#FFFFFF", fontSize: width * 0.04 }}>
                   Reservation Fee:
                 </Text>
                 <Text
@@ -354,10 +403,6 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                 </Text>
               </View>
             </View>
-          ) : (
-            <Text style={{ color: "#fff", marginTop: 20 }}>
-              No reservation data found
-            </Text>
           )}
         </ScrollView>
 
@@ -485,6 +530,285 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
     );
   };
 
+  const orderValid = (): React.JSX.Element => {
+    return (
+      <View style={{ flex: 1 }}>
+        {/* Scrollable main content */}
+        <ScrollView
+          contentContainerStyle={{
+            marginTop: height * 0.1,
+            alignItems: "center",
+            paddingHorizontal: width * 0.07,
+            paddingBottom: 120,
+          }}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Icon */}
+          <View
+            style={{
+              width: width * 0.22,
+              height: width * 0.22,
+              borderRadius: 100,
+              backgroundColor: "#fff",
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: 20,
+            }}
+          >
+            <OrderSummaryReceipt width={52} />
+          </View>
+
+          <Text
+            style={{
+              color: "#fff",
+              fontWeight: "bold",
+              fontSize: width * 0.07,
+              fontFamily: "Inter",
+              marginTop: 10,
+            }}
+          >
+            Order Summary Receipt
+          </Text>
+
+          <Text
+            style={{
+              marginTop: width * 0.02,
+              color: "#fff",
+              fontWeight: "300",
+              fontSize: width * 0.043,
+              fontFamily: "Inter",
+            }}
+          >
+            {getCurrentDateAndTime()}
+          </Text>
+
+          {reservationData && orderData && (
+            <>
+              <View
+                style={{
+                  width: "100%",
+                  marginTop: height * 0.035,
+                  borderRadius: 12,
+                }}
+              >
+                {/* Name */}
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginBottom: 6,
+                  }}
+                >
+                  <Text style={{ color: "#FFFFFF", fontSize: width * 0.04 }}>
+                    Name:
+                  </Text>
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontSize: width * 0.045,
+                    }}
+                  >
+                    {reservationData.name}
+                  </Text>
+                </View>
+
+                {/* Date */}
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginBottom: 6,
+                  }}
+                >
+                  <Text style={{ color: "#FFFFFF", fontSize: width * 0.04 }}>
+                    Date:
+                  </Text>
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontSize: width * 0.045,
+                    }}
+                  >
+                    {formatReadableDate(reservationData.date)}
+                  </Text>
+                </View>
+
+                {/* Type */}
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginBottom: 6,
+                  }}
+                >
+                  <Text style={{ color: "#FFFFFF", fontSize: width * 0.04 }}>
+                    Reservation Type:
+                  </Text>
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontSize: width * 0.045,
+                    }}
+                  >
+                    {reservationData.reservationType.charAt(0).toUpperCase() +
+                      reservationData.reservationType.slice(1)}
+                  </Text>
+                </View>
+
+                {/* Guests */}
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginBottom: 6,
+                  }}
+                >
+                  <Text style={{ color: "#FFFFFF", fontSize: width * 0.04 }}>
+                    Guests:
+                  </Text>
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontSize: width * 0.045,
+                    }}
+                  >
+                    {reservationData.pax}
+                  </Text>
+                </View>
+
+                {/* Fee */}
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginBottom: 6,
+                  }}
+                >
+                  <Text style={{ color: "#FFFFFF", fontSize: width * 0.04 }}>
+                    Reservation Fee:
+                  </Text>
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontSize: width * 0.045,
+                    }}
+                  >
+                    ₱ {reservationData.reservationAmount.toLocaleString()}
+                  </Text>
+                </View>
+              </View>
+
+              {<DottedDivider />}
+
+              {/* order items:  */}
+              <View
+                style={{
+                  width: "100%",
+                  borderRadius: 12,
+                }}
+              >
+                {orderData.items.map((order, index) => (
+                  <View
+                    key={index}
+                    style={{
+                      flexDirection: "row",
+                      marginBottom: 6,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "#FFFFFF",
+                        fontSize: width * 0.04,
+                        flex: 1,
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      {order.orderName}
+                    </Text>
+
+                    <Text
+                      style={{
+                        color: "#FFFFFF",
+                        fontSize: width * 0.045,
+                        marginLeft: 10,
+                      }}
+                    >
+                      {order.price.toFixed(2).toLocaleString()}
+                    </Text>
+                  </View>
+                ))}
+
+                {/* total: */}
+                <View
+                  style={{
+                    marginTop: height * 0.012,
+                    flexDirection: "row",
+                    marginBottom: 6,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontWeight: "700",
+                      fontSize: width * 0.047,
+                      flex: 1,
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    Total
+                  </Text>
+
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontWeight: "700",
+                      fontSize: width * 0.047,
+                      marginLeft: 10,
+                    }}
+                  >
+                    {orderData.total}
+                  </Text>
+                </View>
+              </View>
+            </>
+          )}
+        </ScrollView>
+
+        {/* Done button fixed at bottom */}
+        <View
+          style={{
+            paddingHorizontal: height * 0.02,
+            position: "absolute",
+            bottom: height * 0.04,
+            left: width * 0.04,
+            right: width * 0.04,
+          }}
+        >
+          <TouchableOpacity
+            // onPress={(handleDone)}
+            onPress={() => navigation.navigate("StaffHomeScreen")}
+            style={{
+              backgroundColor: "#8A1717",
+              paddingVertical: height * 0.026,
+              borderRadius: width * 0.05,
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                color: "#ffffff",
+                fontSize: width * 0.055,
+                fontWeight: "600",
+              }}
+            >
+              Done
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
   return (
     <>
       {isLoading && Loading("")}
@@ -502,9 +826,9 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
           ? reservationInvalid()
           : isValid && qrIdKey === "reservationId"
           ? reservationValid()
-          : // : isValid && qrIdKey === "orderId"
-            // ? orderValid()
-            null}
+          : isValid && qrIdKey === "orderId"
+          ? orderValid()
+          : null}
       </View>
     </>
   );

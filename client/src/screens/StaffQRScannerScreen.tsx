@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { width, height } from "../utils/dimensions";
 import MainBackground from "../assets/backgrounds/main-background.svg";
 import LogoutModal from "../assets/icons/logout-staff-scanner-modal.svg";
@@ -89,7 +89,6 @@ const StaffQRScannerScreen: React.FC<Props> = ({ navigation }) => {
       if (!scannedData) {
         const encrypted = barcode.data;
 
-        // setIsLoading(true);
         const decrypted = await decryptQr(encrypted);
         const decryptedJson = JSON.parse(decrypted);
 
