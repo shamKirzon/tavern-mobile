@@ -117,7 +117,7 @@ class ReservationRepository {
 
       return data;
     } catch (error) {
-      console.error("reservationRepository/assignEmployeeId ", error);
+      console.error("reservationRepository/assignSecurityId ", error);
     }
   }
 }

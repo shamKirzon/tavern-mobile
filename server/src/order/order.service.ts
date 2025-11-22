@@ -43,6 +43,26 @@ class OrderService {
       console.error("error in getting the order information: ", error);
     }
   }
+
+  async updateOrderItems(orderId: string, updatedOrders: any): Promise<any> {
+    try {
+      return await orderRepository.updateOrderItems(orderId, updatedOrders);
+    } catch (error: any) {
+      console.error("error in updating order items  ", error);
+    }
+  }
+
+  async assignCashierId(employeeId: string, orderId: string): Promise<any> {
+    try {
+      return await orderRepository.assignCashierId(employeeId, orderId);
+    } catch (error) {}
+  }
+
+  async completeOrder(orderId: string): Promise<any> {
+    try {
+      return await orderRepository.completeOrder(orderId);
+    } catch (error) {}
+  }
 }
 
 export const orderService = new OrderService();
