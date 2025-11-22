@@ -11,6 +11,7 @@ import React, { use, useEffect, useState } from "react";
 import { width, height } from "../utils/dimensions";
 
 import AdditionalOrders from "../assets/icons/additional-order.svg";
+import ModalAdditionalOrderIcon from "../assets/icons/modal-additional-order-icon.svg";
 import MainBackground from "../assets/backgrounds/main-background.svg";
 import ReservationVerified from "../assets/icons/reservation-verified.svg";
 import OrderSummaryReceipt from "../assets/icons/order-summary-receipt.svg";
@@ -1193,7 +1194,11 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                   marginTop: height * 0.05,
                 }}
               >
-                <OrderSummaryReceipt width={52} />
+                {isAddiOrderClicked ? (
+                  <ModalAdditionalOrderIcon width={52} />
+                ) : (
+                  <OrderSummaryReceipt width={52} />
+                )}
               </View>
 
               <Text
