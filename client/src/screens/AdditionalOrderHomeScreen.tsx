@@ -145,7 +145,9 @@ const AdditionalOrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
           }}
         >
           <TouchableOpacity
-            onPress={() => navigation.goBack()}
+            onPress={() =>
+              navigation.navigate("StaffQRResultScreen", { isValid, qrResult })
+            }
             style={{ marginRight: width * 0.03, padding: width * 0.01 }}
           >
             <Text style={{ color: "#FFF", fontSize: width * 0.08 }}>‹</Text>

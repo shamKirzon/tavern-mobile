@@ -81,11 +81,6 @@ const StaffHomeScreen: React.FC<Props> = ({ navigation }) => {
     initialize();
   }, []);
 
-  // testing:
-  useEffect(() => {
-    console.log("Current Employee Role:", employeeRole);
-  }, [employeeRole]);
-
   // functions:
   const showPINError = () => {
     setIsPinError(true);

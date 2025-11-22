@@ -19,12 +19,7 @@ import ReservationInvalid from "../assets/icons/reservation-invalid.svg";
 import { RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamLists } from "../types/rootStackParamLists";
-import { useEmployeeStore } from "../stores/useEmployeeStore";
-import {
-  getEmployeeIdByToken,
-  getOrderIdByToken,
-  getReservationIdByToken,
-} from "../services/token";
+import { getEmployeeIdByToken } from "../services/token";
 import { getOrderData } from "../services/order";
 import { assignSecurityId, getReservationData } from "../services/reservation";
 import { formatReadableDate } from "../utils/formatReadableDate";
@@ -49,11 +44,11 @@ interface Props {
 }
 
 const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
-  const { qrResult, isValid, additionalOrder } = route.params;
   const { orders } = useOrderStore();
+  const { qrResult, isValid, additionalOrder } = route.params;
+  const [modalVisible, setModalVisible] = useState(false);
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [employeeId, setEmployeeId] = useState<string>("");
-  const [reservationId, setReservationId] = useState<string>("");
   const [qrIdKey, setQrIdKey] = useState<string | null>("");
   const [qrIdValue, setQrIdValue] = useState<string | null>("");
 
@@ -63,6 +58,9 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
     useState<boolean>(false);
 
   // order
+  const [isAddiOrderClicked, setIsAddiOrderClicked] = useState<boolean>(false);
+  const [rawOrderData, setRawOrderData] = useState();
+
   const [orderData, setOrderData] = useState<{
     items: { orderName: string; price: number; total: number }[];
     total: number;
@@ -74,12 +72,6 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
     orderStatus: "pending",
     reservationId: "",
   });
-
-  // testing
-  // useEffect(() => {
-  //   console.log("reservation Id", orderData.reservationId);
-  //   console.log("reservation data: ", reservationData);
-  // }, [orderData, reservationData]);
 
   // fetching order and reservation data
   useEffect(() => {
@@ -161,32 +153,85 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   }, [qrResult]);
 
+  // useEffect(() => {
+  //   console.log("_______________________________________");
+  //   console.log("Old Orders:", rawOrderData);
+  //   console.log("_______________________________________");
+  //   console.log("Additional Orders:", additionalOrder);
+  //   console.log("_______________________________________");
+  // }, [additionalOrder, orderData]);
+
   // if it has an additional order:
 
   // functions:
+
+  const handleAdditionalOrder = () => {
+    setModalVisible(false);
+    setIsAddiOrderClicked(false);
+    if (!qrResult) return;
+    navigation.navigate("AdditionalOrderHomeScreen", { isValid, qrResult });
+  };
+
   const handleDone = async () => {
     try {
-      // if same button lang naman
-      // add conditional statement depends on the role of the staff:
-      // if(employeeRole === "security") // this logic: else if (employeeRole ==="cashier")// some logic else return (to avoid the null)
+      if (!qrIdKey) return;
+
       const employeeId = await getEmployeeIdByToken();
+      if (!qrIdValue) throw new Error("Can't fetch the employee id. ");
 
-      if (!qrIdValue) return;
+      // security
+      if (qrIdKey === "reservationId") {
+        const result = await assignSecurityId(employeeId, qrIdValue);
+        if (!result)
+          throw new Error("Can't assign security id in this reservation.");
+      }
+      // cashier
+      else if (qrIdKey === "orderId") {
+        setModalVisible(true);
 
-      // reservation: assigning securityid
-      const result = await assignSecurityId(employeeId, qrIdValue);
+        if (additionalOrder) {
+          const updatedOrders = addAdditionalOrders(
+            rawOrderData,
+            additionalOrder
+          );
 
-      // order: assigning cashierid
-      // reservation and order status = "done"
+          //  const res = await updateOrderItems(updatedOrders)
+        }
 
-      if (!result)
-        throw new Error("Error in assigning employee id in reservation");
+        // assignCashierId
+        // completeReservation(qrIdValue)
+        // updateOrder(updatedOrder) =
+        // completeOrder(qrIdValue)
 
-      navigation.navigate("StaffQRScannerScreen");
+        setModalVisible(false);
+      }
+
+      // !!!!!!!!! DONT FORGET TO UNCOMMENT
+      // navigation.navigate("StaffQRScannerScreen");
     } catch (error) {
       console.error("error in handleDone: ", error);
     }
   };
+
+  //
+
+  function addAdditionalOrders(originalOrders: any, newOrders: any) {
+    const total = originalOrders.total + newOrders.total;
+
+    const updatedJson = {
+      originalOrders: {
+        items: originalOrders.order_items,
+        total: originalOrders.total,
+      },
+      newOrders: {
+        items: newOrders.orderItems,
+        total: newOrders.total,
+      },
+      total,
+    };
+
+    return updatedJson;
+  }
 
   const getCurrentDateAndTime = (): string => {
     const now = new Date();
@@ -233,13 +278,17 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   const getOrderInformation = async (id: string) => {
+    const res = await getOrderData(id);
+    if (!res) return;
+
+    setRawOrderData(res);
+
     const {
       order_items: orderItems,
       total,
       order_status: orderStatus,
       reservation_id: reservationId,
-    } = await getOrderData(id);
-
+    } = res;
     return { orderItems, total, orderStatus, reservationId };
   };
 
@@ -564,10 +613,6 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
 
       return formatCurrency(calculatedAmount);
     };
-    const handleAdditionalOrder = () => {
-      if (!qrResult) return;
-      navigation.navigate("AdditionalOrderHomeScreen", { isValid, qrResult });
-    };
 
     return (
       <View style={{ flex: 1 }}>
@@ -620,6 +665,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
             {getCurrentDateAndTime()}
           </Text>
 
+          {/* reservation and order content  */}
           {reservationData && orderData && (
             <>
               <View
@@ -1046,7 +1092,10 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
         >
           {/* additional */}
           <TouchableOpacity
-            onPress={handleAdditionalOrder}
+            onPress={() => {
+              setIsAddiOrderClicked(true);
+              setModalVisible(true);
+            }}
             style={{
               paddingHorizontal: width * 0.02,
               backgroundColor: "#EFD974",
@@ -1058,10 +1107,9 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
             <AdditionalOrders width={width * 0.2} height={width * 0.1} />
           </TouchableOpacity>
 
-          {/* done */}
+          {/* order valid done */}
           <TouchableOpacity
-            // onPress = {handleDone}
-            onPress={() => navigation.navigate("StaffHomeScreen")}
+            onPress={() => setModalVisible(true)}
             style={{
               flex: 1,
               backgroundColor: "#8A1717",
@@ -1085,9 +1133,142 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
     );
   };
 
+  // main jsx return:
   return (
     <>
       {isLoading && Loading("")}
+
+      {/* order handle done modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Pressable
+            onPress={() => Keyboard.dismiss()}
+            style={{
+              flex: 1,
+              width: "100%",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              justifyContent: "center",
+              alignItems: "center",
+              paddingHorizontal: width * 0.08,
+            }}
+          >
+            <Pressable
+              onPress={() => {}}
+              style={{
+                backgroundColor: "#171717",
+                padding: width * 0.06,
+                borderRadius: width * 0.06,
+                width: "100%",
+                alignItems: "center",
+                paddingBottom: height * 0.04,
+                borderWidth: 1,
+                borderColor: "rgba(255, 255, 255, 0.08)",
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 8 },
+                shadowOpacity: 0.4,
+                shadowRadius: 24,
+                elevation: 16,
+              }}
+            >
+              {/* Icon */}
+              <View
+                style={{
+                  width: width * 0.22,
+                  height: width * 0.22,
+                  borderRadius: 100,
+                  backgroundColor: "#fff",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: height * 0.05,
+                }}
+              >
+                <OrderSummaryReceipt width={52} />
+              </View>
+
+              <Text
+                style={{
+                  paddingTop: height * 0.02,
+                  color: "#fff",
+                  fontSize: width * 0.06,
+                  fontWeight: "bold",
+                }}
+              >
+                {isAddiOrderClicked
+                  ? "Need to Add Extra Orders?"
+                  : "Proceed Finalyze Payment"}
+              </Text>
+
+              {/* subtext:  */}
+              <Text
+                style={{
+                  paddingTop: height * 0.008,
+                  textAlign: "center",
+                  color: "#fff",
+                  fontSize: width * 0.04,
+                  fontWeight: "200",
+                  marginBottom: height * 0.03,
+                }}
+              >
+                {isAddiOrderClicked
+                  ? "You can include extra food, drinks, or sides before payment."
+                  : "This action will mark the order as paid and cannot be undone. "}
+              </Text>
+
+              {/* Buttons */}
+              <View style={{ flexDirection: "row", gap: width * 0.04 }}>
+                {["Cancel", "Yes, Proceed"].map((item, index) => (
+                  <Pressable
+                    key={index}
+                    style={({ pressed }) => ({
+                      backgroundColor: index === 0 ? "#FFFF" : "#8A1717",
+                      paddingVertical: height * 0.02,
+                      borderRadius: width * 0.03,
+                      alignItems: "center",
+                      width: width * 0.34,
+                      opacity: pressed ? 0.7 : 1,
+                      transform: [{ scale: pressed ? 0.97 : 1 }],
+                    })}
+                    onPress={() => {
+                      {
+                        if (index === 0) {
+                          setModalVisible(false);
+                          setIsAddiOrderClicked(false);
+                        } else if (index === 1) {
+                          isAddiOrderClicked
+                            ? handleAdditionalOrder()
+                            : handleDone();
+                        }
+                      }
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: index === 0 ? "#8A1717" : "#FFFF",
+                        fontSize: width * 0.04,
+                        fontWeight: "600",
+                      }}
+                    >
+                      {item}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            </Pressable>
+          </Pressable>
+        </View>
+      </Modal>
+
       <View style={{ flex: 1 }}>
         {/* Background */}
         <MainBackground

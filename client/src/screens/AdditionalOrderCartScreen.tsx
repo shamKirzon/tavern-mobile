@@ -65,9 +65,11 @@ const AdditionalOrderCartScreen: React.FC<Props> = ({ route, navigation }) => {
   };
 
   const editItem = (order: any) => {
-    navigation.navigate("CustomizationScreen", {
+    navigation.navigate("AdditionalOrderCustomizationScreen", {
       order,
-      from: "CartScreen",
+      isValid,
+      qrResult,
+      from: "AdditionalOrderCart",
     });
   };
 
@@ -337,7 +339,12 @@ const AdditionalOrderCartScreen: React.FC<Props> = ({ route, navigation }) => {
                     paddingHorizontal: width * 0.1,
                     borderRadius: width * 0.03,
                   }}
-                  onPress={() => navigation.navigate("OrderHomeScreen")}
+                  onPress={() =>
+                    navigation.navigate("AdditionalOrderHomeScreen", {
+                      isValid,
+                      qrResult,
+                    })
+                  }
                 >
                   <Text
                     style={{
