@@ -1,5 +1,5 @@
 import { supabase } from "../lib/supabase-client";
-import { ReservationData } from "../types/reservation";
+import { ReservationData } from "../types/Reservation";
 
 class ReservationRepository {
   async createReservation(reservationData: ReservationData) {
@@ -100,6 +100,24 @@ class ReservationRepository {
       return data;
     } catch (error) {
       console.error("error in getting reservation amount ", error);
+    }
+  }
+
+  async assignSecurityId(employeeId: string, reservationId: string) {
+    try {
+      // modify this:
+      const { data, error } = await supabase
+        .from("reservations")
+        .update({ assigned_security_id: employeeId })
+        .eq("reservation_id", reservationId)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      return data;
+    } catch (error) {
+      console.error("reservationRepository/assignSecurityId ", error);
     }
   }
 }

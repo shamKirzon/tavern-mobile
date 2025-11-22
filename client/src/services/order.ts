@@ -5,7 +5,6 @@ import { getEmailByToken } from "./token";
 
 export const createOrder = async (order: ordersData) => {
   try {
-    console.log("from create order: ", order);
     const email = await getEmailByToken();
     const reservationId = await getReservationIdByToken();
     const res = await axiosInstance.post("/order/create-order", {
@@ -28,9 +27,57 @@ export const getOrderData = async (orderId: string) => {
     const res = await axiosInstance.get(`/order/get-order-data/${orderId}`);
     if (!res) return console.error("can't create a reservation");
 
-    console.log("MY DATA FROM BACKEND: ", res.data.result);
     return res.data.result;
   } catch (error) {
     console.error("services/orders/getOrderData() Error:", error);
+  }
+};
+
+export const updateOrderItems = async (orderId: string, updatedOrders: any) => {
+  try {
+    const res = await axiosInstance.post("/order/update-order-items", {
+      orderId,
+      updatedOrders,
+    });
+    if (!res) throw new Error("can't update order items");
+    console.log(
+      "ITO NA ANG RESULT GALING DB PARE",
+      JSON.stringify(res.data.result)
+    );
+
+    return res.data.result;
+  } catch (error) {
+    console.error("services/orders/updatedOrderItems() Error:", error);
+  }
+};
+
+export const assignCashierId = async (employeeId: string, orderId: string) => {
+  try {
+    const res = await axiosInstance.post("/order/assign-cashier-id", {
+      employeeId,
+      orderId,
+    });
+    if (!res)
+      return console.error("error in service/reservation/assignCashierId");
+
+    return res.data.result;
+  } catch (error) {
+    console.error("services/reservation/assignCashierId(). Error: ", error);
+  }
+};
+
+export const completeOrder = async (orderId: string) => {
+  try {
+    const res = await axiosInstance.post("/order/complete-order", {
+      orderId,
+    });
+    if (!res)
+      return console.error("error in service/reservation/completeOrder");
+
+    console.log({ message: res.data.message });
+
+    return res.data.message;
+  } catch (error) {
+    console.error("services/reservation/completeOrder(). Error: ", error);
   }
 };

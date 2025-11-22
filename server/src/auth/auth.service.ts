@@ -6,7 +6,7 @@ interface OtpValidationResult {
 }
 
 type TokenPayload = {
-  email: string;
+  email: string | null;
   reservationId?: string | null;
   orderId?: string | null;
   employeeId?: string | null;

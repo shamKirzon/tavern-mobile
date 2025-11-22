@@ -68,7 +68,7 @@ export const updateToken = async (update: any) => {
     await deleteToken();
     await saveToken(res.data);
 
-    const decodedToken = await jwtDecode<TokenPayLoad>(res.data.token);
+    const decodedToken = jwtDecode<TokenPayLoad>(res.data.token);
     const tokenInfo = {
       exp: decodedToken.exp,
       iat: decodedToken.iat,

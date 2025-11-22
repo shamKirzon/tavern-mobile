@@ -64,7 +64,6 @@ const StaffHomeScreen: React.FC<Props> = ({ navigation }) => {
         if (!employeeId) return;
 
         const role = await getEmployeeRole(employeeId);
-        console.log("role: ", role);
 
         setEmployeeRole(role);
 
@@ -81,11 +80,6 @@ const StaffHomeScreen: React.FC<Props> = ({ navigation }) => {
 
     initialize();
   }, []);
-
-  // testing:
-  useEffect(() => {
-    console.log("NEW EMPLOYEE ROLE BURATSKI HAHAHH: ", employeeRole);
-  }, [employeeRole]);
 
   // functions:
   const showPINError = () => {
@@ -140,8 +134,9 @@ const StaffHomeScreen: React.FC<Props> = ({ navigation }) => {
       };
 
       if (res) {
-        Alert.alert(`${selectedRole} Verified!`, `Code entered: ${code}`);
-        updateToken({ employeeId: res.employee_id });
+        navigation.navigate("StaffQRScannerScreen");
+        setEmployeeRole(selectedRole);
+        await updateToken({ employeeId: res.employee_id });
         setModalVisible(false);
         setDigitValues(["", "", "", "", ""]);
         setIsPinError(false);

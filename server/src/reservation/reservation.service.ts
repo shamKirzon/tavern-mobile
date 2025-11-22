@@ -1,4 +1,4 @@
-import { ReservationData, ReservationImageType } from "../types/reservation";
+import { ReservationData, ReservationImageType } from "../types/Reservation";
 import { reservationRepository } from "./reservation.repository";
 
 class ReservationService {
@@ -32,6 +32,21 @@ class ReservationService {
         reservationId
       );
       return amount?.reservation_amount;
+    } catch (error) {}
+  }
+
+  async assignSecurityId(
+    employeeId: string,
+    reservationId: string
+  ): Promise<any> {
+    try {
+      const result = await reservationRepository.assignSecurityId(
+        employeeId,
+        reservationId
+      );
+
+      console.log("service part: ", result);
+      return result;
     } catch (error) {}
   }
 }

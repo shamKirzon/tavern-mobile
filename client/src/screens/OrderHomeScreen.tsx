@@ -76,13 +76,6 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
     return null; // not found
   };
 
-  // testing part:
-  // useEffect(() => {
-  //   console.info("updated orders", orders);
-  // }, [orders]);
-
-  // functions:
-
   function isOrderExisting(name: string): boolean {
     return orders.orderItems.some((item) => item.orderName === name);
   }

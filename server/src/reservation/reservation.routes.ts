@@ -24,6 +24,11 @@ reservationRoutes.get(
   reservationController.getReservationAmount
 );
 
+reservationRoutes.post(
+  "/assign-security-id",
+  reservationController.assignSecurityId
+);
+
 // for contentType: multipart/form-data
 reservationRoutes.post(
   "/upload-image",

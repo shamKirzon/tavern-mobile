@@ -111,6 +111,34 @@ class ReservationController {
       return res.status(400).json({ message: "can't upload image" });
     }
   }
+
+  async assignSecurityId(req: Request, res: Response) {
+    try {
+      const { employeeId, reservationId } = req.body;
+
+      if (!reservationId)
+        return res.status(400).json({ message: "must have reservation id" });
+
+      const result = await reservationService.assignSecurityId(
+        employeeId,
+        reservationId
+      );
+
+      if (!result)
+        return res
+          .status(400)
+          .json({ message: "can't perform assigning employee id " });
+
+      return res
+        .status(200)
+        .json({ message: "assigned employee id successfully!", result });
+    } catch (error: any) {
+      console.error("reservationController/getReservationTotal(): ", error);
+      return res
+        .status(400)
+        .json({ message: "can't perform assigning employee id " });
+    }
+  }
 }
 
 export const reservationController = new ReservationController();

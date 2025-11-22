@@ -22,8 +22,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(rateLimiter);
-app.use(helmet());
-app.use(morgan("dev"));
+// app.use(helmet());
+// app.use(morgan("dev"));
 
 app.use("/api/customer", customerRoutes);
 app.use("/api/reservation", reservationRoutes);

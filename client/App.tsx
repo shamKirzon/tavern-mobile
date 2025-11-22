@@ -16,13 +16,16 @@ import CustomizationScreen from "./src/screens/CustomizationScreen";
 import OrderHomeScreen from "./src/screens/OrderHomeScreen";
 import OrderStatusScreen from "./src/screens/OrderStatusScreen";
 import CartScreen from "./src/screens/CartScreen";
-import { checkToken } from "./src/services/token";
+import { checkToken, updateToken } from "./src/services/token";
 import { useFonts } from "expo-font";
 import { deleteToken, getToken, getTokenInformation } from "./src/utils/token";
 import ReservationStatusScreen from "./src/screens/ReservationStatusScreen";
 import StaffHomeScreen from "./src/screens/StaffHomeScreen";
 import StaffQRScannerScreen from "./src/screens/StaffQRScannerScreen";
 import StaffQRResultScreen from "./src/screens/StaffQRResultScreen";
+import AdditionalOrderHomeScreen from "./src/screens/AdditionalOrderHomeScreen";
+import AdditionalOrderCustomizationScreen from "./src/screens/AdditionalOrderCustomizationScreen";
+import AdditionalOrderCartScreen from "./src/screens/AdditionalOrderCartScreen";
 
 const App = () => {
   const [fontsLoaded] = useFonts({
@@ -37,10 +40,12 @@ const App = () => {
 
   useEffect(() => {
     const verifyToken = async () => {
-      const token = await getToken();
-
       // await deleteToken();
-
+      // await updateToken({ orderId: "752a6f8a-1c7f-4294-8649-b8a2b8bce249" });
+      // await updateToken({
+      //   reservationId: "469df6cd-d3f4-4e74-9655-2aa1aeffa3a2",
+      // });
+      // await updateToken({ orderId: null });
       await checkToken();
     };
 
@@ -116,6 +121,21 @@ const App = () => {
           <Stack.Screen
             name="StaffQRResultScreen"
             component={StaffQRResultScreen}
+          />
+
+          <Stack.Screen
+            name="AdditionalOrderHomeScreen"
+            component={AdditionalOrderHomeScreen}
+          />
+
+          <Stack.Screen
+            name="AdditionalOrderCustomizationScreen"
+            component={AdditionalOrderCustomizationScreen}
+          />
+
+          <Stack.Screen
+            name="AdditionalOrderCartScreen"
+            component={AdditionalOrderCartScreen}
           />
         </Stack.Navigator>
       </NavigationContainer>

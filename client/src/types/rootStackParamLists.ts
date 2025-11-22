@@ -1,3 +1,5 @@
+import { ordersData } from "./orders";
+
 export type RootStackParamLists = {
   ReservationReview: undefined;
   WelcomeScreen: undefined;
@@ -27,5 +29,24 @@ export type RootStackParamLists = {
   // staff:
   StaffQRScannerScreen: undefined;
   StaffHomeScreen: undefined;
-  StaffQRResultScreen: undefined;
+  StaffQRResultScreen: {
+    qrResult?: { reservationId: string } | { orderId: string };
+    isValid: boolean;
+    additionalOrder?: ordersData;
+  };
+
+  AdditionalOrderHomeScreen: {
+    qrResult: { reservationId: string } | { orderId: string };
+    isValid: boolean;
+  };
+  AdditionalOrderCustomizationScreen: {
+    order?: any;
+    from: "AdditionalOrderHome" | "AdditionalOrderCart";
+    qrResult: { reservationId: string } | { orderId: string };
+    isValid: boolean;
+  };
+  AdditionalOrderCartScreen: {
+    qrResult: { reservationId: string } | { orderId: string };
+    isValid: boolean;
+  };
 };

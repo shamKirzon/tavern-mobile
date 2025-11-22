@@ -48,6 +48,83 @@ class OrderController {
       return res.status(400).json({ message: "can't create order" });
     }
   }
+
+  async updateOrderItems(req: Request, res: Response) {
+    try {
+      console.log("IM HEREEE");
+      const { orderId, updatedOrders } = req.body;
+
+      if (!orderId || !updatedOrders)
+        return res
+          .status(400)
+          .json({ message: "must have an order id and updated orders " });
+
+      const result = await orderService.updateOrderItems(
+        orderId,
+        updatedOrders
+      );
+
+      if (!result)
+        return res
+          .status(400)
+          .json({ message: "there is no returned results. " });
+
+      return res.status(200).json({ message: "updated successfully", result });
+    } catch (error: any) {
+      console.error("error from updateOrderItems(): ", error);
+      return res.status(400).json({ message: "can't create order" });
+    }
+  }
+
+  async assignCashierId(req: Request, res: Response) {
+    try {
+      const { employeeId, orderId } = req.body;
+
+      if (!orderId)
+        return res.status(400).json({ message: "must have reservation id" });
+
+      const result = await orderService.assignCashierId(employeeId, orderId);
+
+      if (!result)
+        return res
+          .status(400)
+          .json({ message: "can't perform assigning cashier id " });
+
+      return res
+        .status(200)
+        .json({ message: "assigned cashier id successfully!" });
+    } catch (error: any) {
+      console.error("reservationController/assignCashierId(): ", error);
+      return res
+        .status(400)
+        .json({ message: "can't perform assigning cashier id " });
+    }
+  }
+
+  async completeOrder(req: Request, res: Response) {
+    try {
+      const { orderId } = req.body;
+
+      if (!orderId)
+        return res.status(400).json({ message: "must have order id" });
+
+      const result = await orderService.completeOrder(orderId);
+
+      if (!result)
+        return res
+          .status(400)
+          .json({ message: "can't make the oder and reservation complete" });
+
+      return res
+        .status(200)
+        .json({ message: "completing order successfully!", result });
+    } catch (error: any) {
+      console.error("reservationController/completeOrder(): ", error);
+      return res
+        .status(400)
+        .json({ message: "cant perform completing an order and reservation" });
+    }
+  }
 }
 
 export const orderController = new OrderController();

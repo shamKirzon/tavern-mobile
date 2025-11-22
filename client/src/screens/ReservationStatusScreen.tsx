@@ -251,7 +251,7 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
                     fontFamily: "Poppins",
                   }}
                 >
-                  Order Spend Limit is :
+                  Order Minimum Spend Limit :
                 </Text>
                 <Text
                   style={{
@@ -259,6 +259,7 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
                     fontSize: width * 0.075,
                     fontWeight: "700",
                     fontFamily: "Poppins",
+                    alignSelf: "center",
                   }}
                 >
                   ₱{spendLimit}
