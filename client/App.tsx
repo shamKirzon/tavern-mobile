@@ -42,6 +42,7 @@ const App = () => {
     const verifyToken = async () => {
       // await deleteToken();
       // await updateToken({ orderId: "752a6f8a-1c7f-4294-8649-b8a2b8bce249" });
+      // await updateToken({ orderId: null });
       await checkToken();
     };
 
@@ -54,7 +55,7 @@ const App = () => {
     <SafeAreaProvider>
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
-          initialRouteName="StaffHomeScreen"
+          initialRouteName="WelcomeScreen"
           screenOptions={{ headerShown: false, animation: "none" }}
         >
           <Stack.Screen

@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { width, height } from "../utils/dimensions";
 
 import AdditionalOrders from "../assets/icons/additional-order.svg";
@@ -21,7 +21,12 @@ import { RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamLists } from "../types/rootStackParamLists";
 import { getEmployeeIdByToken } from "../services/token";
-import { getOrderData } from "../services/order";
+import {
+  assignCashierId,
+  completeOrder,
+  getOrderData,
+  updateOrderItems,
+} from "../services/order";
 import { assignSecurityId, getReservationData } from "../services/reservation";
 import { formatReadableDate } from "../utils/formatReadableDate";
 import Loading from "./ui/Loading";
@@ -154,13 +159,13 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   }, [qrResult]);
 
-  // useEffect(() => {
-  //   console.log("_______________________________________");
-  //   console.log("Old Orders:", rawOrderData);
-  //   console.log("_______________________________________");
-  //   console.log("Additional Orders:", additionalOrder);
-  //   console.log("_______________________________________");
-  // }, [additionalOrder, orderData]);
+  useEffect(() => {
+    console.log("_______________________________________");
+    console.log("Old Orders:", rawOrderData);
+    console.log("_______________________________________");
+    console.log("Additional Orders:", additionalOrder);
+    console.log("_______________________________________");
+  }, [additionalOrder, orderData]);
 
   // if it has an additional order:
 
@@ -189,6 +194,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
       // cashier
       else if (qrIdKey === "orderId") {
         setModalVisible(true);
+        setIsLoading(true);
 
         if (additionalOrder) {
           const updatedOrders = addAdditionalOrders(
@@ -196,21 +202,18 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
             additionalOrder
           );
 
-          //  const res = await updateOrderItems(updatedOrders)
+          await updateOrderItems(qrIdValue, updatedOrders);
         }
 
-        // assignCashierId
-        // completeReservation(qrIdValue)
-        // updateOrder(updatedOrder) =
-        // completeOrder(qrIdValue)
-
-        setModalVisible(false);
+        await assignCashierId(employeeId, qrIdValue);
+        await completeOrder(qrIdValue);
       }
-
-      // !!!!!!!!! DONT FORGET TO UNCOMMENT
-      // navigation.navigate("StaffQRScannerScreen");
+      navigation.navigate("StaffQRScannerScreen");
     } catch (error) {
       console.error("error in handleDone: ", error);
+    } finally {
+      setIsLoading(false);
+      setModalVisible(false);
     }
   };
 
@@ -1153,6 +1156,8 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
             alignItems: "center",
           }}
         >
+          {isLoading && Loading("")}
+
           <Pressable
             onPress={() => Keyboard.dismiss()}
             style={{
