@@ -21,6 +21,7 @@ import {
   getEmailByToken,
   getOrderIdByToken,
   getReservationIdByToken,
+  updateToken,
 } from "../services/token";
 import {
   getReservationStatus,
@@ -30,6 +31,7 @@ import Loading from "./ui/Loading";
 import { useReservationStore } from "../stores/useReservationStore";
 import { useOrderStore } from "../stores/useOrderStore";
 import { ReservationStatus } from "../types/reservation";
+import { getOrderData } from "../services/order";
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamLists,
@@ -62,6 +64,38 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
   // done = orderstatusScreen
   const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  // complete reservation and order, reset:
+
+  useEffect(() => {
+    const resetSystem = async () => {
+      try {
+        setIsLoadings(true);
+        const reservationId = await getReservationIdByToken();
+        const orderId = await getOrderIdByToken();
+
+        if (!reservationId || !orderId) return;
+
+        const reservationStatus = await getReservationStatus(reservationId);
+        const { order_status: orderStatus } = await getOrderData(orderId);
+
+        if (reservationStatus === "done" && orderStatus === "done") {
+          await updateToken({ orderId: null });
+
+          await updateToken({ reservationId: null });
+
+          console.log("buratski");
+        }
+      } catch (error) {
+        console.error("error in reseting the system. ");
+      } finally {
+        setIsLoadings(false);
+      }
+    };
+
+    resetSystem();
+  }, []);
+
   // toaster anim.
   useEffect(() => {
     if (showToaster) {

@@ -42,6 +42,9 @@ const App = () => {
     const verifyToken = async () => {
       // await deleteToken();
       // await updateToken({ orderId: "752a6f8a-1c7f-4294-8649-b8a2b8bce249" });
+      // await updateToken({
+      //   reservationId: "469df6cd-d3f4-4e74-9655-2aa1aeffa3a2",
+      // });
       // await updateToken({ orderId: null });
       await checkToken();
     };

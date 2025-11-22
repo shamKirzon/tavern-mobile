@@ -1,5 +1,5 @@
 export type TokenPayLoad = {
-  email: string;
+  email?: string;
   reservationId?: string;
   orderId?: string;
   employeeId?: string;
