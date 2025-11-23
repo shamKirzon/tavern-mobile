@@ -11,7 +11,6 @@ class ReservationController {
     try {
       const { data } = req.body;
 
-      console.log("from frontend data: ", data);
       if (!data) return res.status(400).json({ message: "no data fetched" });
 
       const result = await reservationService.createReservation(data);
@@ -25,8 +24,6 @@ class ReservationController {
   async getReservationData(req: Request, res: Response) {
     try {
       const { reservationId } = req.params;
-
-      console.log("reservation id: ", reservationId);
 
       if (!reservationId)
         return res.status(400).json({ message: "must have reservation id " });

@@ -42,6 +42,8 @@ class AuthController {
 
       const otp = await authService.generateOtp(email);
 
+      console.log("OTP: ", otp);
+
       await sendMail(email, otp);
       return res.status(200).json({ message: "otp sent", otp });
     } catch (error: any) {

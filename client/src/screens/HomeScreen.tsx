@@ -83,8 +83,6 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
           await updateToken({ orderId: null });
 
           await updateToken({ reservationId: null });
-
-          console.log("buratski");
         }
       } catch (error) {
         console.error("error in reseting the system. ");
@@ -156,11 +154,6 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
     getTotal();
   }, [hasReservation]);
-
-  // testing:
-  useEffect(() => {
-    console.log("Reservation Amount:", reservationAmount);
-  }, [reservationAmount]);
 
   const handleStatus = async () => {
     if (hasEmail && hasReservation && hasOrder) {

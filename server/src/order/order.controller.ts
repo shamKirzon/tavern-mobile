@@ -31,7 +31,6 @@ class OrderController {
     try {
       const { orderId } = req.params;
 
-      console.log("MY ORDER ID: ", orderId);
       if (!orderId)
         return res.status(400).json({ message: "must have an order id " });
 
@@ -51,7 +50,6 @@ class OrderController {
 
   async updateOrderItems(req: Request, res: Response) {
     try {
-      console.log("IM HEREEE");
       const { orderId, updatedOrders } = req.body;
 
       if (!orderId || !updatedOrders)

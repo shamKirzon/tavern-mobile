@@ -10,7 +10,7 @@ class CustomerRepository {
         .single();
 
       if (error) {
-        console.log("data query failed in getting customer email ", error);
+        console.error("data query failed in getting customer email ", error);
         return null;
       }
 
@@ -29,7 +29,7 @@ class CustomerRepository {
         .single();
 
       if (error) {
-        console.log("data query failed in inserting customer email ", error);
+        console.error("data query failed in inserting customer email ", error);
         return null;
       }
 
@@ -59,7 +59,7 @@ class CustomerRepository {
         .single();
 
       if (error) {
-        console.log(
+        console.error(
           "data query failed setting customer status to inactive ",
           error
         );

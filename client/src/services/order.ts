@@ -40,10 +40,6 @@ export const updateOrderItems = async (orderId: string, updatedOrders: any) => {
       updatedOrders,
     });
     if (!res) throw new Error("can't update order items");
-    console.log(
-      "ITO NA ANG RESULT GALING DB PARE",
-      JSON.stringify(res.data.result)
-    );
 
     return res.data.result;
   } catch (error) {
@@ -73,8 +69,6 @@ export const completeOrder = async (orderId: string) => {
     });
     if (!res)
       return console.error("error in service/reservation/completeOrder");
-
-    console.log({ message: res.data.message });
 
     return res.data.message;
   } catch (error) {

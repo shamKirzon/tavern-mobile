@@ -45,7 +45,6 @@ class ReservationService {
         reservationId
       );
 
-      console.log("service part: ", result);
       return result;
     } catch (error) {}
   }

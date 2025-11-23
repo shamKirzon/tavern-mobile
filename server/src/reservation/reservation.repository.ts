@@ -79,7 +79,6 @@ class ReservationRepository {
 
       if (error) throw error;
 
-      console.log("from get reservation status:", data);
       return data;
     } catch (error) {
       console.error("error in getting reservation status ", error);
@@ -96,7 +95,6 @@ class ReservationRepository {
 
       if (error) throw error;
 
-      console.log("from get reservation amount:", data);
       return data;
     } catch (error) {
       console.error("error in getting reservation amount ", error);

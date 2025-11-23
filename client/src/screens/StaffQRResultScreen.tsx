@@ -159,18 +159,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   }, [qrResult]);
 
-  useEffect(() => {
-    console.log("_______________________________________");
-    console.log("Old Orders:", rawOrderData);
-    console.log("_______________________________________");
-    console.log("Additional Orders:", additionalOrder);
-    console.log("_______________________________________");
-  }, [additionalOrder, orderData]);
-
-  // if it has an additional order:
-
   // functions:
-
   const handleAdditionalOrder = () => {
     setModalVisible(false);
     setIsAddiOrderClicked(false);

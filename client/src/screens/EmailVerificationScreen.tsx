@@ -47,11 +47,6 @@ const EmailVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
     useRef<TextInput>(null),
   ];
 
-  // testing console part:
-  useEffect(() => {
-    console.log("value of showEmailVerifiedToggle: ", showEmailVerifiedToggle);
-  }, [showEmailVerifiedToggle]);
-
   useEffect(() => {
     if (countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);

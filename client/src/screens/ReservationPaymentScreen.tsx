@@ -48,11 +48,6 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
   const [paymentReferenceNumber, setPaymentReferenceNumber] = useState("");
   const [paymentAmount, setPaymentAmount] = useState(0);
 
-  // testing:
-  useEffect(() => {
-    console.log("CUSTOMER DATA UPDATES:", Object.keys(customerReservationData));
-  }, [customerReservationData]);
-
   const handleQRPress = (qr: string) => {
     setSelectedQR(selectedQR === qr ? null : qr);
   };

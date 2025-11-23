@@ -6,7 +6,6 @@ export const registerEmail = async (email: string) => {
     const res = await axiosInstance.post("/customer/register-email", { email });
 
     if (!res) return console.log("no created token");
-    console.log("Email Successfully Verified");
     await saveToken(res.data);
     return res.data;
   } catch (error: any) {

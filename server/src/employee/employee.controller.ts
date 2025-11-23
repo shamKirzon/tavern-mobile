@@ -23,7 +23,6 @@ class EmployeeController {
         return res.status(400).json({ message: "it must have an employee id" });
 
       const role = await employeeService.getEmployeeRole(employeeId);
-      console.log("EMPLOYEE ROLE", role);
 
       res.status(200).json(role?.employee_role);
     } catch (error: any) {

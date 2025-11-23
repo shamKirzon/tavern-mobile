@@ -17,7 +17,10 @@ export const checkToken = async () => {
 
   if (!token || (await isTokenExpired())) {
     authStore.setIsAuthenticated(false);
-    console.log("no token or  the token is expired", token);
+    console.log(
+      "Authentication failed: missing token or expired token. ",
+      token
+    );
     await deleteToken();
   } else {
     authStore.setIsAuthenticated(true);
@@ -78,8 +81,6 @@ export const updateToken = async (update: any) => {
       employeeId: decodedToken.employeeId,
       id: decodedToken.jti,
     };
-
-    console.log("updated token: ", tokenInfo);
   } catch (error) {
     console.error("services/token/updatedToken(); ", error);
   }

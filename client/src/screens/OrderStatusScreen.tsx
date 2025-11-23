@@ -135,47 +135,6 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
     }).start();
   }, []);
 
-  // Download function
-  // const downloadImage = async () => {
-  //   try {
-  //     setIsDownloading(true);
-  //     // Step 1: Get email for filename
-  //     const email = await getEmailByToken();
-  //     const emailName = email.split("@")[0];
-  //     const fileName = `QRCode-${emailName}-${Date.now()}.jpg`;
-  //     // Step 2: Use the cacheDirectory constant properly
-  //     const cacheDir = FileSystem.cacheDirectory;
-  //     if (!cacheDir) {
-  //       throw new Error("Cache directory not available");
-  //     }
-  //     const localPath = cacheDir + fileName;
-  //     // Step 3: Download the image from URL to local storage
-  //     const downloadResult = await FileSystem.downloadAsync(
-  //       orderData.QRCodeUrl,
-  //       localPath
-  //     );
-  //     // Step 4: Request media library permissions
-  //     const permission = await MediaLibrary.requestPermissionsAsync();
-  //     if (!permission.granted) {
-  //       Alert.alert(
-  //         "Permission Required",
-  //         "Please allow access to your photo library to save the QR code."
-  //       );
-  //       setIsDownloading(false);
-  //       return;
-  //     }
-  //     // Step 5: Save to photo library
-  //     await MediaLibrary.saveToLibraryAsync(downloadResult.uri);
-  //     Alert.alert("Success!", "QR code has been saved to your photo library.");
-  //     console.log("File saved to:", downloadResult.uri);
-  //   } catch (error) {
-  //     console.log("Download error:", error);
-  //     Alert.alert("Error", "Failed to download QR code. Please try again.");
-  //   } finally {
-  //     setIsDownloading(false);
-  //   }
-  // };
-
   return (
     <>
       {isLoading && Loading("")}

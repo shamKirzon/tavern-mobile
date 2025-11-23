@@ -26,7 +26,6 @@ class OrderService {
         email
       );
 
-      console.log("QR URL: ", qrUrl);
       // inserting qr url
       await orderRepository.insertQrUrl(qrUrl!, orderId);
 

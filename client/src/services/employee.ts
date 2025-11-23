@@ -23,7 +23,7 @@ export const getEmployeeRole = async (employeeId: string) => {
     const res = await axiosInstance.get(
       `/employee/get-employee-role/${employeeId}`
     );
-    if (!res) return console.error("Can't perform setting status to inactive");
+    if (!res) return console.error("Error in getting the employee role");
 
     return res.data;
   } catch (error: any) {
