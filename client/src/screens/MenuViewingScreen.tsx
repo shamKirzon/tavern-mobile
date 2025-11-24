@@ -4,10 +4,11 @@ import {
   Text,
   TouchableOpacity,
   Image,
-  StyleSheet,
   FlatList,
   Animated,
   ScrollView,
+  Platform,
+  StatusBar,
 } from "react-native";
 import { width, height } from "../utils/dimensions";
 import { RouteProp } from "@react-navigation/native";
@@ -75,65 +76,150 @@ const MenuViewingScreen: React.FC<Props> = ({ navigation, route }) => {
   const menuItems = getMenuItems();
 
   const renderMenuItem = ({ item }: { item: MenuItem }) => (
-    <View style={styles.menuCard}>
-      <Image source={item.image} style={styles.menuImage} />
-      <Text style={styles.menuItemName}>{item.name}</Text>
-      <Text style={styles.menuItemPrice}>₱{item.price.toFixed(2)}</Text>
+    <View
+      style={{
+        width: "48%",
+        marginBottom: height * 0.04,
+      }}
+    >
+      <Image
+        source={item.image}
+        style={{
+          width: "100%",
+          height: height * 0.25,
+          borderRadius: width * 0.04,
+        }}
+      />
+      <Text
+        style={{
+          color: "white",
+          fontSize: width * 0.045,
+          fontWeight: "bold",
+          marginTop: height * 0.01,
+        }}
+      >
+        {item.name}
+      </Text>
+      <Text
+        style={{
+          color: "white",
+          fontSize: width * 0.04,
+          opacity: 0.8,
+        }}
+      >
+        ₱{item.price.toFixed(2)}
+      </Text>
     </View>
   );
 
   return (
-    <View style={styles.mainContainer}>
+    <View
+      style={{
+        width,
+        height,
+        flex: 1,
+        paddingTop: Platform.OS === "ios" ? height * 0.06 : 0,
+      }}
+    >
       <MainBackground
         width={width}
         height={height}
         preserveAspectRatio="none"
-        style={styles.bg}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+        }}
       />
 
       {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerRow}>
+      <View
+        style={{
+          paddingHorizontal: width * 0.05,
+          paddingBottom: height * 0.025,
+        }}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center", // aligns items vertically in the center
+          }}
+        >
           <TouchableOpacity
             onPress={() => navigation.goBack()}
-            style={styles.backButton}
+            style={{
+              width: width * 0.09,
+              height: width * 0.09,
+              justifyContent: "center",
+              alignItems: "center",
+              marginRight: width * 0.025,
+            }}
           >
-            <Text style={styles.backText}>←</Text>
+            <Text
+              style={{
+                color: "white",
+                fontSize: width * 0.08, // match the category font size
+                fontWeight: "600",
+                textAlign: "center",
+              }}
+            >
+              ←
+            </Text>
           </TouchableOpacity>
 
-          <Animated.Text
-            style={[
-              styles.title,
-              { opacity: fadeAnim, transform: [{ translateY: slideAnim }] },
-            ]}
+          <Text
+            style={{
+              color: "white",
+              fontSize: width * 0.08, // same as arrow
+              fontWeight: "bold",
+            }}
           >
             {category}
-          </Animated.Text>
+          </Text>
         </View>
 
         {/* Line divider under header */}
-        <View style={styles.headerLine} />
+        <View
+          style={{
+            height: width * 0.002,
+            backgroundColor: "white",
+            opacity: 0.3,
+            marginTop: height * 0.04,
+          }}
+        />
       </View>
 
       {category === "Drinks" ? (
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
-            paddingTop: 10,
+            paddingTop: height * 0.015,
             paddingHorizontal: width * 0.05,
-            paddingBottom: 20,
+            paddingBottom: height * 0.03,
           }}
         >
           {Object.entries(menuItems as Record<string, MenuItem[]>).map(
             ([section, items]) => (
               <View key={section}>
-                <Text style={styles.sectionTitle}>{section}</Text>
+                <Text
+                  style={{
+                    color: "white",
+                    fontSize: width * 0.065,
+                    fontWeight: "bold",
+                    marginTop: height * 0.02,
+                    marginBottom: height * 0.015,
+                  }}
+                >
+                  {section}
+                </Text>
                 <FlatList
                   data={items}
                   renderItem={renderMenuItem}
                   keyExtractor={(item, index) => index.toString()}
                   numColumns={2}
-                  columnWrapperStyle={styles.columnWrapper}
+                  columnWrapperStyle={{
+                    justifyContent: "space-between",
+                  }}
                   scrollEnabled={false}
                 />
               </View>
@@ -146,92 +232,18 @@ const MenuViewingScreen: React.FC<Props> = ({ navigation, route }) => {
           renderItem={renderMenuItem}
           keyExtractor={(item, index) => index.toString()}
           numColumns={2}
-          contentContainerStyle={styles.listContainer}
-          columnWrapperStyle={styles.columnWrapper}
+          contentContainerStyle={{
+            paddingHorizontal: width * 0.05,
+            paddingBottom: height * 0.03,
+          }}
+          columnWrapperStyle={{
+            justifyContent: "space-between",
+          }}
           showsVerticalScrollIndicator={false}
         />
       )}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  mainContainer: {
-    width,
-    height,
-    flex: 1,
-    paddingTop: height * 0.06,
-  },
-  bg: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-  },
-  header: {
-    paddingHorizontal: width * 0.05,
-    paddingBottom: 15,
-  },
-  headerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  backButton: {
-    width: 35,
-    height: 35,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 10,
-  },
-  backText: {
-    color: "white",
-    fontSize: width * 0.09,
-    fontWeight: "600",
-  },
-  title: {
-    color: "white",
-    fontSize: width * 0.08,
-    fontWeight: "bold",
-  },
-  headerLine: {
-    height: 1,
-    backgroundColor: "white",
-    opacity: 0.3,
-    marginTop: 25,
-  },
-  listContainer: {
-    paddingHorizontal: width * 0.05,
-    paddingBottom: 20,
-  },
-  columnWrapper: {
-    justifyContent: "space-between",
-  },
-  sectionTitle: {
-    color: "white",
-    fontSize: width * 0.065,
-    fontWeight: "bold",
-    marginTop: 15,
-    marginBottom: 10,
-  },
-  menuCard: {
-    width: "48%",
-    marginBottom: 25,
-  },
-  menuImage: {
-    width: "100%",
-    height: 180,
-    borderRadius: 15,
-  },
-  menuItemName: {
-    color: "white",
-    fontSize: width * 0.045,
-    fontWeight: "bold",
-    marginTop: 8,
-  },
-  menuItemPrice: {
-    color: "white",
-    fontSize: width * 0.04,
-    opacity: 0.8,
-  },
-});
 
 export default MenuViewingScreen;

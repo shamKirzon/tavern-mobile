@@ -31,7 +31,11 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
 
       {/* Main background */}
       <MainBackground
-        style={{ position: "absolute", width: "100%", height: "100%" }}
+        style={{
+          position: "absolute",
+          width: "100%",
+          height: "100%",
+        }}
       />
 
       {/* Main content */}
@@ -40,30 +44,40 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
-          padding: width * 0.08,
+          paddingHorizontal: width * 0.08,
+          paddingVertical: height * 0.08,
         }}
       >
         {/* Logo */}
-        <View style={{ justifyContent: "center", alignItems: "center" }}>
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           <Logo />
         </View>
 
         {/* Info Lines */}
-        <View style={{ marginTop: height * 0.2 }}>
+        <View
+          style={{
+            marginTop: height * 0.2,
+          }}
+        >
           {/* Open Hours */}
           <View
             style={{
               flexDirection: "row",
               alignItems: "center",
-              marginBottom: 10,
+              marginBottom: height * 0.02,
             }}
           >
-            <ScheduleIcon width={20} height={20} />
+            <ScheduleIcon width={width * 0.05} height={width * 0.05} />
             <Text
               style={{
                 color: "#FFFFFF",
                 fontSize: width * 0.035,
-                marginLeft: 8,
+                marginLeft: width * 0.02,
               }}
             >
               Open Hours: 05:00 PM - 02:00 AM
@@ -78,12 +92,12 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
               width: width * 0.8,
             }}
           >
-            <LocationIcon width={20} height={20} />
+            <LocationIcon width={width * 0.05} height={width * 0.05} />
             <Text
               style={{
                 color: "#FFFFFF",
                 fontSize: width * 0.035,
-                marginLeft: 8,
+                marginLeft: width * 0.02,
               }}
             >
               #197 Aguirre Avenue, B.F. Homes, Parañaque, Philippines
@@ -97,14 +111,14 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
           style={{
             backgroundColor: "#8A1717",
             paddingVertical: width * 0.055,
-            paddingHorizontal: 105,
-            borderRadius: 16,
+            paddingHorizontal: width * 0.28,
+            borderRadius: width * 0.04,
             marginTop: height * 0.15,
           }}
         >
           <Text
             style={{
-              color: "#FFFF",
+              color: "#FFFFFF",
               fontSize: width * 0.05,
               fontWeight: "bold",
             }}
@@ -133,7 +147,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
       {/* Sidebar overlay */}
       <ResizableSidebar
         minWidth={0}
-        maxWidth={300}
+        maxWidth={width * 0.78}
         initialOpen={false}
         animationDuration={200}
         open={isSidebarOpen}
@@ -150,7 +164,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
         <TouchableOpacity onPress={() => setIsSidebarOpen(false)}>
           <Text
             style={{
-              padding: 16,
+              padding: width * 0.04,
               fontSize: width * 0.05,
               fontWeight: "bold",
               color: "#FFF",
@@ -165,7 +179,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
         >
           <Text
             style={{
-              padding: 16,
+              padding: width * 0.04,
               fontSize: width * 0.05,
               fontWeight: "bold",
               color: "#FFF",

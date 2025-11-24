@@ -12,6 +12,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Modal,
+  Pressable,
 } from "react-native";
 import { width, height } from "../utils/dimensions";
 import MainBackground from "../assets/backgrounds/main-background.svg";
@@ -45,11 +47,12 @@ const PRICE_PER_PAX_INCLUSIVE = 1000;
 const PRICE_PER_PAX_EXCLUSIVE = 2000;
 
 const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
+  const [modalVisible, setModalVisible] = useState(false);
   const [isGuestInvalid, setIsGuestInvalid] = useState(false);
   const { setReservationData, customerReservationData } = useReservationStore();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [contactNumber, setContactNumber] = useState("");
+  const [contactNumber, setContactNumber] = useState("09");
   const [guests, setGuests] = useState(1);
   const [reservationType, setReservationType] = useState("Inclusive");
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
@@ -58,6 +61,22 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [startIndex, setStartIndex] = useState(0);
   const [isUploading, setIsUploading] = useState<boolean>(false);
+
+  const [errors, setErrors] = useState<{
+    firstName: boolean;
+    lastName: boolean;
+    contactNumber: boolean;
+    guests: boolean;
+    schedule: boolean;
+    validId: boolean;
+  }>({
+    firstName: true,
+    lastName: true,
+    contactNumber: true,
+    guests: true,
+    schedule: true,
+    validId: true,
+  });
 
   const today = new Date();
   const reservationTypes = ["Exclusive", "Inclusive"];
@@ -206,8 +225,124 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
     <>
       {isUploading && Loading("Uploading file...")}
 
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Pressable
+            onPress={() => Keyboard.dismiss()}
+            style={{
+              flex: 1,
+              width: "100%",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              justifyContent: "center",
+              alignItems: "center",
+              paddingHorizontal: width * 0.08,
+            }}
+          >
+            <Pressable
+              onPress={() => {}}
+              style={{
+                backgroundColor: "#171717",
+                padding: width * 0.06,
+                borderRadius: width * 0.06,
+                width: "100%",
+                alignItems: "center",
+                paddingBottom: height * 0.04,
+                borderWidth: 1,
+                borderColor: "rgba(255, 255, 255, 0.08)",
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 8 },
+                shadowOpacity: 0.4,
+                shadowRadius: 24,
+                elevation: 16,
+              }}
+            >
+              <Text
+                style={{
+                  textAlign: "center",
+                  paddingTop: height * 0.02,
+                  color: "#fff",
+                  fontSize: width * 0.06,
+                  fontWeight: "bold",
+                  alignSelf: "center",
+                }}
+              >
+                Are you sure you want to exit?
+              </Text>
+
+              {/* subtext:  */}
+              <Text
+                style={{
+                  paddingTop: height * 0.02,
+                  textAlign: "center",
+                  color: "#fff",
+                  fontSize: width * 0.04,
+                  fontWeight: "200",
+                  marginBottom: height * 0.07,
+                }}
+              >
+                You have unsaved changes. Exiting now will lose all your
+                progress.
+              </Text>
+
+              {/* Buttons */}
+              <View style={{ flexDirection: "row", gap: width * 0.04 }}>
+                {["Cancel", "Exit"].map((item, index) => (
+                  <Pressable
+                    key={index}
+                    style={({ pressed }) => ({
+                      backgroundColor: index === 0 ? "#FFFF" : "#8A1717",
+                      paddingVertical: height * 0.02,
+                      borderRadius: width * 0.03,
+                      alignItems: "center",
+                      width: width * 0.34,
+                      opacity: pressed ? 0.7 : 1,
+                      transform: [{ scale: pressed ? 0.97 : 1 }],
+                    })}
+                    onPress={() => {
+                      {
+                        if (index === 0) {
+                          setModalVisible(false);
+                        } else if (index === 1) {
+                          setModalVisible(false);
+                          navigation.navigate("HomeScreen");
+                        }
+                      }
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: index === 0 ? "#8A1717" : "#FFFF",
+                        fontSize: width * 0.04,
+                        fontWeight: "600",
+                      }}
+                    >
+                      {item}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            </Pressable>
+          </Pressable>
+        </View>
+      </Modal>
+
       <KeyboardAvoidingView
-        style={{ width, height, flex: 1 }}
+        style={{
+          width,
+          height,
+          flex: 1,
+        }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={0}
       >
@@ -222,15 +357,16 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
         <View
           style={{
             flexDirection: "row",
-            alignItems: "center",
+            alignItems: "center", // vertically centers icon with text
+            justifyContent: "flex-start",
             paddingHorizontal: width * 0.05,
-            paddingTop: height * 0.06,
-            paddingBottom: 20,
+            paddingTop: Platform.OS === "ios" ? height * 0.06 : height * 0.02,
+            paddingBottom: height * 0.02,
             zIndex: 1,
           }}
         >
           <TouchableOpacity
-            onPress={() => navigation.goBack()}
+            onPress={() => setModalVisible(true)}
             style={{
               width: 35,
               height: 35,
@@ -281,15 +417,22 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
             >
               Enter Your Information
             </Text>
-
             {/* Input Fields */}
             <View style={{ flexDirection: "row", gap: 12 }}>
               <TextInput
                 placeholder="First Name"
                 value={firstName}
-                onChangeText={(text) =>
-                  setFirstName(text.replace(/[^a-zA-Z\s]/g, ""))
-                }
+                onChangeText={(text) => {
+                  // Only allow letters and spaces
+                  const cleanedText = text.replace(/[^a-zA-Z\s]/g, "");
+                  setFirstName(cleanedText);
+
+                  // Set error if empty
+                  setErrors((prev) => ({
+                    ...prev,
+                    firstName: cleanedText.trim() === "",
+                  }));
+                }}
                 placeholderTextColor="#999"
                 style={{
                   flex: 1,
@@ -299,14 +442,27 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                   paddingHorizontal: 18,
                   fontSize: width * 0.04,
                   color: "#000",
+
+                  borderWidth: errors.firstName ? 2 : 0,
+                  borderColor: errors.firstName ? "red" : "transparent",
                 }}
               />
+
+              {/* last name */}
               <TextInput
                 placeholder="Last Name"
                 value={lastName}
-                onChangeText={(text) =>
-                  setLastName(text.replace(/[^a-zA-Z\s]/g, ""))
-                }
+                onChangeText={(text) => {
+                  // Only allow letters and spaces
+                  const cleanedText = text.replace(/[^a-zA-Z\s]/g, "");
+                  setLastName(cleanedText);
+
+                  // Set error if empty
+                  setErrors((prev) => ({
+                    ...prev,
+                    lastName: cleanedText.trim() === "",
+                  }));
+                }}
                 placeholderTextColor="#999"
                 style={{
                   flex: 1,
@@ -316,15 +472,36 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                   paddingHorizontal: 18,
                   fontSize: width * 0.04,
                   color: "#000",
+                  borderWidth: errors.lastName ? 2 : 0,
+                  borderColor: errors.lastName ? "red" : "transparent",
                 }}
               />
             </View>
 
-            {/* Contact Number */}
             <TextInput
               placeholder="Contact Number"
               value={contactNumber}
-              onChangeText={setContactNumber}
+              onChangeText={(text) => {
+                // Only allow numeric characters
+                let numericText = text.replace(/[^0-9]/g, "");
+
+                // Always start with "09"
+                if (!numericText.startsWith("09")) {
+                  numericText = "09";
+                }
+
+                if (numericText.length !== 11)
+                  setErrors((prev) => ({ ...prev, contactNumber: true }));
+                // Limit to 11 digits
+                if (numericText.length > 11) {
+                  numericText = numericText.slice(0, 11);
+                }
+
+                if (numericText.length == 11)
+                  setErrors((prev) => ({ ...prev, contactNumber: false }));
+
+                setContactNumber(numericText);
+              }}
               placeholderTextColor="#999"
               keyboardType="phone-pad"
               style={{
@@ -334,6 +511,8 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                 paddingHorizontal: 18,
                 fontSize: width * 0.04,
                 color: "#000",
+                borderWidth: errors.contactNumber ? 2 : 0,
+                borderColor: errors.contactNumber ? "red" : "transparent",
               }}
             />
 
@@ -354,8 +533,11 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                   backgroundColor: "rgba(255, 255, 255, 0.1)",
                   borderRadius: 16,
                   padding: 20,
-                  borderWidth: 1,
-                  borderColor: "rgba(255, 255, 255, 0.15)",
+
+                  borderWidth: errors.schedule ? 1 : 0,
+                  borderColor: errors.schedule
+                    ? "red"
+                    : "rgba(255, 255, 255, 0.15)",
                 }}
               >
                 <View
@@ -430,7 +612,10 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                       .map((day, index) => (
                         <TouchableOpacity
                           key={day.date + index}
-                          onPress={() => setSelectedDate(day.date)}
+                          onPress={() => {
+                            setErrors((prev) => ({ ...prev, schedule: false }));
+                            setSelectedDate(day.date);
+                          }}
                           style={{
                             flex: 1,
                             alignItems: "center",
@@ -479,7 +664,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                 </View>
               </View>
             </View>
-
             {/* Reservation Type and Guests */}
             <View style={{ flexDirection: "row", gap: 12 }}>
               <View style={{ flex: 1, zIndex: showDropdown ? 100 : 1 }}>
@@ -600,7 +784,7 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                 <Text
                   style={{
                     color: "white",
-                    fontSize: width * 0.038,
+                    fontSize: width * 0.037,
                     fontWeight: "500",
                     marginBottom: 8,
                   }}
@@ -646,7 +830,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                 />
               </View>
             </View>
-
             {/* Reservation Fee */}
             <View
               style={{
@@ -701,7 +884,10 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                 </Text>
               </View>
               <TouchableOpacity
-                onPress={handleUpload}
+                onPress={() => {
+                  handleUpload();
+                  setErrors((prev) => ({ ...prev, validId: false }));
+                }}
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
@@ -711,10 +897,13 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                   borderRadius: 12,
                   paddingVertical: 12,
                   paddingHorizontal: width * 0.06,
-                  borderWidth: 1,
-                  borderColor: validId
-                    ? "rgba(0, 255, 100, 0.4)"
-                    : "rgba(255, 255, 255, 0.2)",
+
+                  borderWidth: errors.validId ? 1 : 0,
+                  borderColor: errors.validId
+                    ? "red"
+                    : validId
+                    ? "rgba(0, 200, 100, 0.2)"
+                    : "transparent",
                 }}
               >
                 <Text
@@ -728,7 +917,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                 </Text>
               </TouchableOpacity>
             </View>
-
             {/* Book Now */}
             <TouchableOpacity
               disabled={bookNowDisabled}
