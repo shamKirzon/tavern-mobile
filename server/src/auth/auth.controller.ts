@@ -33,7 +33,7 @@ class AuthController {
       console.error("authController/generateToken:", error.message);
     }
   }
-
+  // hakdog
   async sendOtp(req: Request, res: Response) {
     try {
       const { email } = req.body;
