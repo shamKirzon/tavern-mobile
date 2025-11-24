@@ -15,7 +15,7 @@ import * as ImagePicker from "expo-image-picker";
 
 import MainBackground from "../assets/backgrounds/main-background.svg";
 import PaymentMethod from "../assets/images/payment-method.svg";
-import { height, width } from "../utils/dimensions";
+import { height, paddingTop, width } from "../utils/dimensions";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamLists } from "../types/rootStackParamLists";
 import { RouteProp } from "@react-navigation/native";
@@ -42,6 +42,10 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
   const { reservationFee } = route.params;
   const { setReservationData, customerReservationData } = useReservationStore();
 
+  const [errors, setErrors] = useState<{
+    refNum: boolean;
+    paymentAmount: boolean;
+  }>({ refNum: true, paymentAmount: true });
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [selectedQR, setSelectedQR] = useState<string | null>(null);
   const [uploadedPayment, setUploadedPayment] = useState<string | null>(null);
@@ -128,19 +132,26 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
           contentContainerStyle={{ paddingBottom: height * 0.03 }}
           keyboardShouldPersistTaps="handled"
           enableOnAndroid
-          extraScrollHeight={20}
+          extraScrollHeight={
+            Platform.OS === "ios" ? height * 0.025 : height * 0.154
+          }
         >
           <View
             style={{
               flex: 1,
               paddingHorizontal: width * 0.05,
-              paddingTop: height * 0.06,
             }}
           >
             {/* Header */}
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                paddingTop: paddingTop,
+                marginBottom: height * 0.01,
+              }}
+            >
               <TouchableOpacity
-                onPress={() => navigation?.goBack?.()}
                 style={{
                   width: width * 0.09,
                   height: width * 0.09,
@@ -148,13 +159,14 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
                   alignItems: "center",
                   marginRight: width * 0.025,
                 }}
+                onPress={() => navigation?.goBack?.()}
               >
                 <View
                   style={{
                     width: width * 0.035,
                     height: width * 0.035,
-                    borderLeftWidth: 3,
-                    borderBottomWidth: 3,
+                    borderLeftWidth: width * 0.008,
+                    borderBottomWidth: width * 0.008,
                     borderColor: "#fff",
                     transform: [{ rotate: "45deg" }],
                   }}
@@ -163,8 +175,8 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
 
               <Text
                 style={{
-                  color: "#fff",
-                  fontSize: width * 0.08,
+                  color: "#FFFFFF",
+                  fontSize: width * 0.07,
                   fontWeight: "bold",
                 }}
               >
@@ -502,7 +514,7 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
 
             {/* Payment Info + Confirm Button */}
             <KeyboardAvoidingView
-              behavior={Platform.OS === "ios" ? "padding" : "height"}
+              // behavior={Platform.OS === "ios" ? "padding" : "height"}
               keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
             >
               {/* gap between confirm payment and payment informations */}
@@ -522,7 +534,13 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
                   <TextInput
                     placeholder="Enter Reference Number"
                     value={paymentReferenceNumber}
-                    onChangeText={setPaymentReferenceNumber}
+                    onChangeText={(text) => {
+                      if (text) {
+                        setErrors((prev) => ({ ...prev, refNum: false }));
+                      } else setErrors((prev) => ({ ...prev, refNum: true }));
+
+                      setPaymentReferenceNumber(text);
+                    }}
                     placeholderTextColor="#999"
                     style={{
                       backgroundColor: "white",
@@ -531,6 +549,8 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
                       paddingHorizontal: width * 0.045,
                       fontSize: width * 0.04,
                       color: "#000",
+                      borderWidth: errors.refNum ? 2 : 0,
+                      borderColor: errors.refNum ? "red" : "transparent",
                     }}
                   />
 
@@ -551,9 +571,25 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
                     ).toLocaleString()})`}
                     value={paymentAmount ? String(paymentAmount) : ""}
                     onChangeText={(text) => {
-                      const num = Number(text.replace(/,/g, ""));
-                      if (!isNaN(num)) setPaymentAmount(num);
-                      else setPaymentAmount(0);
+                      if (!text || text.trim() === "") {
+                        // If empty, set error to true
+                        setErrors((prev) => ({
+                          ...prev,
+                          paymentAmount: true,
+                        }));
+                        setPaymentAmount(0); // optional, reset value
+                      } else {
+                        // If not empty, set error to false
+                        setErrors((prev) => ({
+                          ...prev,
+                          paymentAmount: false,
+                        }));
+
+                        // Convert text to number, remove commas
+                        const num = Number(text.replace(/,/g, ""));
+                        if (!isNaN(num)) setPaymentAmount(num);
+                        else setPaymentAmount(0);
+                      }
                     }}
                     placeholderTextColor="#999"
                     keyboardType="numeric"
@@ -564,21 +600,35 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
                       paddingHorizontal: width * 0.045,
                       fontSize: width * 0.04,
                       color: "#000",
+                      borderWidth: errors.paymentAmount ? 2 : 0,
+                      borderColor: errors.paymentAmount ? "red" : "transparent",
                     }}
                   />
                 </View>
 
                 <TouchableOpacity
                   onPress={handleConfirmPayment}
-                  disabled={!uploadedPayment}
-                  style={{
-                    backgroundColor: "#8B0000",
-                    borderRadius: width * 0.03,
-                    paddingVertical: height * 0.02,
-                    alignItems: "center",
-                    opacity: !uploadedPayment ? 0.5 : 1,
-                    marginTop: width * 0.03,
-                  }}
+                  disabled={
+                    !uploadedPayment || errors.paymentAmount || errors.refNum
+                  }
+                  style={[
+                    {
+                      backgroundColor: "#8B0000",
+                      borderRadius: width * 0.03,
+                      paddingVertical: height * 0.02,
+                      alignItems: "center",
+                      opacity: !uploadedPayment ? 0.5 : 1,
+                      marginTop: width * 0.03,
+                    },
+                    {
+                      opacity:
+                        !uploadedPayment ||
+                        errors.paymentAmount ||
+                        errors.refNum
+                          ? 0.4
+                          : 1,
+                    },
+                  ]}
                 >
                   <Text
                     style={{

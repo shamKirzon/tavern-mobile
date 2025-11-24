@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Platform, View } from "react-native";
+import { NativeModules, Platform, View } from "react-native";
 
 import HomeScreen from "./src/screens/HomeScreen";
 import ReservationScreen from "./src/screens/ReservationScreen";
@@ -51,6 +51,7 @@ const App = () => {
   const Stack = createNativeStackNavigator<RootStackParamLists>();
 
   // to avoid the status bar in androind ONLY
+
   const AppWrapper: React.FC<{ children: React.ReactNode }> = ({
     children,
   }) => {
@@ -73,7 +74,7 @@ const App = () => {
 
         <NavigationContainer ref={navigationRef}>
           <Stack.Navigator
-            initialRouteName="ReservationScreen"
+            initialRouteName="WelcomeScreen"
             screenOptions={{ headerShown: false, animation: "none" }}
           >
             <Stack.Screen

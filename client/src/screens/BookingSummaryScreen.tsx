@@ -3,15 +3,14 @@ import MainBackground from "../assets/backgrounds/main-background.svg";
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Pressable,
+  Platform,
 } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamLists } from "../types/rootStackParamLists";
-import { height, width } from "../utils/dimensions";
+import { height, paddingTop, width } from "../utils/dimensions";
 import { formatReadableDate } from "../utils/formatReadableDate";
 
 type BookingSummaryScreenNavigationProps = NativeStackNavigationProp<
@@ -35,87 +34,296 @@ const BookingSummaryScreen: React.FC<Props> = ({ navigation, route }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      {/* Background SVG */}
       <MainBackground
-        width="100%"
-        height="100%"
-        preserveAspectRatio="xMidYMid slice"
-        style={StyleSheet.absoluteFillObject}
+        width={width}
+        height={height}
+        preserveAspectRatio="none"
+        style={{ position: "absolute", top: 0, left: 0 }}
       />
 
       {/* Main Content */}
-      <View style={styles.container}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.backArrowButton}
-            onPress={() => navigation?.goBack?.()}
-          >
-            <View style={styles.customArrow} />
-          </TouchableOpacity>
-
-          <Text style={styles.headerTitle}>Reservation Summary</Text>
-        </View>
-
+      <View style={{ flex: 1, paddingHorizontal: width * 0.05 }}>
         {/* Scrollable Content */}
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <ScrollView contentContainerStyle={{ paddingBottom: height * 0.15 }}>
+          {/* Header */}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              paddingTop: paddingTop,
+              marginBottom: height * 0.01,
+            }}
+          >
+            <TouchableOpacity
+              style={{
+                width: width * 0.09,
+                height: width * 0.09,
+                justifyContent: "center",
+                alignItems: "center",
+                marginRight: width * 0.025,
+              }}
+              onPress={() => navigation?.goBack?.()}
+            >
+              <View
+                style={{
+                  width: width * 0.035,
+                  height: width * 0.035,
+                  borderLeftWidth: width * 0.008,
+                  borderBottomWidth: width * 0.008,
+                  borderColor: "#fff",
+                  transform: [{ rotate: "45deg" }],
+                }}
+              />
+            </TouchableOpacity>
+
+            <Text
+              style={{
+                color: "#FFFFFF",
+                fontSize: width * 0.07,
+                fontWeight: "bold",
+              }}
+            >
+              Reservation Summary
+            </Text>
+          </View>
+
           {/* Reservation Details */}
-          <View style={styles.infoBox}>
-            <View style={styles.row}>
-              <Text style={styles.label}>Name:</Text>
-              <Text style={styles.value}>{name}</Text>
+          <View
+            style={{
+              marginTop: height * 0.012,
+              backgroundColor: "rgba(255,255,255,0.1)",
+              borderRadius: width * 0.03,
+              padding: width * 0.04,
+              marginBottom: height * 0.02,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginBottom: height * 0.01,
+              }}
+            >
+              <Text style={{ color: "#FFFFFF", fontSize: width * 0.034 }}>
+                Name:
+              </Text>
+              <Text
+                style={{
+                  color: "#FFFFFF",
+                  fontSize: width * 0.034,
+                  fontWeight: "700",
+                }}
+              >
+                {name}
+              </Text>
             </View>
-            <View style={styles.row}>
-              <Text style={styles.label}>Date:</Text>
-              <Text style={styles.value}>{formatReadableDate(date)}</Text>
+
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginBottom: height * 0.01,
+              }}
+            >
+              <Text style={{ color: "#FFFFFF", fontSize: width * 0.034 }}>
+                Date:
+              </Text>
+              <Text
+                style={{
+                  color: "#FFFFFF",
+                  fontSize: width * 0.034,
+                  fontWeight: "700",
+                }}
+              >
+                {formatReadableDate(date)}
+              </Text>
             </View>
-            <View style={styles.row}>
-              <Text style={styles.label}>Type:</Text>
-              <Text style={styles.value}>{reservationType}</Text>
+
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginBottom: height * 0.01,
+              }}
+            >
+              <Text style={{ color: "#FFFFFF", fontSize: width * 0.034 }}>
+                Type:
+              </Text>
+              <Text
+                style={{
+                  color: "#FFFFFF",
+                  fontSize: width * 0.034,
+                  fontWeight: "700",
+                }}
+              >
+                {reservationType}
+              </Text>
             </View>
-            <View style={styles.row}>
-              <Text style={styles.label}>Guests:</Text>
-              <Text style={styles.value}>{guests}</Text>
+
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginBottom: height * 0.01,
+              }}
+            >
+              <Text style={{ color: "#FFFFFF", fontSize: width * 0.034 }}>
+                Guests:
+              </Text>
+              <Text
+                style={{
+                  color: "#FFFFFF",
+                  fontSize: width * 0.034,
+                  fontWeight: "700",
+                }}
+              >
+                {guests}
+              </Text>
             </View>
-            <View style={styles.row}>
-              <Text style={styles.label}>Reservation Fee:</Text>
-              <Text style={styles.value}>
+
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginBottom: height * 0.01,
+              }}
+            >
+              <Text style={{ color: "#FFFFFF", fontSize: width * 0.034 }}>
+                Reservation Fee:
+              </Text>
+              <Text
+                style={{
+                  color: "#FFFFFF",
+                  fontSize: width * 0.034,
+                  fontWeight: "700",
+                }}
+              >
                 {parseInt(reservationFee).toLocaleString()} PHP
               </Text>
             </View>
           </View>
 
           {/* Terms & Conditions */}
-          <View style={styles.termsContainer}>
-            <Text style={styles.termsTitle}>Terms and Conditions</Text>
+          <View
+            style={{
+              backgroundColor: "rgba(255,255,255,0.1)",
+              borderRadius: width * 0.03,
+              padding: width * 0.04,
+            }}
+          >
+            <Text
+              style={{
+                color: "#FFFFFF",
+                fontSize: width * 0.045,
+                fontWeight: "bold",
+                marginBottom: height * 0.015,
+              }}
+            >
+              Terms and Conditions
+            </Text>
 
-            <View style={styles.policyContainer}>
-              <Text style={styles.policyTitle}>Reservation Policy</Text>
-              <Text style={styles.policyText}>
+            <View style={{ marginBottom: height * 0.03 }}>
+              <Text
+                style={{
+                  color: "#FFFFFF",
+                  fontSize: width * 0.04,
+                  fontWeight: "600",
+                  marginBottom: height * 0.008,
+                }}
+              >
+                Reservation Policy
+              </Text>
+              <Text
+                style={{
+                  color: "#dddddd",
+                  fontSize: width * 0.032,
+                  marginBottom: height * 0.01,
+                }}
+              >
                 Orders must be placed at least 2 days in advance to ensure
                 availability and preparation time.
               </Text>
 
-              <Text style={styles.policyTitle}>Cancellation Policy</Text>
-              <Text style={styles.policyText}>
+              <Text
+                style={{
+                  color: "#FFFFFF",
+                  fontSize: width * 0.04,
+                  fontWeight: "600",
+                  marginBottom: height * 0.008,
+                }}
+              >
+                Cancellation Policy
+              </Text>
+              <Text
+                style={{
+                  color: "#dddddd",
+                  fontSize: width * 0.032,
+                  marginBottom: height * 0.01,
+                }}
+              >
                 Cancellations made within 24 hours of pickup/delivery will not
                 be refunded.
               </Text>
 
-              <Text style={styles.policyTitle}>Payment Policy</Text>
-              <Text style={styles.policyText}>
+              <Text
+                style={{
+                  color: "#FFFFFF",
+                  fontSize: width * 0.04,
+                  fontWeight: "600",
+                  marginBottom: height * 0.008,
+                }}
+              >
+                Payment Policy
+              </Text>
+              <Text
+                style={{
+                  color: "#dddddd",
+                  fontSize: width * 0.032,
+                  marginBottom: height * 0.01,
+                }}
+              >
                 Full payment is required to confirm your order. Payments are
                 non-refundable once confirmed.
               </Text>
 
-              <Text style={styles.policyTitle}>Special Requests</Text>
-              <Text style={styles.policyText}>
+              <Text
+                style={{
+                  color: "#FFFFFF",
+                  fontSize: width * 0.04,
+                  fontWeight: "600",
+                  marginBottom: height * 0.008,
+                }}
+              >
+                Special Requests
+              </Text>
+              <Text
+                style={{
+                  color: "#dddddd",
+                  fontSize: width * 0.032,
+                  marginBottom: height * 0.01,
+                }}
+              >
                 Customizations or specific requests must be communicated upon
                 ordering.
               </Text>
 
-              <Text style={styles.policyTitle}>Privacy Policy</Text>
-              <Text style={styles.policyText}>
+              <Text
+                style={{
+                  color: "#FFFFFF",
+                  fontSize: width * 0.04,
+                  fontWeight: "600",
+                  marginBottom: height * 0.008,
+                }}
+              >
+                Privacy Policy
+              </Text>
+              <Text
+                style={{
+                  color: "#dddddd",
+                  fontSize: width * 0.032,
+                  marginBottom: height * 0.01,
+                }}
+              >
                 Customer information is kept confidential and used solely for
                 processing your order.
               </Text>
@@ -135,25 +343,26 @@ const BookingSummaryScreen: React.FC<Props> = ({ navigation, route }) => {
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                marginRight: 8, // small spacing between checkbox and text
+                marginRight: width * 0.02,
               }}
             >
               {/* Checkbox Box */}
               <View
                 style={{
-                  width: 20,
-                  height: 20,
-                  borderWidth: 2,
+                  width: width * 0.05,
+                  height: width * 0.05,
+                  borderWidth: width * 0.005,
                   borderColor: "#ccc",
-                  borderRadius: 4,
+                  borderRadius: width * 0.01,
                   justifyContent: "center",
                   alignItems: "center",
                   backgroundColor: isChecked ? "#D4AF37" : "transparent",
                 }}
               >
-                {/* Check mark */}
                 {isChecked && (
-                  <Text style={{ color: "white", fontSize: 14 }}>✓</Text>
+                  <Text style={{ color: "white", fontSize: width * 0.035 }}>
+                    ✓
+                  </Text>
                 )}
               </View>
             </TouchableOpacity>
@@ -163,7 +372,7 @@ const BookingSummaryScreen: React.FC<Props> = ({ navigation, route }) => {
               style={{
                 color: "white",
                 fontSize: width * 0.034,
-                flexShrink: 1, // allows text to wrap if it’s long
+                flexShrink: 1,
               }}
             >
               I have read and agree to the ordering and payment policies.
@@ -173,13 +382,31 @@ const BookingSummaryScreen: React.FC<Props> = ({ navigation, route }) => {
 
         {/* Continue Button */}
         <TouchableOpacity
-          style={[styles.button, { opacity: isChecked ? 1 : 0.5 }]}
+          style={{
+            position: "absolute",
+            bottom: height * 0.035,
+            left: width * 0.05,
+            right: width * 0.05,
+            backgroundColor: "#8B0000",
+            paddingVertical: height * 0.02,
+            borderRadius: width * 0.03,
+            alignItems: "center",
+            opacity: isChecked ? 1 : 0.5,
+          }}
           disabled={!isChecked}
           onPress={() =>
             navigation.navigate("ReservationPaymentScreen", { reservationFee })
           }
         >
-          <Text style={styles.buttonText}>Continue to Payment</Text>
+          <Text
+            style={{
+              color: "#FFFFFF",
+              fontSize: width * 0.04,
+              fontWeight: "600",
+            }}
+          >
+            Continue to Payment
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -187,106 +414,3 @@ const BookingSummaryScreen: React.FC<Props> = ({ navigation, route }) => {
 };
 
 export default BookingSummaryScreen;
-
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-
-  /** Header **/
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 50,
-    marginBottom: 5,
-  },
-  backArrowButton: {
-    width: 35,
-    height: 35,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 10,
-  },
-  customArrow: {
-    width: 14,
-    height: 14,
-    borderLeftWidth: 3,
-    borderBottomWidth: 3,
-    borderColor: "#fff",
-    transform: [{ rotate: "45deg" }],
-  },
-  headerTitle: {
-    color: "#FFFFFF",
-    fontSize: width * 0.07,
-    fontWeight: "bold",
-  },
-
-  /** Content **/
-  scrollContainer: { paddingBottom: 120 },
-  sectionTitle: {
-    color: "#FFFFFF",
-    fontSize: 20,
-    fontWeight: "600",
-    marginBottom: 10,
-  },
-  infoBox: {
-    marginTop: height * 0.012,
-    backgroundColor: "rgba(255,255,255,0.1)",
-    borderRadius: 12,
-    padding: 15,
-    marginBottom: 15,
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 6,
-  },
-  label: { color: "#FFFFFF", fontSize: 14 },
-  value: { color: "#FFFFFF", fontSize: 14, fontWeight: "700" },
-
-  /** Terms **/
-  termsContainer: {
-    backgroundColor: "rgba(255,255,255,0.1)",
-    borderRadius: 12,
-    padding: 15,
-  },
-  termsTitle: {
-    color: "#FFFFFF",
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  policyContainer: { marginBottom: 20 },
-  policyTitle: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 4,
-  },
-  policyText: {
-    color: "#dddddd",
-    fontSize: 13,
-    marginBottom: 8,
-  },
-  checkboxContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-
-  checkboxLabel: { color: "#fff", flex: 1, fontSize: 13 },
-
-  /** Button **/
-  button: {
-    position: "absolute",
-    bottom: 30,
-    left: 20,
-    right: 20,
-    backgroundColor: "#8B0000",
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-});

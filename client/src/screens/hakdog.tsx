@@ -1,6 +1,7 @@
 import React from "react";
+import { paddingTop } from "../utils/dimensions";
 
-export const walaLang = (): React.JSX.Element => {
+export const modal = (): React.JSX.Element => {
   return (
     <>
       <Modal
@@ -113,6 +114,54 @@ export const walaLang = (): React.JSX.Element => {
           </Pressable>
         </View>
       </Modal>
+    </>
+  );
+};
+
+export const header = (): React.JSX.Element => {
+  return (
+    <>
+      {/* Header */}
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          paddingTop: paddingTop,
+          marginBottom: height * 0.01,
+        }}
+      >
+        <TouchableOpacity
+          style={{
+            width: width * 0.09,
+            height: width * 0.09,
+            justifyContent: "center",
+            alignItems: "center",
+            marginRight: width * 0.025,
+          }}
+          onPress={() => navigation?.goBack?.()}
+        >
+          <View
+            style={{
+              width: width * 0.035,
+              height: width * 0.035,
+              borderLeftWidth: width * 0.008,
+              borderBottomWidth: width * 0.008,
+              borderColor: "#fff",
+              transform: [{ rotate: "45deg" }],
+            }}
+          />
+        </TouchableOpacity>
+
+        <Text
+          style={{
+            color: "#FFFFFF",
+            fontSize: width * 0.07,
+            fontWeight: "bold",
+          }}
+        >
+          Reservation
+        </Text>
+      </View>
     </>
   );
 };
