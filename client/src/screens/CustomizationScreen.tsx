@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-  TextInput,
-} from "react-native";
+import { View, Text, Image, TouchableOpacity, TextInput } from "react-native";
 import MainBackground from "../assets/backgrounds/main-background.svg";
 import { RouteProp } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -15,8 +8,8 @@ import { RootStackParamLists } from "../types/rootStackParamLists";
 
 import { appetizers, mainCourse, desserts, drinks } from "../data/menu";
 import { useOrderStore } from "../stores/useOrderStore";
-import { ordersData } from "../types/orders";
-import { width } from "../utils/dimensions";
+import { width, height, paddingTop } from "../utils/dimensions";
+import { Servings } from "../types/orders";
 
 type CustomizationScreenRouteProps = RouteProp<
   RootStackParamLists,
@@ -26,8 +19,6 @@ type CustomizationScreenNavigationProps = NativeStackNavigationProp<
   RootStackParamLists,
   "CustomizationScreen"
 >;
-
-type Servings = "Solo" | "Regular" | "To Share";
 
 interface Props {
   route: CustomizationScreenRouteProps;
@@ -141,89 +132,236 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
   description = description.charAt(0).toUpperCase() + description.slice(1);
 
   return (
-    <View style={styles.container}>
+    <View style={{ flex: 1, backgroundColor: "transparent" }}>
       <MainBackground
         width="100%"
         height="100%"
         preserveAspectRatio="xMidYMid slice"
-        style={StyleSheet.absoluteFillObject}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+        }}
       />
+
+      {/* Header */}
+      <View
+        style={{
+          paddingTop: paddingTop,
+          paddingHorizontal: width * 0.05,
+
+          flexDirection: "row",
+          alignItems: "center",
+          marginBottom: height * 0.01,
+        }}
+      >
+        <TouchableOpacity
+          style={{
+            width: width * 0.09,
+            height: width * 0.09,
+            justifyContent: "center",
+            alignItems: "center",
+            marginRight: width * 0.025,
+          }}
+          onPress={() => navigation?.goBack?.()}
+        >
+          <View
+            style={{
+              width: width * 0.035,
+              height: width * 0.035,
+              borderLeftWidth: width * 0.008,
+              borderBottomWidth: width * 0.008,
+              borderColor: "#fff",
+              transform: [{ rotate: "45deg" }],
+            }}
+          />
+        </TouchableOpacity>
+
+        <Text
+          style={{
+            color: "#FFFFFF",
+            fontSize: width * 0.07,
+            fontWeight: "bold",
+          }}
+        >
+          Menu
+        </Text>
+      </View>
 
       <KeyboardAwareScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ marginTop: 60, paddingBottom: 100 }}
+        contentContainerStyle={{
+          paddingBottom: height * 0.05,
+          paddingHorizontal: width * 0.05,
+        }}
         keyboardShouldPersistTaps="handled"
         enableOnAndroid
-        extraScrollHeight={20}
+        extraScrollHeight={height * 0.03}
       >
-        {/* HEADER */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginBottom: 10,
-            paddingHorizontal: 20,
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={{ marginRight: 10, padding: 5 }}
-          >
-            <Text style={{ color: "#FFF", fontSize: 30 }}>‹</Text>
-          </TouchableOpacity>
-          <Text style={{ color: "#FFF", fontSize: 24, fontWeight: "700" }}>
-            Menu
-          </Text>
-        </View>
-
         {/* FOOD IMAGE */}
         <View style={{ alignItems: "center" }}>
-          <Image source={order.image} style={styles.image} resizeMode="cover" />
+          <Image
+            source={order.image}
+            style={{
+              width: "100%",
+              height: height * 0.2,
+              borderRadius: width * 0.04,
+              marginVertical: height * 0.025,
+            }}
+            resizeMode="cover"
+          />
         </View>
 
         {/* CONTENT */}
-        <View style={styles.overlayContainer}>
-          {/* Title and Base Price */}
-          <View style={styles.rowBetween}>
-            <Text style={styles.title}>{order.name || order.orderName}</Text>
+        <View
+          style={{
+            backgroundColor: "transparent",
+            // marginTop: height * 0.0,
+            borderTopLeftRadius: width * 0.05,
+            borderTopRightRadius: width * 0.05,
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                color: "#fff",
+                fontSize: width * 0.05,
+                fontWeight: "700",
+                flexShrink: 1,
+                width: "70%",
+              }}
+            >
+              {order.name || order.orderName}
+            </Text>
             <View style={{ alignItems: "flex-end" }}>
-              <Text style={styles.price}>₱{computedPrice.toFixed(2)}</Text>
-              <Text style={styles.basePriceLabel}>Base price</Text>
+              <Text
+                style={{
+                  color: "#fff",
+                  fontSize: width * 0.05,
+                  fontWeight: "700",
+                }}
+              >
+                ₱{computedPrice.toFixed(2)}
+              </Text>
+              <Text
+                style={{
+                  color: "#f4d03f",
+                  fontSize: width * 0.027,
+                }}
+              >
+                Base price
+              </Text>
             </View>
           </View>
 
-          <Text style={styles.description}>{description}</Text>
-          <View style={styles.divider} />
+          <Text
+            style={{
+              color: "#ccc",
+              fontSize: width * 0.035,
+              marginBottom: height * 0.02,
+              lineHeight: height * 0.035,
+            }}
+          >
+            {description}
+          </Text>
+          <View
+            style={{
+              borderBottomColor: "rgba(255,255,255,0.3)",
+              borderBottomWidth: height * 0.0015,
+              marginBottom: height * 0.025,
+            }}
+          />
 
           {/* Servings */}
           {category !== "Dessert" && category !== "Drinks" && (
             <>
-              <View style={styles.section}>
-                <View style={styles.rowBetween}>
-                  <Text style={styles.sectionTitle}>Servings</Text>
+              <View style={{ marginBottom: height * 0.02 }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "#fff",
+                      fontSize: width * 0.045,
+                      fontWeight: "600",
+                    }}
+                  >
+                    Servings
+                  </Text>
                 </View>
 
                 {servingOptions.map((option) => (
-                  <View style={styles.radioRow} key={option.label}>
-                    <View style={styles.radioContainer}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginTop: height * 0.025,
+                    }}
+                    key={option.label}
+                  >
+                    <View
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                    >
                       <TouchableOpacity
                         onPress={() => setSelectedServing(option.label as any)}
                       >
                         <View
                           style={[
-                            styles.outerCircle,
-                            selectedServing === option.label &&
-                              styles.outerCircleActive,
+                            {
+                              width: width * 0.05,
+                              height: width * 0.05,
+                              borderRadius: width * 0.025,
+                              borderWidth: height * 0.003,
+                              borderColor: "#999",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              marginRight: width * 0.03,
+                            },
+                            selectedServing === option.label && {
+                              borderColor: "#ff3b30",
+                            },
                           ]}
                         >
                           {selectedServing === option.label && (
-                            <View style={styles.innerCircle} />
+                            <View
+                              style={{
+                                width: width * 0.025,
+                                height: width * 0.025,
+                                borderRadius: width * 0.0125,
+                                backgroundColor: "#ff3b30",
+                              }}
+                            />
                           )}
                         </View>
                       </TouchableOpacity>
-                      <Text style={styles.radioLabel}>{option.label}</Text>
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontSize: width * 0.04,
+                        }}
+                      >
+                        {option.label}
+                      </Text>
                     </View>
-                    <Text style={styles.radioPrice}>
+                    <Text
+                      style={{
+                        color: "#fff",
+                        fontSize: width * 0.04,
+                      }}
+                    >
                       {option.price === 0
                         ? "0.00"
                         : `+${option.price.toFixed(2)}`}
@@ -231,22 +369,48 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
                   </View>
                 ))}
               </View>
-              <View style={styles.divider} />
+              <View
+                style={{
+                  borderBottomColor: "rgba(255,255,255,0.3)",
+                  borderBottomWidth: height * 0.0015,
+                  marginBottom: height * 0.025,
+                }}
+              />
             </>
           )}
 
           {/* Note */}
-          <View style={styles.section}>
-            <View style={styles.rowBetween}>
-              <Text style={styles.sectionTitle}>Note to restaurant</Text>
+          <View style={{ marginBottom: height * 0.04 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Text
+                style={{
+                  color: "#fff",
+                  fontSize: width * 0.045,
+                  fontWeight: "600",
+                }}
+              >
+                Note to restaurant
+              </Text>
             </View>
             <TextInput
-              style={[
-                styles.textInput,
-                (category === "Dessert" || category === "Drinks") && {
-                  height: 100,
-                },
-              ]}
+              style={{
+                backgroundColor: "transparent",
+                color: "#fff",
+                borderWidth: 1,
+                borderColor: "rgba(255,255,255,0.3)",
+                borderRadius: width * 0.03,
+                padding: height * 0.02,
+                marginTop: height * 0.02,
+                fontSize: width * 0.035,
+                height: height * 0.12,
+                textAlignVertical: "top",
+              }}
               value={note}
               placeholder="Specify any additional requests"
               placeholderTextColor="#999"
@@ -256,264 +420,107 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
           </View>
 
           {/* Quantity */}
-          <View style={styles.quantityContainer}>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              // paddingBottom: height * 0.12,
+            }}
+          >
             <TouchableOpacity
               onPress={() => handleQuantityChange(-1)}
               disabled={quantity === 1}
-              style={[styles.qtyButton, quantity === 1 && { opacity: 0.3 }]}
+              style={[
+                {
+                  borderWidth: height * 0.004,
+                  borderColor: "#fff",
+                  borderRadius: width * 0.15,
+                  width: width * 0.1,
+                  height: width * 0.1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                },
+                quantity === 1 && { opacity: 0.3 },
+              ]}
             >
-              <Text style={styles.qtySymbol}>−</Text>
+              <Text
+                style={{
+                  color: "#fff",
+                  fontSize: width * 0.06,
+                  fontWeight: "800",
+                }}
+              >
+                −
+              </Text>
             </TouchableOpacity>
-            <Text style={styles.qtyText}>{quantity}</Text>
+            <Text
+              style={{
+                color: "#fff",
+                fontSize: width * 0.05,
+                fontWeight: "600",
+                marginHorizontal: width * 0.08,
+              }}
+            >
+              {quantity}
+            </Text>
             <TouchableOpacity
               onPress={() => handleQuantityChange(1)}
-              style={styles.qtyButton}
+              style={{
+                borderWidth: height * 0.004,
+                borderColor: "#fff",
+                borderRadius: width * 0.15,
+                width: width * 0.1,
+                height: width * 0.1,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
-              <Text style={styles.qtySymbol}>+</Text>
+              <Text
+                style={{
+                  color: "#fff",
+                  fontSize: width * 0.06,
+                  fontWeight: "800",
+                }}
+              >
+                +
+              </Text>
             </TouchableOpacity>
           </View>
-
-          {/* Update Button */}
-          <TouchableOpacity
-            style={styles.updateButton}
-            onPress={handleOrderAction}
-          >
-            <Text style={styles.updateButtonText}>
-              {buttonLabel} - ₱{totalPrice.toFixed(2)}
-            </Text>
-          </TouchableOpacity>
         </View>
       </KeyboardAwareScrollView>
+
+      <View
+        style={{
+          paddingHorizontal: width * 0.05,
+          paddingBottom: 30,
+          paddingTop: 15,
+        }}
+      >
+        {/* Update Button */}
+        <TouchableOpacity
+          style={{
+            backgroundColor: "#8B0000",
+            paddingVertical: 20,
+            borderRadius: 20,
+            alignItems: "center",
+          }}
+          onPress={handleOrderAction}
+        >
+          <Text
+            style={{
+              color: "#fff",
+              fontSize: width * 0.045,
+              fontWeight: "700",
+              textAlign: "center",
+            }}
+          >
+            {buttonLabel} - ₱{totalPrice.toFixed(2)}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
 export default CustomizationScreen;
-
-// styles remain the same (you can reuse your original styles)
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "transparent",
-  },
-  backButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 50,
-    marginLeft: 20,
-  },
-  backArrow: {
-    color: "#fff",
-    fontSize: 26,
-    fontWeight: "600",
-  },
-  menuText: {
-    color: "#fff",
-    fontSize: 20,
-    fontWeight: "600",
-    marginLeft: 10,
-  },
-  image: {
-    width: "90%",
-    height: 220,
-    borderRadius: 15,
-    marginVertical: 15,
-  },
-  overlayContainer: {
-    backgroundColor: "transparent",
-    paddingHorizontal: 20,
-    paddingVertical: 25,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    marginTop: -10,
-  },
-  rowBetween: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  title: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "700",
-    flexShrink: 1,
-    width: "70%",
-  },
-  price: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "700",
-  },
-  basePriceLabel: {
-    color: "#f4d03f",
-    fontSize: 11,
-  },
-  description: {
-    color: "#ccc",
-    fontSize: 14,
-    marginTop: 8,
-    marginBottom: 15,
-    lineHeight: 20,
-  },
-  divider: {
-    borderBottomColor: "rgba(255,255,255,0.3)",
-    borderBottomWidth: 1,
-    marginBottom: 15,
-  },
-  section: {
-    marginBottom: 25,
-  },
-  sectionTitle: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  pickContainer: {
-    backgroundColor: "#f4d03f",
-    borderRadius: 15,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-  },
-  pickText: {
-    color: "#000",
-    fontSize: 12,
-    fontWeight: "600",
-  },
-  radioRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 12,
-  },
-  radioContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  outerCircle: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    borderWidth: 1.5,
-    borderColor: "#999",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 10,
-  },
-  outerCircleActive: {
-    borderColor: "#ff3b30",
-  },
-  innerCircle: {
-    width: 9,
-    height: 9,
-    borderRadius: 5,
-    backgroundColor: "#ff3b30",
-  },
-  radioLabel: {
-    color: "#fff",
-    fontSize: 15,
-  },
-  radioPrice: {
-    color: "#fff",
-    fontSize: 15,
-  },
-  textInput: {
-    backgroundColor: "transparent",
-    color: "#fff",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.3)",
-    borderRadius: 10,
-    padding: 12,
-    marginTop: 25,
-    fontSize: 14,
-  },
-  quantityContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingBottom: width * 0.07,
-  },
-  qtyButton: {
-    borderWidth: 1.5,
-    borderColor: "#fff",
-    borderRadius: 50,
-    width: 36,
-    height: 36,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  qtySymbol: {
-    color: "#fff",
-    fontSize: 20,
-    fontWeight: "800",
-  },
-  qtyText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "600",
-    marginHorizontal: 25,
-  },
-  updateButton: {
-    backgroundColor: "#c0392b",
-    paddingVertical: 15,
-    borderRadius: 10,
-  },
-  updateButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "700",
-    textAlign: "center",
-  },
-
-  // ✅ Modal Styles
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContainer: {
-    width: 250,
-    backgroundColor: "#fff",
-    borderRadius: 20,
-    paddingVertical: 25,
-    paddingHorizontal: 15,
-    alignItems: "center",
-  },
-  modalText: {
-    color: "#000",
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 20,
-  },
-  modalButtons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-  },
-  noButton: {
-    flex: 1,
-    marginRight: 10,
-    borderWidth: 1,
-    borderColor: "#c0392b",
-    borderRadius: 25,
-    paddingVertical: 10,
-    backgroundColor: "#fff",
-    alignItems: "center",
-  },
-  yesButton: {
-    flex: 1,
-    backgroundColor: "#c0392b",
-    borderRadius: 25,
-    paddingVertical: 10,
-    alignItems: "center",
-  },
-  noButtonText: {
-    color: "#c0392b",
-    fontWeight: "700",
-  },
-  yesButtonText: {
-    color: "#fff",
-    fontWeight: "700",
-  },
-});

@@ -51,7 +51,6 @@ const App = () => {
   const Stack = createNativeStackNavigator<RootStackParamLists>();
 
   // to avoid the status bar in androind ONLY
-
   const AppWrapper: React.FC<{ children: React.ReactNode }> = ({
     children,
   }) => {

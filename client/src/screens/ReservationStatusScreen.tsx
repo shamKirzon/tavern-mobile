@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamLists } from "../types/rootStackParamLists";
-import { height, width } from "../utils/dimensions";
+import { height, paddingTop, width } from "../utils/dimensions";
 import {
   View,
   Text,
   TouchableOpacity,
   useWindowDimensions,
   Alert,
+  ScrollView,
 } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import MainBackground from "../assets/backgrounds/main-background.svg";
@@ -18,6 +19,7 @@ import OrderPolicyScreen from "./OrderPolicyScreen";
 import { useReservationStore } from "../stores/useReservationStore";
 import { updateToken } from "../services/token";
 import { useOrderStore } from "../stores/useOrderStore";
+import { rulesAndConditions } from "../data/rulesAndCondition";
 type ReservationStatusScreenRouteProp = RouteProp<
   RootStackParamLists,
   "ReservationStatusScreen"
@@ -45,7 +47,7 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
       header: "Awaiting Confirmation",
       title: "What Happens Next?",
       description:
-        "Please allow up to 48 hours for us to manually verify your payment. You will receive a confirmation email as soon as it is approved.",
+        "Please allow up to 24 hours for us to manually verify your payment. You will receive a confirmation email as soon as it is approved.",
     },
     rejected: {
       header: "Reservation not Approved",
@@ -134,55 +136,72 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
     return (
       <View style={{ width, height, flex: 1 }}>
         {/* Background Layer */}
-        <MainBackground style={{ position: "absolute", height: "100%" }} />
+        <MainBackground
+          width={width}
+          height={height}
+          preserveAspectRatio="none"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+          }}
+        />
+
+        {/* Header */}
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            paddingTop: paddingTop,
+            // marginBottom: height * 0.01,
+            paddingHorizontal: width * 0.05,
+          }}
+        >
+          <TouchableOpacity
+            style={{
+              width: width * 0.09,
+              height: width * 0.09,
+              justifyContent: "center",
+              alignItems: "center",
+              marginRight: width * 0.025,
+            }}
+            onPress={() => navigation?.goBack?.()}
+          >
+            <View
+              style={{
+                width: width * 0.035,
+                height: width * 0.035,
+                borderLeftWidth: width * 0.008,
+                borderBottomWidth: width * 0.008,
+                borderColor: "#fff",
+                transform: [{ rotate: "45deg" }],
+              }}
+            />
+          </TouchableOpacity>
+
+          <Text
+            style={{
+              color: "#FFFFFF",
+              fontSize: width * 0.07,
+              fontWeight: "bold",
+            }}
+          >
+            Order Policy
+          </Text>
+        </View>
 
         {/* Main Content Container */}
-        <View
+        <ScrollView
           style={{
             flex: 1,
             padding: width * 0.05,
-            paddingTop: height * 0.06,
           }}
         >
           <View>
-            {/* ===== HEADER WITH BACK BUTTON ===== */}
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginBottom: height * 0.02,
-              }}
-            >
-              <TouchableOpacity
-                onPress={() => navigation.goBack()}
-                style={{ marginRight: width * 0.03, padding: 5 }}
-              >
-                <Text
-                  style={{
-                    color: "#FFF",
-                    fontSize: 30,
-                    fontWeight: "300",
-                    lineHeight: 30,
-                  }}
-                >
-                  ‹
-                </Text>
-              </TouchableOpacity>
-              <Text
-                style={{
-                  color: "#FFF",
-                  fontSize: width * 0.06,
-                  fontWeight: "700",
-                  fontFamily: "Poppins",
-                }}
-              >
-                Order Policy
-              </Text>
-            </View>
-
             {/* ===== ORDER SPEND LIMIT CARD ===== */}
             <View
               style={{
+                marginTop: height * 0.02,
                 backgroundColor: "rgba(255, 255, 255, 0.12)",
                 borderRadius: 20,
                 padding: width * 0.045,
@@ -291,38 +310,7 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
                 Terms and Conditions
               </Text>
               <View>
-                {[
-                  {
-                    title: "1. Order Process",
-                    content:
-                      "All orders must be placed through this mobile app. Confirmation is issued once payment is received.",
-                  },
-                  {
-                    title: "2. Deposit Payment",
-                    content:
-                      "A non-refundable deposit is required to secure your order. Payments accepted via GCash, Maya, Bank Transfer, or PayPal.",
-                  },
-                  {
-                    title: "3. Non-Refundable Policy",
-                    content:
-                      "Deposits are strictly non-refundable, including cancellations or no-shows. Please confirm availability before ordering.",
-                  },
-                  {
-                    title: "4. Order Spend Limit",
-                    content:
-                      "Each order is subject to a ₱15,000 spending limit. Additional charges may apply for rush consumption.",
-                  },
-                  {
-                    title: "5. Modifications",
-                    content:
-                      "Changes may be requested 48 hours in advance, subject to approval and availability.",
-                  },
-                  {
-                    title: "6. Confirmation",
-                    content:
-                      "A QR Code and order details will be emailed after successful payment. Present this upon arrival.",
-                  },
-                ].map((item, index) => (
+                {rulesAndConditions.map((item, index) => (
                   <View key={index} style={{ marginBottom: height * 0.008 }}>
                     <Text
                       style={{
@@ -360,7 +348,7 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
                 flexDirection: "row",
                 alignItems: "center",
                 marginTop: height * 0.015,
-                marginBottom: height * 0.13,
+                paddingBottom: height * 0.07,
               }}
             >
               <TouchableOpacity
@@ -368,10 +356,9 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  marginRight: 8, // small spacing between checkbox and text
+                  marginRight: 8,
                 }}
               >
-                {/* Checkbox Box */}
                 <View
                   style={{
                     width: 20,
@@ -384,51 +371,57 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
                     backgroundColor: isChecked ? "#D4AF37" : "transparent",
                   }}
                 >
-                  {/* Check mark */}
                   {isChecked && (
                     <Text style={{ color: "white", fontSize: 14 }}>✓</Text>
                   )}
                 </View>
               </TouchableOpacity>
 
-              {/* Label */}
               <Text
                 style={{
                   color: "white",
                   fontSize: width * 0.032,
-                  flexShrink: 1, // allows text to wrap if it’s long
+                  flexShrink: 1,
                 }}
               >
                 I have read and agree to the ordering and payment policies.
               </Text>
             </View>
-            {/* ===== CONTINUE ORDERING BUTTON ===== */}
-            <TouchableOpacity
-              onPress={handleContinueOrdering}
-              disabled={!isChecked}
-              style={[
-                {
-                  backgroundColor: "#8B0000",
-                  paddingVertical: height * 0.018,
-                  borderRadius: 30,
-                  alignItems: "center",
-                  marginBottom: height * 0.015,
-                },
-                !isChecked && { opacity: 0.5 },
-              ]}
-            >
-              <Text
-                style={{
-                  color: "#FFF",
-                  fontSize: width * 0.042,
-                  fontWeight: "700",
-                  fontFamily: "Poppins",
-                }}
-              >
-                Continue Ordering
-              </Text>
-            </TouchableOpacity>
           </View>
+        </ScrollView>
+
+        {/* ===== CONTINUE ORDERING BUTTON ===== */}
+        <View
+          style={{
+            paddingHorizontal: width * 0.05,
+            paddingBottom: 30,
+            paddingTop: 15,
+          }}
+        >
+          <TouchableOpacity
+            onPress={handleContinueOrdering}
+            disabled={!isChecked}
+            style={[
+              {
+                backgroundColor: "#8B0000",
+                paddingVertical: 20,
+                borderRadius: 20,
+                alignItems: "center",
+              },
+              !isChecked && { opacity: 0.5 },
+            ]}
+          >
+            <Text
+              style={{
+                color: "#FFF",
+                fontSize: width * 0.042,
+                fontWeight: "700",
+                fontFamily: "Poppins",
+              }}
+            >
+              Continue Ordering
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -440,52 +433,44 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
       {reservationStatus !== "accepted" && (
         <View style={{ width, height, flex: 1 }}>
           {/* ===== BACKGROUND ===== */}
-          <MainBackground style={{ position: "absolute", height: "100%" }} />
+          <MainBackground
+            width={width}
+            height={height}
+            preserveAspectRatio="none"
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+            }}
+          />
 
           {/* ===== MAIN CONTAINER ===== */}
           <View
             style={{
               flex: 1,
               padding: width * 0.05,
-              paddingTop: height * 0.06,
+              paddingTop: paddingTop,
               justifyContent: "space-between",
             }}
           >
-            {/* ===== HEADER ===== */}
-            <View>
-              <View
+            {/* Header */}
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: height * 0.01,
+              }}
+            >
+              <Text
                 style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginBottom: height * 0.02,
+                  paddingLeft: width * 0.035,
+                  color: "#FFFFFF",
+                  fontSize: width * 0.07,
+                  fontWeight: "bold",
                 }}
               >
-                <TouchableOpacity
-                  onPress={() => navigation.goBack()}
-                  style={{ marginRight: width * 0.03, padding: 5 }}
-                >
-                  <Text
-                    style={{
-                      color: "#FFF",
-                      fontSize: 30,
-                      fontWeight: "300",
-                      lineHeight: 30,
-                    }}
-                  >
-                    ‹
-                  </Text>
-                </TouchableOpacity>
-                <Text
-                  style={{
-                    color: "#FFF",
-                    fontSize: 25,
-                    fontWeight: "700",
-                    fontFamily: "Poppins",
-                  }}
-                >
-                  Reservation Status
-                </Text>
-              </View>
+                Reservation Status
+              </Text>
             </View>
 
             {/* ===== CENTERED CONTENT (Loading Icon to Info Card) ===== */}

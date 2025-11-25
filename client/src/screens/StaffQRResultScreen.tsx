@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { width, height } from "../utils/dimensions";
+import { width, height, paddingTop } from "../utils/dimensions";
 
 import AdditionalOrders from "../assets/icons/additional-order.svg";
 import ModalAdditionalOrderIcon from "../assets/icons/modal-additional-order-icon.svg";
@@ -133,7 +133,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
           throw new Error("Can't insert corresponding data in states");
         }
       } catch (error) {
-        console.log("error in fetching data: ", error);
+        console.log("Can't get the QR data:", error);
       } finally {
         setIsLoading(false);
       }
@@ -199,7 +199,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
       }
       navigation.navigate("StaffQRScannerScreen");
     } catch (error) {
-      console.error("error in handleDone: ", error);
+      console.error("error in handleDone():", error);
     } finally {
       setIsLoading(false);
       setModalVisible(false);
@@ -612,10 +612,10 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
         {/* Scrollable main content */}
         <ScrollView
           contentContainerStyle={{
-            marginTop: height * 0.1,
+            paddingTop: paddingTop,
             alignItems: "center",
             paddingHorizontal: width * 0.07,
-            paddingBottom: 120,
+            paddingBottom: 15,
           }}
           showsVerticalScrollIndicator={false}
         >
@@ -951,7 +951,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                     paddingBottom: height * 0.02,
                   }}
                 >
-                  Summmary
+                  Summary
                 </Text>
                 {/* total: */}
                 <View
@@ -1074,12 +1074,14 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
         {/* additional order, done  */}
         <View
           style={{
+            paddingTop: 20,
+            paddingBottom: height * 0.03,
             flexDirection: "row",
             paddingHorizontal: height * 0.02,
-            position: "absolute",
-            bottom: height * 0.035,
-            left: width * 0.04,
-            right: width * 0.04,
+            // position: "absolute",
+            // bottom: height * 0.035,
+            // left: width * 0.04,
+            // right: width * 0.04,
             gap: 12,
           }}
         >
@@ -1197,6 +1199,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
 
               <Text
                 style={{
+                  textAlign: "center",
                   paddingTop: height * 0.02,
                   color: "#fff",
                   fontSize: width * 0.06,
@@ -1211,12 +1214,12 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
               {/* subtext:  */}
               <Text
                 style={{
-                  paddingTop: height * 0.008,
+                  paddingTop: height * 0.01,
                   textAlign: "center",
                   color: "#fff",
                   fontSize: width * 0.04,
                   fontWeight: "200",
-                  marginBottom: height * 0.03,
+                  marginBottom: height * 0.06,
                 }}
               >
                 {isAddiOrderClicked
@@ -1269,13 +1272,11 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
       </Modal>
 
       <View style={{ flex: 1 }}>
-        {/* Background */}
         <MainBackground
-          style={{
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-          }}
+          width={width}
+          height={height}
+          preserveAspectRatio="none"
+          style={{ position: "absolute", top: 0, left: 0 }}
         />
 
         {isReservationStatusInvalid || isValid == false // para makuha niya yung invalid galinlg sa scanner

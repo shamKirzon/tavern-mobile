@@ -62,7 +62,7 @@ class AuthController {
 
       if (validatedResult.isExpired == true && validatedResult.isValid == false)
         return res.status(200).json({
-          message: "otp already expired. generate a new otp",
+          message: "otp already Expired. Generate a new otp",
           isValidOtp: false,
         });
       else if (

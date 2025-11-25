@@ -44,49 +44,49 @@ const BookingSummaryScreen: React.FC<Props> = ({ navigation, route }) => {
       {/* Main Content */}
       <View style={{ flex: 1, paddingHorizontal: width * 0.05 }}>
         {/* Scrollable Content */}
-        <ScrollView contentContainerStyle={{ paddingBottom: height * 0.15 }}>
-          {/* Header */}
-          <View
+        {/* Header */}
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            paddingTop: paddingTop,
+            marginBottom: height * 0.01,
+          }}
+        >
+          <TouchableOpacity
             style={{
-              flexDirection: "row",
+              width: width * 0.09,
+              height: width * 0.09,
+              justifyContent: "center",
               alignItems: "center",
-              paddingTop: paddingTop,
-              marginBottom: height * 0.01,
+              marginRight: width * 0.025,
+            }}
+            onPress={() => navigation?.goBack?.()}
+          >
+            <View
+              style={{
+                width: width * 0.035,
+                height: width * 0.035,
+                borderLeftWidth: width * 0.008,
+                borderBottomWidth: width * 0.008,
+                borderColor: "#fff",
+                transform: [{ rotate: "45deg" }],
+              }}
+            />
+          </TouchableOpacity>
+
+          <Text
+            style={{
+              color: "#FFFFFF",
+              fontSize: width * 0.07,
+              fontWeight: "bold",
             }}
           >
-            <TouchableOpacity
-              style={{
-                width: width * 0.09,
-                height: width * 0.09,
-                justifyContent: "center",
-                alignItems: "center",
-                marginRight: width * 0.025,
-              }}
-              onPress={() => navigation?.goBack?.()}
-            >
-              <View
-                style={{
-                  width: width * 0.035,
-                  height: width * 0.035,
-                  borderLeftWidth: width * 0.008,
-                  borderBottomWidth: width * 0.008,
-                  borderColor: "#fff",
-                  transform: [{ rotate: "45deg" }],
-                }}
-              />
-            </TouchableOpacity>
+            Reservation Summary
+          </Text>
+        </View>
 
-            <Text
-              style={{
-                color: "#FFFFFF",
-                fontSize: width * 0.07,
-                fontWeight: "bold",
-              }}
-            >
-              Reservation Summary
-            </Text>
-          </View>
-
+        <ScrollView contentContainerStyle={{ paddingBottom: height * 0.15 }}>
           {/* Reservation Details */}
           <View
             style={{

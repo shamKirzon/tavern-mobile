@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamLists } from "../types/rootStackParamLists";
-import { height, width } from "../utils/dimensions";
+import { height, paddingTop, width } from "../utils/dimensions";
 import {
   View,
   Text,
@@ -84,7 +84,7 @@ const EmailVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
     const result = await validateOtp(email, otpCode);
     if (!result?.isValidOtp) {
       showOtpError();
-      console.log("message:", result?.message);
+      console.log("OTP server message:", result?.message);
       setOtp(["", "", "", ""]);
       inputRefs[0].current?.focus();
       return;
@@ -113,7 +113,16 @@ const EmailVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={{ width, height, flex: 1 }}>
-        <MainBackground style={{ position: "absolute", height: "100%" }} />
+        <MainBackground
+          width={width}
+          height={height}
+          preserveAspectRatio="none"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+          }}
+        />
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={{
@@ -127,12 +136,22 @@ const EmailVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
           <TouchableOpacity
             onPress={handleBack}
             style={{
+              paddingTop: paddingTop,
               position: "absolute",
               top: height * 0.06,
               left: width * 0.06,
             }}
           >
-            <Text style={{ color: "#FFFFFF", fontSize: 28 }}>←</Text>
+            <View
+              style={{
+                width: width * 0.035,
+                height: width * 0.035,
+                borderLeftWidth: width * 0.008,
+                borderBottomWidth: width * 0.008,
+                borderColor: "#fff",
+                transform: [{ rotate: "45deg" }],
+              }}
+            />
           </TouchableOpacity>
 
           {/* Title Section */}

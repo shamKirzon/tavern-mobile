@@ -42,42 +42,106 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
   const { reservationFee } = route.params;
   const { setReservationData, customerReservationData } = useReservationStore();
 
-  const [errors, setErrors] = useState<{
-    refNum: boolean;
-    paymentAmount: boolean;
-  }>({ refNum: true, paymentAmount: true });
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [selectedQR, setSelectedQR] = useState<string | null>(null);
   const [uploadedPayment, setUploadedPayment] = useState<string | null>(null);
   const [paymentReferenceNumber, setPaymentReferenceNumber] = useState("");
   const [paymentAmount, setPaymentAmount] = useState(0);
 
+  // Error Handling:
+  const [errors, setErrors] = useState<{
+    refNum: boolean;
+    paymentAmount: boolean;
+    proofOfPayment: boolean;
+  }>({ refNum: false, paymentAmount: false, proofOfPayment: false });
+
+  const [errorMessage, setErrorMessage] = useState<{
+    refNum: string;
+    paymentAmount: string;
+    proofOfPayment: string;
+  }>({ refNum: "", paymentAmount: "", proofOfPayment: "" });
+
+  // functions :
+
+  const validateInputs = () => {
+    let isValid = true;
+
+    const newErrorMessages = {
+      refNum: "",
+      paymentAmount: "",
+      proofOfPayment: "",
+    };
+
+    const newErrors = {
+      refNum: false,
+      paymentAmount: false,
+      proofOfPayment: false,
+    };
+
+    if (!paymentReferenceNumber.trim()) {
+      newErrorMessages.refNum = "Reference number cannot be empty.";
+      newErrors.refNum = true;
+      isValid = false;
+    }
+
+    if (!paymentAmount) {
+      newErrorMessages.paymentAmount = "Payment amount cannot be empty.";
+      newErrors.paymentAmount = true;
+      isValid = false;
+    }
+
+    if (!uploadedPayment) {
+      newErrorMessages.proofOfPayment = "Please upload a proof of payment.  ";
+      newErrors.proofOfPayment = true;
+      isValid = false;
+    }
+
+    // Update state
+    setErrorMessage(newErrorMessages);
+    setErrors(newErrors);
+
+    return isValid;
+  };
+
   const handleQRPress = (qr: string) => {
     setSelectedQR(selectedQR === qr ? null : qr);
   };
 
   const handleConfirmPayment = async () => {
-    if (!paymentReferenceNumber || !paymentAmount) return;
+    // 1. VALIDATION FIRST (outside try)
+    if (!validateInputs()) {
+      return; // stop execution
+    }
 
-    // since hindi nakukuha agad agad yung latest state
+    // 2. Check required fields
+    if (!paymentReferenceNumber || !paymentAmount) {
+      return;
+    }
+
+    // 3. Build updated data BEFORE try
     const updatedCustomerData = {
       ...customerReservationData,
-      ...{ paymentReferenceNumber, paymentAmount },
+      paymentReferenceNumber,
+      paymentAmount,
     };
+
     setReservationData({
       paymentReferenceNumber,
       paymentAmount,
     });
 
     setIsUploading(true);
+
     try {
       const res = await createReservation(updatedCustomerData);
+
       if (res) {
         navigation.navigate("HomeScreen");
       }
     } catch (err) {
       console.error("Error creating reservation:", err);
     } finally {
+      // 6. Stop loading
       setIsUploading(false);
     }
   };
@@ -99,6 +163,7 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
       const paymentUrl = await uploadImage(imageUri, "payment");
       if (paymentUrl) {
         setUploadedPayment(paymentUrl);
+        setErrorMessage((prev) => ({ ...prev, proofOfPayment: "" }));
         setReservationData({ paymentUrl });
       }
     } catch (error) {
@@ -127,6 +192,49 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
           }}
         />
 
+        {/* Header */}
+        <View
+          style={{
+            paddingHorizontal: width * 0.05,
+            flexDirection: "row",
+            alignItems: "center",
+            paddingTop: paddingTop,
+            marginBottom: height * 0.01,
+          }}
+        >
+          <TouchableOpacity
+            style={{
+              width: width * 0.09,
+              height: width * 0.09,
+              justifyContent: "center",
+              alignItems: "center",
+              marginRight: width * 0.025,
+            }}
+            onPress={() => navigation?.goBack?.()}
+          >
+            <View
+              style={{
+                width: width * 0.035,
+                height: width * 0.035,
+                borderLeftWidth: width * 0.008,
+                borderBottomWidth: width * 0.008,
+                borderColor: "#fff",
+                transform: [{ rotate: "45deg" }],
+              }}
+            />
+          </TouchableOpacity>
+
+          <Text
+            style={{
+              color: "#FFFFFF",
+              fontSize: width * 0.07,
+              fontWeight: "bold",
+            }}
+          >
+            Payment
+          </Text>
+        </View>
+
         <KeyboardAwareScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: height * 0.03 }}
@@ -142,48 +250,6 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
               paddingHorizontal: width * 0.05,
             }}
           >
-            {/* Header */}
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                paddingTop: paddingTop,
-                marginBottom: height * 0.01,
-              }}
-            >
-              <TouchableOpacity
-                style={{
-                  width: width * 0.09,
-                  height: width * 0.09,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginRight: width * 0.025,
-                }}
-                onPress={() => navigation?.goBack?.()}
-              >
-                <View
-                  style={{
-                    width: width * 0.035,
-                    height: width * 0.035,
-                    borderLeftWidth: width * 0.008,
-                    borderBottomWidth: width * 0.008,
-                    borderColor: "#fff",
-                    transform: [{ rotate: "45deg" }],
-                  }}
-                />
-              </TouchableOpacity>
-
-              <Text
-                style={{
-                  color: "#FFFFFF",
-                  fontSize: width * 0.07,
-                  fontWeight: "bold",
-                }}
-              >
-                Payment
-              </Text>
-            </View>
-
             {/* Note Box */}
             <View
               style={{
@@ -464,52 +530,72 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
               </View>
             </View>
 
-            {/* Upload Proof */}
+            {/* Upload Section */}
             <View
               style={{
                 flexDirection: "row",
                 justifyContent: "space-between",
-                marginBottom: height * 0.01,
               }}
             >
-              <Text
-                style={{
-                  color: "#fff",
-                  fontSize: width * 0.044,
-                  fontWeight: "500",
-                  marginTop: height * 0.006,
-                }}
-              >
-                Upload Proof of Payment
-              </Text>
-
-              <TouchableOpacity
-                onPress={handleUpload}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  backgroundColor: uploadedPayment
-                    ? "rgba(0, 200, 100, 0.2)"
-                    : "rgba(255, 255, 255, 0.1)",
-                  borderRadius: width * 0.03,
-                  paddingVertical: height * 0.018,
-                  paddingHorizontal: width * 0.06,
-                  borderWidth: 1,
-                  borderColor: uploadedPayment
-                    ? "rgba(0, 255, 100, 0.4)"
-                    : "rgba(255, 255, 255, 0.2)",
-                }}
-              >
+              <View style={{ flex: 1 }}>
                 <Text
                   style={{
                     color: "white",
-                    fontSize: width * 0.038,
+                    fontSize: width * 0.044,
                     fontWeight: "500",
                   }}
                 >
-                  {uploadedPayment ? "File Uploaded" : "Browse File"}
+                  Upload Proof of Payment
                 </Text>
-              </TouchableOpacity>
+              </View>
+
+              <View style={{ flex: 1 }}>
+                <TouchableOpacity
+                  onPress={(text) => {
+                    handleUpload();
+
+                    setErrors((prev) => ({ ...prev, proofOfPayment: false }));
+                  }}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: uploadedPayment
+                      ? "rgba(0, 200, 100, 0.2)"
+                      : "rgba(255, 255, 255, 0.1)",
+                    borderRadius: width * 0.03,
+                    paddingVertical: height * 0.018,
+                    paddingHorizontal: width * 0.06,
+                    borderWidth: 1,
+                    borderColor: errors.proofOfPayment
+                      ? "red"
+                      : uploadedPayment
+                      ? "rgba(0, 200, 100, 0.2)"
+                      : "transparent",
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "white",
+                      fontSize: width * 0.038,
+                      fontWeight: "500",
+                    }}
+                  >
+                    {uploadedPayment ? "File Uploaded" : "Browse File"}
+                  </Text>
+                </TouchableOpacity>
+                {errorMessage.proofOfPayment !== "" && (
+                  <Text
+                    style={{
+                      color: "red",
+                      marginTop: 4,
+                      fontSize: width * 0.03,
+                    }}
+                  >
+                    {errorMessage.proofOfPayment}
+                  </Text>
+                )}
+              </View>
             </View>
 
             {/* Payment Info + Confirm Button */}
@@ -518,7 +604,7 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
               keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
             >
               {/* gap between confirm payment and payment informations */}
-              <View style={{ gap: width * 0.04 }}>
+              <View style={{ gap: width * 0.04, marginTop: height * 0.04 }}>
                 <View style={{ gap: width * 0.01 }}>
                   <Text
                     style={{
@@ -536,8 +622,28 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
                     value={paymentReferenceNumber}
                     onChangeText={(text) => {
                       if (text) {
-                        setErrors((prev) => ({ ...prev, refNum: false }));
-                      } else setErrors((prev) => ({ ...prev, refNum: true }));
+                        setErrorMessage((prev) => ({
+                          ...prev,
+                          refNum: "",
+                        }));
+
+                        setErrors((prev) => ({
+                          ...prev,
+                          refNum: false,
+                        }));
+                      }
+
+                      if (!text) {
+                        setErrorMessage((prev) => ({
+                          ...prev,
+                          refNum: "Reference number cannot be empty.",
+                        }));
+
+                        setErrors((prev) => ({
+                          ...prev,
+                          refNum: true,
+                        }));
+                      }
 
                       setPaymentReferenceNumber(text);
                     }}
@@ -553,6 +659,17 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
                       borderColor: errors.refNum ? "red" : "transparent",
                     }}
                   />
+                  {errorMessage.refNum !== "" && (
+                    <Text
+                      style={{
+                        color: "red",
+                        marginTop: 4,
+                        fontSize: width * 0.03,
+                      }}
+                    >
+                      {errorMessage.refNum}
+                    </Text>
+                  )}
 
                   <Text
                     style={{
@@ -572,14 +689,22 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
                     value={paymentAmount ? String(paymentAmount) : ""}
                     onChangeText={(text) => {
                       if (!text || text.trim() === "") {
-                        // If empty, set error to true
+                        setErrorMessage((prev) => ({
+                          ...prev,
+                          paymentAmount: "Payment amount cannot be empty",
+                        }));
+
                         setErrors((prev) => ({
                           ...prev,
                           paymentAmount: true,
                         }));
                         setPaymentAmount(0); // optional, reset value
                       } else {
-                        // If not empty, set error to false
+                        setErrorMessage((prev) => ({
+                          ...prev,
+                          paymentAmount: "",
+                        }));
+
                         setErrors((prev) => ({
                           ...prev,
                           paymentAmount: false,
@@ -604,29 +729,29 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
                       borderColor: errors.paymentAmount ? "red" : "transparent",
                     }}
                   />
+
+                  {errorMessage.paymentAmount !== "" && (
+                    <Text
+                      style={{
+                        color: "red",
+                        marginTop: 4,
+                        fontSize: width * 0.03,
+                      }}
+                    >
+                      {errorMessage.paymentAmount}
+                    </Text>
+                  )}
                 </View>
 
                 <TouchableOpacity
                   onPress={handleConfirmPayment}
-                  disabled={
-                    !uploadedPayment || errors.paymentAmount || errors.refNum
-                  }
                   style={[
                     {
                       backgroundColor: "#8B0000",
                       borderRadius: width * 0.03,
                       paddingVertical: height * 0.02,
                       alignItems: "center",
-                      opacity: !uploadedPayment ? 0.5 : 1,
                       marginTop: width * 0.03,
-                    },
-                    {
-                      opacity:
-                        !uploadedPayment ||
-                        errors.paymentAmount ||
-                        errors.refNum
-                          ? 0.4
-                          : 1,
                     },
                   ]}
                 >

@@ -146,7 +146,7 @@ const StaffHomeScreen: React.FC<Props> = ({ navigation }) => {
         inputRefs.current[0]?.focus();
       }
     } catch (error) {
-      console.error("error in validating pin ", error);
+      console.error("Error in validating pin:", error);
     } finally {
       setIsLoading(false);
     }
@@ -167,7 +167,14 @@ const StaffHomeScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* Main background */}
         <MainBackground
-          style={{ position: "absolute", width: "100%", height: "100%" }}
+          width={width}
+          height={height}
+          preserveAspectRatio="none"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+          }}
         />
 
         {/* Main content */}
@@ -207,10 +214,9 @@ const StaffHomeScreen: React.FC<Props> = ({ navigation }) => {
             {/* Welcome text */}
             <Text
               style={{
-                fontSize: width * 0.08,
+                fontSize: width * 0.09,
                 fontWeight: "bold",
                 color: "#fff",
-                fontFamily: "Poppins-ExtraBoldItalic",
               }}
             >
               Welcome!
@@ -322,6 +328,7 @@ const StaffHomeScreen: React.FC<Props> = ({ navigation }) => {
                   <View style={{ flexDirection: "row", gap: width * 0.03 }}>
                     {Array.from({ length: 5 }).map((_, index) => (
                       <TextInput
+                        secureTextEntry
                         key={index}
                         ref={(ref: any) => (inputRefs.current[index] = ref)}
                         value={digitValues[index]}

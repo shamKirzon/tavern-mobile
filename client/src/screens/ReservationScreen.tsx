@@ -52,7 +52,7 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
   const { setReservationData, customerReservationData } = useReservationStore();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [contactNumber, setContactNumber] = useState("09");
+  const [contactNumber, setContactNumber] = useState("");
   const [guests, setGuests] = useState(1);
   const [reservationType, setReservationType] = useState("Inclusive");
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
@@ -120,15 +120,12 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
   }, [reservationType]);
 
   useEffect(() => {
-    console.log("nag rrender ito: ", reservationType);
     if (guests > maxGuests) {
       setGuests(maxGuests);
     } else if (guests < minGuests) {
       setGuests(minGuests);
     }
   }, [reservationType]);
-
-  // useEffect(() => {}, [minGuests]);
 
   useEffect(() => {
     setGuests(minGuests);
@@ -166,7 +163,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
       });
 
       if (result.canceled) {
-        console.log("User cancelled image picking");
         return;
       }
 
@@ -174,7 +170,7 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
 
       const validIdUrl = await uploadImage(imageUri, "validId");
       if (validIdUrl) {
-        console.log("valid id url successfully:", validIdUrl);
+        console.log("Valid id uploaded successfully.");
         setErrorMessages((prev) => ({
           ...prev,
           validId: "",
@@ -214,12 +210,10 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
     const monthIndex = months[month.toLowerCase()];
 
     if (monthIndex === undefined) {
-      console.error("Invalid month name:", month);
       return new Date(NaN); // invalid date
     }
 
     const date = new Date(year, monthIndex, day);
-    console.log("CREATE DATE RESULTS:", date);
     return date;
   };
 
@@ -284,7 +278,7 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
     setErrorMessages(newErrorMessages);
     setErrors(newErrors);
 
-    return isValid; // true if all inputs are valid
+    return isValid;
   };
 
   const handleBookNow = async () => {
@@ -296,8 +290,8 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
       // container:
       const reservationData: ReservationData = {
         email,
-        firstName: capitalizeWords(firstName),
-        lastName: capitalizeWords(lastName),
+        firstName: capitalizeWords(firstName).trimEnd(),
+        lastName: capitalizeWords(lastName).trimStart(),
         mobileNumber: contactNumber.trim(),
         reservationType: reservationType.toLowerCase(),
         date,
@@ -309,7 +303,7 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
 
       // navigation:
       navigation.navigate("BookingSummaryScreen", {
-        name: `${reservationData.firstName}${reservationData.lastName}`,
+        name: `${reservationData.firstName} ${reservationData.lastName}`,
         date: reservationData.date?.toISOString()!,
         guests: reservationData.pax!,
         reservationType:
@@ -487,6 +481,49 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
           style={{ position: "absolute", top: 0, left: 0 }}
         />
 
+        {/* Header */}
+        <View
+          style={{
+            paddingHorizontal: width * 0.05,
+            flexDirection: "row",
+            alignItems: "center",
+            paddingTop: paddingTop,
+            marginBottom: height * 0.01,
+          }}
+        >
+          <TouchableOpacity
+            style={{
+              width: width * 0.09,
+              height: width * 0.09,
+              justifyContent: "center",
+              alignItems: "center",
+              marginRight: width * 0.025,
+            }}
+            onPress={() => setModalVisible(true)}
+          >
+            <View
+              style={{
+                width: width * 0.035,
+                height: width * 0.035,
+                borderLeftWidth: width * 0.008,
+                borderBottomWidth: width * 0.008,
+                borderColor: "#fff",
+                transform: [{ rotate: "45deg" }],
+              }}
+            />
+          </TouchableOpacity>
+
+          <Text
+            style={{
+              color: "#FFFFFF",
+              fontSize: width * 0.07,
+              fontWeight: "bold",
+            }}
+          >
+            Reservation
+          </Text>
+        </View>
+
         <ScrollView
           style={{ flex: 1 }}
           contentContainerStyle={{
@@ -496,48 +533,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Header */}
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              paddingTop: paddingTop,
-              marginBottom: height * 0.01,
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                width: width * 0.09,
-                height: width * 0.09,
-                justifyContent: "center",
-                alignItems: "center",
-                marginRight: width * 0.025,
-              }}
-              onPress={() => setModalVisible(true)}
-            >
-              <View
-                style={{
-                  width: width * 0.035,
-                  height: width * 0.035,
-                  borderLeftWidth: width * 0.008,
-                  borderBottomWidth: width * 0.008,
-                  borderColor: "#fff",
-                  transform: [{ rotate: "45deg" }],
-                }}
-              />
-            </TouchableOpacity>
-
-            <Text
-              style={{
-                color: "#FFFFFF",
-                fontSize: width * 0.07,
-                fontWeight: "bold",
-              }}
-            >
-              Reservation
-            </Text>
-          </View>
-
           <View style={{ gap: 18 }}>
             {/* User Info */}
             <Text
@@ -1124,6 +1119,7 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                   Upload One (1) Valid ID
                 </Text>
               </View>
+
               <View style={{ flex: 1 }}>
                 {/* Browse File */}
                 <TouchableOpacity
@@ -1172,6 +1168,7 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                 )}
               </View>
             </View>
+
             {/* Book Now */}
             <TouchableOpacity
               onPress={handleBookNow}

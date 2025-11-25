@@ -83,7 +83,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
           await updateToken({ reservationId: null });
         }
       } catch (error) {
-        console.error("error in reseting the system. ");
+        console.error("Can't perform reset system.");
       } finally {
         setIsLoadings(false);
       }
@@ -91,6 +91,8 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
     resetSystem();
   }, []);
+
+  // NEXT STEP : COPY THE CSS OF SHOW TOASTER WHEN THE EMAIL IS VERIFIED.
 
   // toaster animation
   useEffect(() => {
@@ -161,7 +163,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         if (!res) return;
         setReservationStatus(res);
       } catch (error) {
-        console.error("Error: ", error);
+        console.error("Error in handleStatus(): ", error);
       } finally {
         setIsLoadings(false);
       }
@@ -239,41 +241,53 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
   const renderReservationLabel = (): JSX.Element | null => {
     let bgColor = "";
+    let borderColor = "";
     let text = "";
 
     switch (reservationStatus) {
       case "pending":
-        bgColor = "#A88A00";
+        borderColor = "#A88A00";
+        bgColor = "rgba(255, 217, 102, 0.25)";
         text = "Pending Reservation Approval";
         break;
+
       case "accepted":
-        bgColor = "#4CAF50";
+        bgColor = "rgb(35, 135, 35)";
+        borderColor = "rgb(35, 135, 35)";
         text = "Reservation Approved";
         break;
+
       case "rejected":
-        bgColor = "#E05002";
+        borderColor = "#E05002";
+        bgColor = "rgba(224, 80, 2, 0.25)";
         text = "Your Reservation has been Rejected.";
         break;
+
       case "done":
-        bgColor = "#C6A300";
+        borderColor = "#C6A300";
+        bgColor = "rgba(198, 163, 0, 0.25)";
         text = "Review Order Summary.";
         break;
+
       default:
-        return null;
+        return <></>;
     }
 
     return (
       <Text
         style={{
           color: "white",
-          fontWeight: "bold",
-          paddingVertical: height * 0.015,
+          fontSize: width * 0.04,
+          fontWeight: "500",
+          paddingVertical: height * 0.01,
           paddingHorizontal: width * 0.05,
           borderRadius: width * 0.03,
           textAlign: "center",
           width: "100%",
           marginBottom: height * 0.02,
           backgroundColor: bgColor,
+          borderWidth: 1,
+          borderColor: borderColor,
         }}
       >
         {text}
@@ -313,6 +327,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
             View Status
           </Text>
         </TouchableOpacity>
+        {/* labelTesting(pending) */}
       </View>
     );
   };

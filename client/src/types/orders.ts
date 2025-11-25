@@ -29,3 +29,4 @@ export interface orderStore {
 }
 
 export type OrderStatus = "pending" | "cancelled" | "done";
+export type Servings = "Solo" | "Regular" | "To Share";

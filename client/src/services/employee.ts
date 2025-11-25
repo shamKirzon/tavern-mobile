@@ -10,7 +10,7 @@ export const validatePin = async (
       pin,
       role,
     });
-    if (!res) return console.error("Can't perform setting status to inactive");
+    if (!res) return console.error("Can't perform setting status to inactive.");
 
     return res.data;
   } catch (error: any) {
@@ -35,7 +35,7 @@ export const decryptQr = async (encryptedQr: string) => {
     const res = await axiosInstance.post(`/employee/decrypt-qr`, {
       encryptedQr,
     });
-    if (!res) return console.error("can't perform decryption of qr");
+    if (!res) return console.log("Can't decrypt the QR.");
 
     return res.data;
   } catch (error: any) {

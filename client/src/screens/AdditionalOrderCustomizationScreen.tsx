@@ -1,21 +1,13 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  TextInput,
-  ScrollView,
-} from "react-native";
+import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
 import MainBackground from "../assets/backgrounds/main-background.svg";
 import { RouteProp } from "@react-navigation/native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamLists } from "../types/rootStackParamLists";
 
 import { appetizers, mainCourse, desserts, drinks } from "../data/menu";
 import { useOrderStore } from "../stores/useOrderStore";
-import { width, height } from "../utils/dimensions";
+import { width, height, paddingTop } from "../utils/dimensions";
 
 type AdditionalOrderCustomizationScreenRouteProps = RouteProp<
   RootStackParamLists,
@@ -144,40 +136,57 @@ const AdditionalOrderCustomizationScreen: React.FC<Props> = ({
         style={{ position: "absolute", top: 0, left: 0 }}
       />
 
+      {/* Header */}
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          paddingTop: paddingTop,
+          marginBottom: height * 0.01,
+          paddingHorizontal: width * 0.05,
+        }}
+      >
+        <TouchableOpacity
+          style={{
+            width: width * 0.09,
+            height: width * 0.09,
+            justifyContent: "center",
+            alignItems: "center",
+            marginRight: width * 0.025,
+          }}
+          onPress={() => navigation?.goBack?.()}
+        >
+          <View
+            style={{
+              width: width * 0.035,
+              height: width * 0.035,
+              borderLeftWidth: width * 0.008,
+              borderBottomWidth: width * 0.008,
+              borderColor: "#fff",
+              transform: [{ rotate: "45deg" }],
+            }}
+          />
+        </TouchableOpacity>
+
+        <Text
+          style={{
+            color: "#FFFFFF",
+            fontSize: width * 0.07,
+            fontWeight: "bold",
+          }}
+        >
+          Menu
+        </Text>
+      </View>
+
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
-          paddingTop: height * 0.08,
+          paddingTop: height * 0.03,
           paddingBottom: height * 0.15,
+          paddingHorizontal: width * 0.05,
         }}
       >
-        {/* HEADER */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginBottom: height * 0.02,
-            paddingHorizontal: width * 0.05,
-            width: "100%",
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={{ marginRight: width * 0.03, padding: width * 0.01 }}
-          >
-            <Text style={{ color: "#FFF", fontSize: width * 0.08 }}>‹</Text>
-          </TouchableOpacity>
-          <Text
-            style={{
-              color: "#FFF",
-              fontSize: width * 0.065,
-              fontWeight: "700",
-            }}
-          >
-            Menu
-          </Text>
-        </View>
-
         {/* FOOD IMAGE */}
         <View style={{ alignItems: "center" }}>
           <Image
@@ -195,7 +204,7 @@ const AdditionalOrderCustomizationScreen: React.FC<Props> = ({
         <View
           style={{
             backgroundColor: "transparent",
-            paddingHorizontal: width * 0.05,
+
             paddingVertical: height * 0.03,
             borderTopLeftRadius: width * 0.05,
             borderTopRightRadius: width * 0.05,

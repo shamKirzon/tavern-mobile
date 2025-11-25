@@ -31,10 +31,13 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
 
       {/* Main background */}
       <MainBackground
+        width={width}
+        height={height}
+        preserveAspectRatio="none"
         style={{
           position: "absolute",
-          width: "100%",
-          height: "100%",
+          top: 0,
+          left: 0,
         }}
       />
 
@@ -45,7 +48,8 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
           justifyContent: "center",
           alignItems: "center",
           paddingHorizontal: width * 0.08,
-          paddingVertical: height * 0.08,
+          paddingTop: height * 0.15,
+          paddingBottom: height * 0.05,
         }}
       >
         {/* Logo */}
@@ -113,7 +117,8 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
             paddingVertical: width * 0.055,
             paddingHorizontal: width * 0.28,
             borderRadius: width * 0.04,
-            marginTop: height * 0.15,
+            // marginTop: height * 0.15,
+            marginTop: "auto",
           }}
         >
           <Text
