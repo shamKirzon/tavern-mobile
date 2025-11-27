@@ -65,7 +65,6 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  // reset system
   useEffect(() => {
     const resetSystem = async () => {
       try {
@@ -92,9 +91,6 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     resetSystem();
   }, []);
 
-  // NEXT STEP : COPY THE CSS OF SHOW TOASTER WHEN THE EMAIL IS VERIFIED.
-
-  // toaster animation
   useEffect(() => {
     if (showToaster) {
       Animated.timing(fadeAnim, {
@@ -115,7 +111,6 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     }
   }, [showToaster]);
 
-  // email verified toggle
   useEffect(() => {
     if (showEmailVerifiedToggle) {
       setShowToaster(true);
@@ -213,8 +208,8 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         style={{
           opacity: fadeAnim,
           backgroundColor: isEmailInvalid
-            ? "rgba(211, 47, 47, 0.8)" // semi-transparent red
-            : "rgba(76, 175, 80, 0.8)", // semi-transparent green for success
+            ? "rgba(211, 47, 47, 0.8)"
+            : "rgba(76, 175, 80, 0.8)",
 
           paddingVertical: height * 0.01,
           paddingHorizontal: width * 0.05,
@@ -267,6 +262,12 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         borderColor = "#C6A300";
         bgColor = "rgba(198, 163, 0, 0.25)";
         text = "Review Order Summary.";
+        break;
+
+      case "cancelled":
+        borderColor = "#FFA500";
+        bgColor = "rgba(255, 165, 0, 0.25)";
+        text = "Reservation has been Cancelled.";
         break;
 
       default:
@@ -455,8 +456,8 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
           contentContainerStyle={{
             paddingTop: Platform.OS === "ios" ? height * 0.06 : height * 0.02,
             flexGrow: 1,
-            justifyContent: "center", // centers vertically
-            alignItems: "center", // centers horizontally
+            justifyContent: "center",
+            alignItems: "center",
             width: "100%",
             paddingHorizontal: width * 0.05,
             paddingVertical: height * 0.02,

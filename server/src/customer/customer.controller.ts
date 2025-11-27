@@ -18,7 +18,6 @@ class CustomerController {
     }
   }
 
-  // for future purposes
   async setInactive(req: Request, res: Response) {
     try {
       const { email } = req.body;
@@ -30,7 +29,7 @@ class CustomerController {
         return res.status(404).json({ message: "email can't find." });
 
       return res.status(200).json({
-        message: "customer status set as inactive",
+        message: "Customer status set as inactive",
         customerStatus,
       });
     } catch (error: any) {
@@ -39,7 +38,7 @@ class CustomerController {
       );
     }
   }
-  // for future purposes
+
   async setActive(req: Request, res: Response) {
     try {
       const { email } = req.body;

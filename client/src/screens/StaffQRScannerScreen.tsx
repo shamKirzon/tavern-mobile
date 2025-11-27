@@ -124,75 +124,14 @@ const StaffQRScannerScreen: React.FC<Props> = ({ navigation }) => {
           }}
         />
 
-        {/* Role Label */}
-        {/* <View
-          style={{
-            position: "absolute",
-            top: height * 0.1,
-            alignSelf: "center",
-            paddingHorizontal: width * 0.04,
-            paddingVertical: width * 0.02,
-            borderRadius: width * 0.03,
-            backgroundColor: "#8A1717",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 99,
-          }}
-        >
-          <Text
-            style={{
-              color: "#fff",
-              fontWeight: "bold",
-              fontSize: width * 0.07,
-            }}
-          >
-            {employeeRole?.toString().charAt(0).toUpperCase()}
-            {employeeRole?.toString().slice(1)}
-          </Text>
-        </View> */}
-
-        {/* Logout Icon */}
-        {/* <View
-          style={{
-            position: "absolute",
-            top: height * 0.05,
-            right: width * 0.05,
-            width: width * 0.15,
-            height: width * 0.15,
-            borderRadius: width * 0.15,
-            borderColor: "#fff",
-            borderWidth: width * 0.005,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "transparent",
-            zIndex: 99,
-          }}
-        >
-          <Pressable
-            onPress={() => setModalVisible(true)}
-            style={({ pressed }) => ({
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-              opacity: pressed ? 0.6 : 1,
-              transform: [{ scale: pressed ? 0.95 : 1 }],
-            })}
-          >
-            <LogoutScanner width={width * 0.08} />
-          </Pressable>
-        </View> */}
-
-        {/* Center Content */}
         <View
           style={{
             flex: 1,
-            // justifyContent: "center",
-            // alignItems: "center",
+
             paddingHorizontal: width * 0.08,
             backgroundColor: "rgba(0,0,0,0.7)",
           }}
         >
-          {/* Header */}
           <View
             style={{
               paddingTop: paddingTop + 5,
@@ -283,7 +222,6 @@ const StaffQRScannerScreen: React.FC<Props> = ({ navigation }) => {
                 onBarcodeScanned={hasScanned ? undefined : handleScanned}
               />
 
-              {/* Scanner Corners */}
               {[
                 { top: 0, left: 0, borderTopWidth: 3, borderLeftWidth: 3 },
                 { top: 0, right: 0, borderTopWidth: 3, borderRightWidth: 3 },

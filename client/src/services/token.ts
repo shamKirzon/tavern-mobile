@@ -17,10 +17,7 @@ export const checkToken = async () => {
 
   if (!token || (await isTokenExpired())) {
     authStore.setIsAuthenticated(false);
-    console.log(
-      "Authentication failed: missing token or expired token. ",
-      token
-    );
+    console.log("Missing token or expired token. ", token);
     await deleteToken();
   } else {
     authStore.setIsAuthenticated(true);
@@ -63,10 +60,7 @@ export const updateToken = async (update: any) => {
       update,
     });
 
-    if (!res)
-      return console.log(
-        "services/token/updateToken(): can't update the token"
-      );
+    if (!res) return console.log("Can't update token.");
 
     await deleteToken();
     await saveToken(res.data);

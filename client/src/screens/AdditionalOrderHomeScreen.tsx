@@ -69,7 +69,7 @@ const AdditionalOrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
     )
       return "Drinks";
 
-    return null; // not found
+    return null;
   };
 
   function isOrderExisting(name: string): boolean {
@@ -173,72 +173,6 @@ const AdditionalOrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
         contentContainerStyle={{ alignItems: "center", paddingBottom: 100 }}
       >
         <View style={styles.content}>
-          {/* <Text style={styles.menuTitle}>Welcome to Tavern Asia!</Text> */}
-          {/* search bar */}
-          {/* <View style={styles.searchContainer}>
-            <SearchIcon width={22} height={22} style={{ marginRight: 1 }} />
-            <TextInput
-              placeholder="What food do you crave?"
-              placeholderTextColor="#999"
-              onChangeText={handleSearch}
-              style={[
-                styles.input,
-                {
-                  flex: 1,
-                  marginBottom: 0,
-                  backgroundColor: "transparent",
-                  color: "#000",
-                },
-              ]}
-            />
-          </View> */}
-
-          {/* search results */}
-          {/* {query.trim() !== "" && (
-            <View style={styles.dropdownContainer}>
-              {filteredData.length > 0 ? (
-                filteredData.map((item, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => onSearchResultPress(item)}
-                    style={styles.dropdownItem}
-                    activeOpacity={0.8}
-                  >
-                    <SearchIcon
-                      width={22}
-                      height={22}
-                      style={{ marginRight: 10 }}
-                    />
-                    <Text style={styles.dropdownText}>{item.name}</Text>
-                  </TouchableOpacity>
-                ))
-              ) : (
-                <Text style={styles.noResult}>No results found</Text>
-              )}
-            </View>
-          )} */}
-
-          {/* special promos */}
-          {/* <Text style={styles.menuTitle}>Special Promos</Text>
-          <View style={{ width: "100%", height: 147, marginBottom: 25 }}>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              // keyboardShouldPersistTaps="handled" // or "always" - di ko alam kung gumagana ba to
-              pagingEnabled
-              snapToAlignment="center"
-              decelerationRate="fast"
-              contentContainerStyle={{ paddingHorizontal: 10 }}
-            >
-              <View style={styles.promoCard}>
-                <Promo1 width="100%" height="100%" />
-              </View>
-              <View style={styles.promoCard}>
-                <Promo2 width="100%" height="100%" />
-              </View>
-            </ScrollView>
-          </View> */}
-          {/* Category Icons */}
           <View style={styles.categoryContainer}>
             <TouchableOpacity
               style={[

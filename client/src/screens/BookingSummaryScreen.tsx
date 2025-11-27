@@ -11,7 +11,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamLists } from "../types/rootStackParamLists";
 import { height, paddingTop, width } from "../utils/dimensions";
-import { formatReadableDate } from "../utils/formatReadableDate";
+import { formatReadableDate } from "../utils/date";
 
 type BookingSummaryScreenNavigationProps = NativeStackNavigationProp<
   RootStackParamLists,

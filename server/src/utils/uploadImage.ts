@@ -15,7 +15,7 @@ export const uploadImageWithUrl = async ({ localFile, type }: Props) => {
 
     return result.secure_url;
   } catch (error: any) {
-    console.error("error from reservation service/uploadImage(): ", error);
+    console.error("Error in reservationService/uploadImage(): ", error);
     throw new Error("Failed to upload image");
   }
 };

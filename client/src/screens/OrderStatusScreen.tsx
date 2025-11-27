@@ -19,7 +19,7 @@ import { getOrderData } from "../services/order";
 import { getOrderIdByToken, getReservationIdByToken } from "../services/token";
 import { ReservationData } from "../types/reservation";
 import { getReservationData } from "../services/reservation";
-import { formatReadableDate } from "../utils/formatReadableDate";
+import { formatReadableDate } from "../utils/date";
 import DottedDivider from "./ui/DottedDivider";
 type OrderStatusScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamLists,
@@ -111,7 +111,6 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
     load();
   }, []);
 
-  // anim
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
@@ -365,7 +364,7 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
               >
                 <Text
                   style={{
-                    maxWidth: width * 0.7, // ⭐ LIMIT the width safely
+                    maxWidth: width * 0.7,
                     color: "white",
                     fontSize: width * 0.04,
                     opacity: 0.9,

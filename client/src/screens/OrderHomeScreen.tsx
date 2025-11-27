@@ -48,7 +48,6 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
   const menuData = [...appetizers, ...mainCourse, ...desserts, ...allDrinks];
 
   const [query, setQuery] = useState("");
-  // const [position, setPosition] = useS
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [filteredData, setFilteredData] = useState(menuData);
 
@@ -73,7 +72,7 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
     )
       return "Drinks";
 
-    return null; // not found
+    return null;
   };
 
   function isOrderExisting(name: string): boolean {
@@ -125,8 +124,8 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
       <ScrollView
         ref={scrollViewRef}
         style={{ width: "100%" }}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled" // para maclick muna yung content nang di umaalis sa keyboard
+        showsVerticalScrollIndicator={false} //
+        keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ alignItems: "center", paddingBottom: 100 }}
       >
         <View style={styles.content}>
@@ -469,9 +468,9 @@ const styles = StyleSheet.create({
     width: width * 0.9,
     elevation: 5,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: height * 0.003 }, // 2px approx
+    shadowOffset: { width: 0, height: height * 0.003 },
     shadowOpacity: 0.2,
-    shadowRadius: width * 0.01, // 4px approx
+    shadowRadius: width * 0.01,
   },
   headerTitle: {
     color: "white",
@@ -608,7 +607,7 @@ const styles = StyleSheet.create({
     fontSize: width * 0.04,
     opacity: 0.8,
   },
-  // results:
+
   dropdownContainer: {
     position: "absolute",
     marginTop: 160,

@@ -23,7 +23,7 @@ class OrderController {
         .status(200)
         .json({ message: "Order Created Successfully! ", orderId });
     } catch (error: any) {
-      console.error("error from createOrder(): ", error);
+      console.error("Error in createOrder(): ", error);
       return res.status(400).json({ message: "can't create order" });
     }
   }
@@ -43,7 +43,7 @@ class OrderController {
 
       return res.status(200).json({ message: "order data ", result });
     } catch (error: any) {
-      console.error("error from getOrderData(): ", error);
+      console.error("Error in getOrderData(): ", error);
       return res.status(400).json({ message: "can't create order" });
     }
   }
@@ -69,7 +69,7 @@ class OrderController {
 
       return res.status(200).json({ message: "updated successfully", result });
     } catch (error: any) {
-      console.error("error from updateOrderItems(): ", error);
+      console.error("Error in updateOrderItems(): ", error);
       return res.status(400).json({ message: "can't create order" });
     }
   }
@@ -92,7 +92,10 @@ class OrderController {
         .status(200)
         .json({ message: "assigned cashier id successfully!" });
     } catch (error: any) {
-      console.error("reservationController/assignCashierId(): ", error);
+      console.error(
+        "Error in reservationController/assignCashierId(): ",
+        error
+      );
       return res
         .status(400)
         .json({ message: "can't perform assigning cashier id " });
@@ -111,13 +114,13 @@ class OrderController {
       if (!result)
         return res
           .status(400)
-          .json({ message: "can't make the oder and reservation complete" });
+          .json({ message: "Can't make the oder and reservation complete" });
 
       return res
         .status(200)
         .json({ message: "completing order successfully!", result });
     } catch (error: any) {
-      console.error("reservationController/completeOrder(): ", error);
+      console.error("Error in reservationController/completeOrder(): ", error);
       return res
         .status(400)
         .json({ message: "cant perform completing an order and reservation" });

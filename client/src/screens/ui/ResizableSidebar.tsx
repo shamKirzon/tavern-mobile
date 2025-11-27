@@ -23,7 +23,7 @@ type Props = {
   children?: React.ReactNode;
   open?: boolean;
   onToggle?: (open: boolean) => void;
-  style?: object; // ✅ allow custom style
+  style?: object;
 };
 
 const ResizableSidebar = ({
@@ -32,7 +32,7 @@ const ResizableSidebar = ({
   initialOpen = false,
   animationDuration = 220,
   children,
-  open: controlledOpen, // controlled prop
+  open: controlledOpen,
   onToggle,
   style,
 }: Props) => {
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     bottom: 0,
-    backgroundColor: "#8A1717", // dark navy
+    backgroundColor: "#8A1717",
     paddingTop: Platform.OS === "ios" ? 48 : 16,
     zIndex: 50,
     shadowColor: "#000",
@@ -206,6 +206,6 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     flex: 1,
-    marginLeft: 0, // main content sits under sidebar; adjust if you want shifting content
+    marginLeft: 0,
   },
 });

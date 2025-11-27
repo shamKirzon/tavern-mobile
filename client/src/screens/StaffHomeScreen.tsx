@@ -67,7 +67,6 @@ const StaffHomeScreen: React.FC<Props> = ({ navigation }) => {
 
         setEmployeeRole(role);
 
-        // Navigate after role is set
         if (role) {
           navigation.navigate("StaffQRScannerScreen");
         }
@@ -81,7 +80,6 @@ const StaffHomeScreen: React.FC<Props> = ({ navigation }) => {
     initialize();
   }, []);
 
-  // functions:
   const showPINError = () => {
     setIsPinError(true);
 
@@ -120,18 +118,6 @@ const StaffHomeScreen: React.FC<Props> = ({ navigation }) => {
       setIsLoading(true);
 
       const res = await validatePin(code, selectedRole);
-
-      // results example:
-      const myResData = {
-        employee_id: "25273ea9-4cce-40a1-a02a-adecd1a8c6d9",
-        employee_role: "cashier",
-        full_name: "Dummy Cashier",
-        image_url: null,
-        pin: "12345",
-        shift_day: "Tuesday, Wednesday, Friday",
-        shift_end: "4:00",
-        shift_start: "8:00",
-      };
 
       if (res) {
         navigation.navigate("StaffQRScannerScreen");

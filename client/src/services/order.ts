@@ -39,7 +39,7 @@ export const updateOrderItems = async (orderId: string, updatedOrders: any) => {
       orderId,
       updatedOrders,
     });
-    if (!res) throw new Error("can't update order items");
+    if (!res) throw new Error("Can't update order items");
 
     return res.data.result;
   } catch (error) {

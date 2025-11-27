@@ -117,7 +117,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
             paddingVertical: width * 0.055,
             paddingHorizontal: width * 0.28,
             borderRadius: width * 0.04,
-            // marginTop: height * 0.15,
+
             marginTop: "auto",
           }}
         >

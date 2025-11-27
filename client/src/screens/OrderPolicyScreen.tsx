@@ -29,7 +29,6 @@ const OrderPolicyScreen: React.FC<Props> = ({ navigation }) => {
       Alert.alert("Error", "Please agree to the terms and conditions");
       return;
     }
-    // navigation.navigate("NextScreen");
   };
 
   const handleBack = () => {

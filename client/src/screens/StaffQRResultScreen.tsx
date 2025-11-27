@@ -28,7 +28,7 @@ import {
   updateOrderItems,
 } from "../services/order";
 import { assignSecurityId, getReservationData } from "../services/reservation";
-import { formatReadableDate } from "../utils/formatReadableDate";
+import { formatReadableDate } from "../utils/date";
 import Loading from "./ui/Loading";
 import { OrderStatus } from "../types/orders";
 import DottedDivider from "./ui/DottedDivider";
@@ -86,7 +86,6 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
 
     const fetchData = async () => {
       try {
-        // example:
         setIsLoading(true);
 
         if (qrIdKey === "reservationId") {
@@ -206,8 +205,6 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   };
 
-  //
-
   function addAdditionalOrders(originalOrders: any, newOrders: any) {
     const total = originalOrders.total + newOrders.total;
 
@@ -238,7 +235,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
     const timeOptions: Intl.DateTimeFormatOptions = {
       hour: "2-digit",
       minute: "2-digit",
-      hour12: true, // 12-hour format with AM/PM
+      hour12: true,
     };
 
     const date = now.toLocaleDateString("en-US", dateOptions);
@@ -1013,13 +1010,6 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                       marginLeft: 10,
                     }}
                   >
-                    {/* {(reservationData.reservationAmount / 2).toLocaleString(
-                      undefined,
-                      {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      }
-                    )} */}
                     - {formatCurrency(reservationData.reservationAmount / 2)}
                   </Text>
                 </View>
@@ -1027,11 +1017,11 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                 {/* divider solid line */}
                 <View
                   style={{
-                    height: width * 0.001, // thickness of the line
+                    height: width * 0.001,
                     alignSelf: "center",
-                    backgroundColor: "rgba(150,150,150,0.6)", // grey with some transparency
-                    width: "100%", // full width
-                    marginVertical: 10, // optional spacing above and below
+                    backgroundColor: "rgba(150,150,150,0.6)",
+                    width: "100%",
+                    marginVertical: 10,
                   }}
                 />
 
@@ -1078,10 +1068,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
             paddingBottom: height * 0.03,
             flexDirection: "row",
             paddingHorizontal: height * 0.02,
-            // position: "absolute",
-            // bottom: height * 0.035,
-            // left: width * 0.04,
-            // right: width * 0.04,
+
             gap: 12,
           }}
         >
@@ -1128,12 +1115,10 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
     );
   };
 
-  // main jsx return:
   return (
     <>
       {isLoading && Loading("")}
 
-      {/* order handle done modal */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -1211,7 +1196,6 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                   : "Proceed Finalyze Payment"}
               </Text>
 
-              {/* subtext:  */}
               <Text
                 style={{
                   paddingTop: height * 0.01,
@@ -1227,7 +1211,6 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                   : "This action will mark the order as paid and cannot be undone. "}
               </Text>
 
-              {/* Buttons */}
               <View style={{ flexDirection: "row", gap: width * 0.04 }}>
                 {["Cancel", "Yes, Proceed"].map((item, index) => (
                   <Pressable
@@ -1279,7 +1262,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
           style={{ position: "absolute", top: 0, left: 0 }}
         />
 
-        {isReservationStatusInvalid || isValid == false // para makuha niya yung invalid galinlg sa scanner
+        {isReservationStatusInvalid || isValid == false
           ? reservationInvalid()
           : isValid && qrIdKey === "reservationId"
           ? reservationValid()

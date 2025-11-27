@@ -142,7 +142,7 @@ const MenuViewingScreen: React.FC<Props> = ({ navigation, route }) => {
         <View
           style={{
             flexDirection: "row",
-            alignItems: "center", // aligns items vertically in the center
+            alignItems: "center",
           }}
         >
           <TouchableOpacity
@@ -158,7 +158,7 @@ const MenuViewingScreen: React.FC<Props> = ({ navigation, route }) => {
             <Text
               style={{
                 color: "white",
-                fontSize: width * 0.08, // match the category font size
+                fontSize: width * 0.08,
                 fontWeight: "600",
                 textAlign: "center",
               }}
@@ -170,7 +170,7 @@ const MenuViewingScreen: React.FC<Props> = ({ navigation, route }) => {
           <Text
             style={{
               color: "white",
-              fontSize: width * 0.08, // same as arrow
+              fontSize: width * 0.08,
               fontWeight: "bold",
             }}
           >

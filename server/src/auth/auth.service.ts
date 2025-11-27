@@ -21,14 +21,10 @@ class AuthService {
 
       const decode = jwt.verify(oldToken, process.env.TOKEN_SECRET_KEY!) as any;
 
-      console.log("decode in updateToken: ", decode);
-
       const newPayload: TokenPayload = {
         ...decode,
         ...update,
       };
-
-      console.info("newPayload information", newPayload);
 
       const token = jwt.sign(newPayload, process.env.TOKEN_SECRET_KEY!);
 

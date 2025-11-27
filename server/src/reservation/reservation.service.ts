@@ -14,7 +14,7 @@ class ReservationService {
     try {
       return await reservationRepository.getReservationData(reservationId);
     } catch (error: any) {
-      console.error("error in getting reservation information: ", error);
+      console.error("Error in getting reservation information: ", error);
     }
   }
 

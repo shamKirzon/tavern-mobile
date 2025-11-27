@@ -274,7 +274,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
       isValid = false;
     }
 
-    // Update state
     setErrorMessages(newErrorMessages);
     setErrors(newErrors);
 
@@ -287,7 +286,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
 
       const date = createDate(selectedDate!, currentMonth, 2025);
 
-      // container:
       const reservationData: ReservationData = {
         email,
         firstName: capitalizeWords(firstName).trimEnd(),
@@ -301,7 +299,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
 
       setReservationData(reservationData);
 
-      // navigation:
       navigation.navigate("BookingSummaryScreen", {
         name: `${reservationData.firstName} ${reservationData.lastName}`,
         date: reservationData.date?.toISOString()!,
@@ -313,35 +310,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
       });
     } else {
     }
-
-    // const email = await getEmailByToken();
-
-    // const date = createDate(selectedDate!, currentMonth, 2025);
-
-    // // container:
-    // const reservationData: ReservationData = {
-    //   email,
-    //   firstName: capitalizeWords(firstName),
-    //   lastName: capitalizeWords(lastName),
-    //   mobileNumber: contactNumber.trim(),
-    //   reservationType: reservationType.toLowerCase(),
-    //   date,
-    //   pax: guests,
-    //   reservationAmount: totalFee,
-    // };
-
-    // setReservationData(reservationData);
-
-    // // navigation:
-    // navigation.navigate("BookingSummaryScreen", {
-    //   name: `${reservationData.firstName}${reservationData.lastName}`,
-    //   date: reservationData.date?.toISOString()!,
-    //   guests: reservationData.pax!,
-    //   reservationType:
-    //     reservationData.reservationType?.charAt(0).toUpperCase()! +
-    //     reservationData.reservationType?.slice(1),
-    //   reservationFee: reservationData.reservationAmount?.toString()!,
-    // });
   };
 
   const handleSelectReservationType = (type: string) => {
@@ -408,7 +376,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                 Are you sure you want to exit?
               </Text>
 
-              {/* subtext:  */}
               <Text
                 style={{
                   paddingTop: height * 0.02,
@@ -423,7 +390,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                 progress.
               </Text>
 
-              {/* Buttons */}
               <View style={{ flexDirection: "row", gap: width * 0.04 }}>
                 {["Cancel", "Exit"].map((item, index) => (
                   <Pressable
@@ -481,7 +447,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
           style={{ position: "absolute", top: 0, left: 0 }}
         />
 
-        {/* Header */}
         <View
           style={{
             paddingHorizontal: width * 0.05,
@@ -545,9 +510,8 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
             >
               Enter Your Information
             </Text>
-            {/* Input Fields */}
+
             <View style={{ flexDirection: "row", gap: 12 }}>
-              {/* First Name */}
               <View style={{ flex: 1 }}>
                 <TextInput
                   placeholder="First Name"
@@ -568,7 +532,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                     const cleanedText = text.replace(/[^a-zA-Z\s]/g, "");
                     setFirstName(cleanedText);
 
-                    // Set error if empty
                     setErrors((prev) => ({
                       ...prev,
                       firstName: cleanedText.trim() === "",
@@ -599,7 +562,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                 )}
               </View>
 
-              {/* Last Name */}
               <View style={{ flex: 1 }}>
                 <TextInput
                   placeholder="Last Name"
@@ -651,24 +613,19 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
               </View>
             </View>
 
-            {/* Contact Number */}
             <TextInput
               placeholder="Contact Number"
               value={contactNumber}
               onChangeText={(text) => {
-                // Remove non-numeric characters
                 let numericText = text.replace(/[^0-9]/g, "");
 
-                // Always start with 09
                 if (!numericText.startsWith("09")) numericText = "09";
 
-                // Limit to 11 digits
                 if (numericText.length > 11)
                   numericText = numericText.slice(0, 11);
 
                 setContactNumber(numericText);
 
-                // Validate
                 let errorMessage = "";
                 let isError = false;
 
@@ -705,7 +662,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
               </Text>
             )}
 
-            {/* Schedule Picker */}
             <View>
               <Text
                 style={{
@@ -745,7 +701,7 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                   >
                     Pick a Schedule
                   </Text>
-                  <TouchableOpacity
+                  <View
                     style={{
                       backgroundColor: "rgba(255, 255, 255, 0.15)",
                       paddingVertical: 8,
@@ -764,10 +720,9 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                     >
                       {currentMonth}
                     </Text>
-                  </TouchableOpacity>
+                  </View>
                 </View>
 
-                {/* Days Carousel */}
                 <View
                   style={{
                     flexDirection: "row",
@@ -868,7 +823,7 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                 </Text>
               )}
             </View>
-            {/* Reservation Type and Guests */}
+
             <View style={{ flexDirection: "row", gap: 12 }}>
               <View style={{ flex: 1, zIndex: showDropdown ? 100 : 1 }}>
                 <Text
@@ -914,7 +869,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                   </Text>
                 </TouchableOpacity>
 
-                {/* Overlay behind dropdown */}
                 {showDropdown && (
                   <TouchableOpacity
                     style={{
@@ -931,7 +885,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                   />
                 )}
 
-                {/* Dropdown List */}
                 {showDropdown && (
                   <View
                     style={{
@@ -983,7 +936,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                 )}
               </View>
 
-              {/* Guests */}
               <View style={{ flex: 1 }}>
                 <Text
                   style={{
@@ -1066,7 +1018,7 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                 )}
               </View>
             </View>
-            {/* Reservation Fee */}
+
             <View
               style={{
                 flexDirection: "row",
@@ -1100,7 +1052,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
               </Text>
             </View>
 
-            {/* Upload Section */}
             <View
               style={{
                 flexDirection: "row",
@@ -1121,7 +1072,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
               </View>
 
               <View style={{ flex: 1 }}>
-                {/* Browse File */}
                 <TouchableOpacity
                   onPress={() => {
                     handleUpload();
@@ -1169,7 +1119,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
               </View>
             </View>
 
-            {/* Book Now */}
             <TouchableOpacity
               onPress={handleBookNow}
               style={[

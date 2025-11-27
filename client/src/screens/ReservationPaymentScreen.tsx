@@ -61,8 +61,7 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
     proofOfPayment: string;
   }>({ refNum: "", paymentAmount: "", proofOfPayment: "" });
 
-  // functions :
-
+  // Functions
   const validateInputs = () => {
     let isValid = true;
 
@@ -96,7 +95,6 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
       isValid = false;
     }
 
-    // Update state
     setErrorMessage(newErrorMessages);
     setErrors(newErrors);
 
@@ -108,17 +106,14 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
   };
 
   const handleConfirmPayment = async () => {
-    // 1. VALIDATION FIRST (outside try)
     if (!validateInputs()) {
-      return; // stop execution
+      return;
     }
 
-    // 2. Check required fields
     if (!paymentReferenceNumber || !paymentAmount) {
       return;
     }
 
-    // 3. Build updated data BEFORE try
     const updatedCustomerData = {
       ...customerReservationData,
       paymentReferenceNumber,
@@ -141,7 +136,6 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
     } catch (err) {
       console.error("Error creating reservation:", err);
     } finally {
-      // 6. Stop loading
       setIsUploading(false);
     }
   };
@@ -178,7 +172,6 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
       {isUploading && Loading("")}
 
       <View style={{ flex: 1 }}>
-        {/* Background */}
         <MainBackground
           width="100%"
           height="100%"
@@ -192,7 +185,6 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
           }}
         />
 
-        {/* Header */}
         <View
           style={{
             paddingHorizontal: width * 0.05,
@@ -250,7 +242,6 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
               paddingHorizontal: width * 0.05,
             }}
           >
-            {/* Note Box */}
             <View
               style={{
                 backgroundColor: "rgba(255, 255, 255, 0.08)",
@@ -301,7 +292,6 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
               </View>
             </View>
 
-            {/* Payment Methods */}
             <View
               style={{
                 backgroundColor: "rgba(255,255,255,0.1)",
@@ -345,7 +335,6 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
                   marginTop: height * 0.006,
                 }}
               >
-                {/* GCash */}
                 <TouchableOpacity
                   style={{
                     width: "30%",
@@ -397,7 +386,6 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
                   </Text>
                 </TouchableOpacity>
 
-                {/* BPI */}
                 <TouchableOpacity
                   style={{
                     width: "30%",
@@ -449,7 +437,6 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
                   </Text>
                 </TouchableOpacity>
 
-                {/* PayMaya */}
                 <TouchableOpacity
                   style={{
                     width: "30%",
@@ -502,7 +489,6 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
                 </TouchableOpacity>
               </View>
 
-              {/* TOTAL PAYABLE */}
               <View
                 style={{
                   marginTop: height * 0.02,
@@ -530,7 +516,6 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
               </View>
             </View>
 
-            {/* Upload Section */}
             <View
               style={{
                 flexDirection: "row",
@@ -598,12 +583,9 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
               </View>
             </View>
 
-            {/* Payment Info + Confirm Button */}
             <KeyboardAvoidingView
-              // behavior={Platform.OS === "ios" ? "padding" : "height"}
               keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
             >
-              {/* gap between confirm payment and payment informations */}
               <View style={{ gap: width * 0.04, marginTop: height * 0.04 }}>
                 <View style={{ gap: width * 0.01 }}>
                   <Text
@@ -698,7 +680,7 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
                           ...prev,
                           paymentAmount: true,
                         }));
-                        setPaymentAmount(0); // optional, reset value
+                        setPaymentAmount(0);
                       } else {
                         setErrorMessage((prev) => ({
                           ...prev,
@@ -710,7 +692,6 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
                           paymentAmount: false,
                         }));
 
-                        // Convert text to number, remove commas
                         const num = Number(text.replace(/,/g, ""));
                         if (!isNaN(num)) setPaymentAmount(num);
                         else setPaymentAmount(0);
@@ -770,7 +751,7 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
           </View>
         </KeyboardAwareScrollView>
 
-        {/* Floating QR Modal */}
+        {/* Modal */}
         <Modal visible={!!selectedQR} transparent animationType="fade">
           <Pressable
             style={{

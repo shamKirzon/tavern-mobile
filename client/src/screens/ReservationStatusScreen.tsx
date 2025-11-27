@@ -15,6 +15,7 @@ import MainBackground from "../assets/backgrounds/main-background.svg";
 import InfoIcon from "../assets/images/info.svg";
 import CircleSpinner from "./ui/CircleSpinner";
 import Rejected from "../assets/icons/rejected.svg";
+import Cancelled from "../assets/icons/reservation-cancelled.svg";
 import OrderPolicyScreen from "./OrderPolicyScreen";
 import { useReservationStore } from "../stores/useReservationStore";
 import { updateToken } from "../services/token";
@@ -59,9 +60,15 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
       title: "",
       description: "",
     },
+
+    cancelled: {
+      header: "Reservation Cancelled",
+      title: "Cancellation Confirmed",
+      description:
+        "Your reservation has been successfully canceled. You will receive a confirmation email shortly with the cancellation details.",
+    },
   };
 
-  // mounting texts
   useEffect(() => {
     switch (reservationStatus) {
       case "none":
@@ -72,8 +79,6 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
         setDescription(statusText.pending.description);
         break;
       case "accepted":
-        // await getReservationData("sha")
-        // setReservationAmount()
         break;
       case "rejected":
         setHeader(statusText.rejected.header);
@@ -83,12 +88,16 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
         break;
       case "done":
         break;
+
+      case "cancelled":
+        setHeader(statusText.cancelled.header);
+        setTitle(statusText.cancelled.title);
+        setDescription(statusText.cancelled.description);
       default:
         break;
     }
   }, [reservationStatus]);
 
-  // functions
   const displayIcon = () => {
     switch (reservationStatus) {
       case "pending":
@@ -96,7 +105,6 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
       case "accepted":
         break;
       case "rejected":
-        // https://icon-sets.iconify.design/material-symbols/page-13.html?icon-filter=x
         return (
           <View style={{ width: width * 0.25, height: width * 0.25 }}>
             <Rejected width={width * 0.25} height={width * 0.25} />
@@ -104,6 +112,9 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
         );
       case "done":
         break;
+
+      case "cancelled":
+        return <Cancelled />;
       default:
         break;
     }
@@ -117,8 +128,12 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
       case "rejected":
         await updateToken({ reservationId: null });
         navigation.navigate("HomeScreen");
-
         break;
+
+      case "cancelled":
+        await updateToken({ reservationId: null });
+        navigation.navigate("HomeScreen");
+
       case "done":
         break;
       default:
@@ -135,7 +150,6 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
 
     return (
       <View style={{ width, height, flex: 1 }}>
-        {/* Background Layer */}
         <MainBackground
           width={width}
           height={height}
@@ -147,13 +161,12 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
           }}
         />
 
-        {/* Header */}
         <View
           style={{
             flexDirection: "row",
             alignItems: "center",
             paddingTop: paddingTop,
-            // marginBottom: height * 0.01,
+
             paddingHorizontal: width * 0.05,
           }}
         >
@@ -190,7 +203,6 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
           </Text>
         </View>
 
-        {/* Main Content Container */}
         <ScrollView
           style={{
             flex: 1,
@@ -198,7 +210,6 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
           }}
         >
           <View>
-            {/* ===== ORDER SPEND LIMIT CARD ===== */}
             <View
               style={{
                 marginTop: height * 0.02,
@@ -213,7 +224,6 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
                 justifyContent: "center",
               }}
             >
-              {/* Bell Icon */}
               <View
                 style={{
                   width: 44,
@@ -286,7 +296,6 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
               </View>
             </View>
 
-            {/* ===== TERMS AND CONDITIONS CARD ===== */}
             <View
               style={{
                 backgroundColor: "rgba(255, 255, 255, 0.12)",
@@ -340,9 +349,7 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
             </View>
           </View>
 
-          {/* Bottom Section */}
           <View>
-            {/* ===== AGREEMENT CHECKBOX ===== */}
             <View
               style={{
                 flexDirection: "row",
@@ -390,7 +397,6 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
           </View>
         </ScrollView>
 
-        {/* ===== CONTINUE ORDERING BUTTON ===== */}
         <View
           style={{
             paddingHorizontal: width * 0.05,
@@ -432,7 +438,6 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
       {reservationStatus === "accepted" && displayOrderPolicy()}
       {reservationStatus !== "accepted" && (
         <View style={{ width, height, flex: 1 }}>
-          {/* ===== BACKGROUND ===== */}
           <MainBackground
             width={width}
             height={height}
@@ -444,7 +449,6 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
             }}
           />
 
-          {/* ===== MAIN CONTAINER ===== */}
           <View
             style={{
               flex: 1,
@@ -453,7 +457,6 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
               justifyContent: "space-between",
             }}
           >
-            {/* Header */}
             <View
               style={{
                 flexDirection: "row",
@@ -473,7 +476,6 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
               </Text>
             </View>
 
-            {/* ===== CENTERED CONTENT (Loading Icon to Info Card) ===== */}
             <View
               style={{
                 flex: 1,
@@ -494,7 +496,7 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
               >
                 {header}
               </Text>
-              {/* ===== INFO CARD ===== */}
+
               <View
                 style={{
                   backgroundColor: "rgba(255, 255, 255, 0.12)",
@@ -543,7 +545,6 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
               </View>
             </View>
 
-            {/* ===== BACK TO HOME BUTTON ===== */}
             <TouchableOpacity
               onPress={handleStatusAction}
               style={{

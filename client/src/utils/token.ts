@@ -54,7 +54,7 @@ export const isTokenExpired = async (): Promise<boolean> => {
     const decodedToken = jwtDecode<TokenPayLoad>(token!);
     return decodedToken.exp * 1000 < Date.now();
   } catch (error: any) {
-    console.error("isTokenExpired: decoding of token part ", error);
+    console.error("There is an error in decoding token.", error);
     return true;
   }
 };
@@ -76,11 +76,11 @@ export const refreshToken = async () => {
       decodedToken,
     });
 
-    if (!res) return console.log("no created token");
+    if (!res) return console.log("No created token");
 
     await deleteToken();
     await saveToken(res.data);
   } catch (error: any) {
-    console.error("registerEmail error: ", error);
+    console.error("Error in utils/token/refreshToken()", error);
   }
 };

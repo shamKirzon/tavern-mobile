@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { NativeModules, Platform, View } from "react-native";
+import { Platform, View } from "react-native";
 
 import HomeScreen from "./src/screens/HomeScreen";
 import ReservationScreen from "./src/screens/ReservationScreen";

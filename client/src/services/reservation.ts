@@ -10,14 +10,14 @@ export const createReservation = async (data: ReservationData) => {
     const res = await axiosInstance.post("/reservation/create-reservation", {
       data,
     });
-    if (!res) return console.error("can't create a reservation");
+    if (!res) return console.error("Can't create a reservation.");
 
     const reservationId = res.data;
-    // updating token part:
+
     await updateToken({ reservationId });
     return reservationId;
   } catch (error) {
-    console.error("services/reservation/createReservation(). Error: ", error);
+    console.error("Error in services/reservation/createReservation():", error);
   }
 };
 
@@ -26,12 +26,12 @@ export const getReservationStatus = async (reservationId: string) => {
     const res = await axiosInstance.get(
       `/reservation/get-reservation-status/${reservationId}`
     );
-    if (!res) return console.error("can't get reservation status");
+    if (!res) return console.error("Can't get reservation status.");
 
     return res.data.status;
   } catch (error) {
     console.error(
-      "services/reservation/getReservationStatus(). Error: ",
+      "Error in services/reservation/getReservationStatus(): ",
       error
     );
   }
@@ -42,12 +42,12 @@ export const getReservationAmount = async (reservationId: string) => {
     const res = await axiosInstance.get(
       `/reservation/get-reservation-amount/${reservationId}`
     );
-    if (!res) return console.error("can't get reservation status");
+    if (!res) return console.error("Can't get reservation status");
 
     return res.data.amount;
   } catch (error) {
     console.error(
-      "services/reservation/getReservationStatus(). Error: ",
+      "Error in services/reservation/getReservationStatus()",
       error
     );
   }
@@ -58,11 +58,11 @@ export const getReservationData = async (reservationId: string) => {
     const res = await axiosInstance.get(
       `/reservation/get-reservation-data/${reservationId}`
     );
-    if (!res) return console.error("can't get reservation data ");
+    if (!res) return console.error("Can't get reservation data ");
 
     return res.data.result;
   } catch (error) {
-    console.error("services/reservation/getReservationData(). Error: ", error);
+    console.error("Error in services/reservation/getReservationData()", error);
   }
 };
 
@@ -94,11 +94,11 @@ export const uploadImage = async (
       }
     );
 
-    if (!res) return console.error("can't upload image");
+    if (!res) return console.error("Can't upload image");
 
     return res.data.imageUrl;
   } catch (error: any) {
-    console.error("services/reservation/uploadImage()", error.message);
+    console.error("Error in services/reservation/uploadImage()", error.message);
   }
 };
 
@@ -111,13 +111,10 @@ export const assignSecurityId = async (
       employeeId,
       reservationId,
     });
-    if (!res)
-      return console.error("error in service/reservation/assignEmployeeId");
-
-    console.log({ message: res.data.message });
+    if (!res) return console.error("Can't assign security id.");
 
     return res.data.result;
   } catch (error) {
-    console.error("services/reservation/getReservationData(). Error: ", error);
+    console.error("Error in services/reservation/getReservationData()", error);
   }
 };

@@ -32,7 +32,6 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
   const orderName = order.name || order.orderName;
   const buttonLabel = from === "CartScreen" ? "Update Basket" : "Add to Cart";
 
-  // Initialize state with previous order info
   const [selectedServing, setSelectedServing] = useState<Servings>(
     order.serving?.servingSize
       ? (capitalize(order.serving.servingSize) as Servings)
@@ -52,7 +51,6 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
 
   const category = getCategory(order);
 
-  // Recompute total only if quantity or serving changes
   useEffect(() => {
     const servingPrice =
       servingOptions.find((s) => s.label === selectedServing)?.price || 0;
@@ -60,8 +58,7 @@ const CustomizationScreen: React.FC<Props> = ({ route, navigation }) => {
     setTotalPrice(newTotal);
   }, [quantity, selectedServing]);
 
-  // Functions
-
+  //Functions
   function getCategory(result: any) {
     if (
       appetizers.find((item) => item.name === (result.name || result.orderName))

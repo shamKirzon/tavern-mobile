@@ -9,15 +9,11 @@ class AuthController {
       if (!oldToken)
         return res.status(400).json({ message: "it must have an old token" });
 
-      console.log("oldtoken:", oldToken);
-      console.log("update", update);
-
       const updatedToken = await authService.updateToken(oldToken, update);
-      console.log("updatedToken Result: ", updatedToken);
 
       res.status(201).json({ token: updatedToken });
     } catch (error: any) {
-      console.error("authController/updateToken:", error.message);
+      console.error(" Error in authController/updateToken():", error.message);
     }
   }
 
@@ -33,7 +29,7 @@ class AuthController {
       console.error("authController/generateToken:", error.message);
     }
   }
-  // hakdog
+
   async sendOtp(req: Request, res: Response) {
     try {
       const { email } = req.body;

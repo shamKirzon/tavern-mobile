@@ -47,11 +47,14 @@ class ReservationRepository {
         .single();
 
       if (error)
-        return console.error("supabase error in createReservation()", error);
+        return console.error(
+          "Query failed in reservationRepository/createReservation()",
+          error
+        );
 
       return data;
     } catch (error: any) {
-      console.error("error in createReservation: ", error);
+      console.error("Error in createReservation: ", error);
     }
   }
   async getReservationData(reservationId: string) {
@@ -65,7 +68,7 @@ class ReservationRepository {
 
       return data;
     } catch (error) {
-      console.error("error in getting reservation information: ", error);
+      console.error("Error in getting reservation information: ", error);
     }
   }
 
@@ -81,7 +84,7 @@ class ReservationRepository {
 
       return data;
     } catch (error) {
-      console.error("error in getting reservation status ", error);
+      console.error("Error in getting reservation status ", error);
     }
   }
 
@@ -97,13 +100,12 @@ class ReservationRepository {
 
       return data;
     } catch (error) {
-      console.error("error in getting reservation amount ", error);
+      console.error("Error in getting reservation amount ", error);
     }
   }
 
   async assignSecurityId(employeeId: string, reservationId: string) {
     try {
-      // modify this:
       const { data, error } = await supabase
         .from("reservations")
         .update({ assigned_security_id: employeeId })
@@ -115,7 +117,7 @@ class ReservationRepository {
 
       return data;
     } catch (error) {
-      console.error("reservationRepository/assignSecurityId ", error);
+      console.error("Error in reservationRepository/assignSecurityId ", error);
     }
   }
 }
