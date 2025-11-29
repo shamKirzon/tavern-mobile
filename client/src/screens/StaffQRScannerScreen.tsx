@@ -117,11 +117,10 @@ const StaffQRScannerScreen: React.FC<Props> = ({ navigation }) => {
       <View style={{ flex: 1 }}>
         {/* Background */}
         <MainBackground
-          style={{
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-          }}
+          width={width}
+          height={height}
+          preserveAspectRatio="none"
+          style={{ position: "absolute", top: 0, left: 0 }}
         />
 
         <View
