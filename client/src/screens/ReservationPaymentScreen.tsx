@@ -134,7 +134,7 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
         navigation.navigate("HomeScreen");
       }
     } catch (err) {
-      console.error("Error creating reservation:", err);
+      console.log("Error creating reservation:", err);
     } finally {
       setIsUploading(false);
     }
@@ -161,7 +161,7 @@ const ReservationPaymentScreen: React.FC<Props> = ({ navigation, route }) => {
         setReservationData({ paymentUrl });
       }
     } catch (error) {
-      console.error("Error picking/uploading payment image:", error);
+      console.log("Error picking/uploading payment image:", error);
     } finally {
       setIsUploading(false);
     }

@@ -47,14 +47,14 @@ class ReservationRepository {
         .single();
 
       if (error)
-        return console.error(
+        return console.log(
           "Query failed in reservationRepository/createReservation()",
           error
         );
 
       return data;
     } catch (error: any) {
-      console.error("Error in createReservation: ", error);
+      console.log("Error in createReservation: ", error);
     }
   }
   async getReservationData(reservationId: string) {
@@ -68,7 +68,7 @@ class ReservationRepository {
 
       return data;
     } catch (error) {
-      console.error("Error in getting reservation information: ", error);
+      console.log("Error in getting reservation information: ", error);
     }
   }
 
@@ -84,7 +84,7 @@ class ReservationRepository {
 
       return data;
     } catch (error) {
-      console.error("Error in getting reservation status ", error);
+      console.log("Error in getting reservation status ", error);
     }
   }
 
@@ -100,7 +100,7 @@ class ReservationRepository {
 
       return data;
     } catch (error) {
-      console.error("Error in getting reservation amount ", error);
+      console.log("Error in getting reservation amount ", error);
     }
   }
 
@@ -117,7 +117,7 @@ class ReservationRepository {
 
       return data;
     } catch (error) {
-      console.error("Error in reservationRepository/assignSecurityId ", error);
+      console.log("Error in reservationRepository/assignSecurityId ", error);
     }
   }
 }

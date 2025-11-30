@@ -76,6 +76,6 @@ export const updateToken = async (update: any) => {
       id: decodedToken.jti,
     };
   } catch (error) {
-    console.error("services/token/updatedToken(); ", error);
+    console.log("services/token/updatedToken(); ", error);
   }
 };

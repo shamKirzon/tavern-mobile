@@ -30,7 +30,7 @@ class AuthService {
 
       return token;
     } catch (error: any) {
-      console.error(error.message || `Error in updating the token `);
+      console.log(error.message || `Error in updating the token `);
     }
   }
 

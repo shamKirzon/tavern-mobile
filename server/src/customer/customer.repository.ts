@@ -10,13 +10,13 @@ class CustomerRepository {
         .single();
 
       if (error) {
-        console.error("Data query failed in getting customer email.", error);
+        console.log("Data query failed in getting customer email.", error);
         return null;
       }
 
       return data;
     } catch (error: any) {
-      console.error(
+      console.log(
         "Error in customerRepository/getCustomerByEmail() ",
         error.message
       );
@@ -32,16 +32,13 @@ class CustomerRepository {
         .single();
 
       if (error) {
-        console.error("Data query failed in inserting customer email ", error);
+        console.log("Data query failed in inserting customer email ", error);
         return null;
       }
 
       return data;
     } catch (error: any) {
-      console.error(
-        "Error in customerRepository/addCustomer(): ",
-        error.message
-      );
+      console.log("Error in customerRepository/addCustomer(): ", error.message);
     }
   }
 
@@ -63,7 +60,7 @@ class CustomerRepository {
         .single();
 
       if (error) {
-        console.error(
+        console.log(
           "Data query failed setting customer status to inactive ",
           error
         );
@@ -72,10 +69,7 @@ class CustomerRepository {
 
       return data;
     } catch (error: any) {
-      console.error(
-        "Error in customerRepository/addCustomer(): ",
-        error.message
-      );
+      console.log("Error in customerRepository/addCustomer(): ", error.message);
     }
   }
 }

@@ -82,6 +82,6 @@ export async function sendMail(to: string, otp: string): Promise<void> {
     });
     console.log("Email sent to:", to);
   } catch (error) {
-    console.error("Failed to send email:", error);
+    console.log("Failed to send email:", error);
   }
 }

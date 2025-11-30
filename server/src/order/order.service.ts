@@ -31,7 +31,7 @@ class OrderService {
 
       return orderId;
     } catch (error) {
-      console.error("Error in ordeService/createOrder(): ", error);
+      console.log("Error in ordeService/createOrder(): ", error);
     }
   }
 
@@ -39,7 +39,7 @@ class OrderService {
     try {
       return await orderRepository.getOrderData(orderId);
     } catch (error: any) {
-      console.error("Error in  getting the order information: ", error);
+      console.log("Error in  getting the order information: ", error);
     }
   }
 
@@ -47,7 +47,7 @@ class OrderService {
     try {
       return await orderRepository.updateOrderItems(orderId, updatedOrders);
     } catch (error: any) {
-      console.error("Error in  updating order items  ", error);
+      console.log("Error in  updating order items  ", error);
     }
   }
 

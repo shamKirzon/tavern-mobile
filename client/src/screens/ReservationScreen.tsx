@@ -179,7 +179,7 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
         setReservationData({ validIdUrl });
       }
     } catch (error) {
-      console.error("Error picking valid ID:", error);
+      console.log("Error picking valid ID:", error);
     } finally {
       setIsUploading(false);
     }

@@ -82,7 +82,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
           await updateToken({ reservationId: null });
         }
       } catch (error) {
-        console.error("Can't perform reset system.");
+        console.log("Can't perform reset system.");
       } finally {
         setIsLoadings(false);
       }
@@ -158,7 +158,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         if (!res) return;
         setReservationStatus(res);
       } catch (error) {
-        console.error("Error in handleStatus(): ", error);
+        console.log("Error in handleStatus(): ", error);
       } finally {
         setIsLoadings(false);
       }

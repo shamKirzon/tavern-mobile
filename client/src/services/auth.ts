@@ -20,7 +20,7 @@ export const generateOtp = async (email: string) => {
     });
     console.log("Generated OTP:", res.data.otp);
   } catch (error) {
-    console.error("services/auth.ts/generateOtp: ", error);
+    console.log("services/auth.ts/generateOtp: ", error);
   }
 };
 export const validateOtp = async (email: string, otp: string) => {
@@ -32,6 +32,6 @@ export const validateOtp = async (email: string, otp: string) => {
 
     return { isValidOtp: res.data.isValidOtp, message: res.data.message };
   } catch (error) {
-    console.error("services/auth.ts/validateOtp: ", error);
+    console.log("services/auth.ts/validateOtp: ", error);
   }
 };

@@ -17,7 +17,7 @@ class ReservationController {
 
       return res.status(201).json(result.reservation_id);
     } catch (error: any) {
-      console.error("Error in createReservation(): ", error);
+      console.log("Error in createReservation(): ", error);
       return res.status(400).json({ message: "can't create reservation" });
     }
   }
@@ -39,7 +39,7 @@ class ReservationController {
         .status(200)
         .json({ message: "Reservation Created Successfully! ", result });
     } catch (error: any) {
-      console.error("Error in createReservation(): ", error);
+      console.log("Error in createReservation(): ", error);
       return res.status(400).json({ message: "can't create reservation" });
     }
   }
@@ -61,7 +61,7 @@ class ReservationController {
 
       return res.status(200).json({ status });
     } catch (error: any) {
-      console.error(
+      console.log(
         "Error in reservationController/createReservation(): ",
         error
       );
@@ -87,7 +87,7 @@ class ReservationController {
 
       return res.status(200).json({ amount });
     } catch (error: any) {
-      console.error(
+      console.log(
         "Error in reservationController/getReservationTotal(): ",
         error
       );
@@ -109,7 +109,7 @@ class ReservationController {
         .status(200)
         .json({ message: "image uploaded successfully", imageUrl });
     } catch (error: any) {
-      console.error("Error in uploadImage(): ", error);
+      console.log("Error in uploadImage(): ", error);
       return res.status(400).json({ message: "can't upload image" });
     }
   }
@@ -135,7 +135,7 @@ class ReservationController {
         .status(200)
         .json({ message: "assigned employee id successfully!", result });
     } catch (error: any) {
-      console.error("reservationController/getReservationTotal(): ", error);
+      console.log("reservationController/getReservationTotal(): ", error);
       return res
         .status(400)
         .json({ message: "can't perform assigning employee id " });

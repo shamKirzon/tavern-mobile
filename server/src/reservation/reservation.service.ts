@@ -6,7 +6,7 @@ class ReservationService {
     try {
       return await reservationRepository.createReservation(data);
     } catch (error) {
-      console.error("Error in createReservation(): ", error);
+      console.log("Error in createReservation(): ", error);
     }
   }
 
@@ -14,7 +14,7 @@ class ReservationService {
     try {
       return await reservationRepository.getReservationData(reservationId);
     } catch (error: any) {
-      console.error("Error in getting reservation information: ", error);
+      console.log("Error in getting reservation information: ", error);
     }
   }
 

@@ -71,7 +71,7 @@ const StaffHomeScreen: React.FC<Props> = ({ navigation }) => {
           navigation.navigate("StaffQRScannerScreen");
         }
       } catch (error) {
-        console.error(error);
+        console.log(error);
       } finally {
         setIsLoading(false);
       }
@@ -132,7 +132,7 @@ const StaffHomeScreen: React.FC<Props> = ({ navigation }) => {
         inputRefs.current[0]?.focus();
       }
     } catch (error) {
-      console.error("Error in validating pin:", error);
+      console.log("Error in validating pin:", error);
     } finally {
       setIsLoading(false);
     }
