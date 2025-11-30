@@ -51,9 +51,7 @@ export const reservationTermsAndConditions = [
   {
     title: "3. Function Reservation Cancellation Policy",
     items: [
-      "Cancellation requests may be made through email only.",
-      "5-14 days prior to the event: 50% of the function payment will be forfeited.",
-      "0-4 days prior to the event: 100% of the function payment is non-refundable.",
+      "Cancellation requests may be made through email only. If the guest requests to cancel or does not show up on the reserved date, only 50% of the reservation fee is refundable.",
     ],
   },
   {

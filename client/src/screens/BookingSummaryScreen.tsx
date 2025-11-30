@@ -330,11 +330,10 @@ const BookingSummaryScreen: React.FC<Props> = ({ navigation, route }) => {
             bottom: height * 0.035,
             left: width * 0.05,
             right: width * 0.05,
-            backgroundColor: "#8B0000",
+            backgroundColor: isChecked ? "#8B0000" : "#460000",
             paddingVertical: height * 0.02,
             borderRadius: width * 0.03,
             alignItems: "center",
-            opacity: isChecked ? 1 : 0.5,
           }}
           disabled={!isChecked}
           onPress={() =>
@@ -343,7 +342,7 @@ const BookingSummaryScreen: React.FC<Props> = ({ navigation, route }) => {
         >
           <Text
             style={{
-              color: "#FFFFFF",
+              color: isChecked ? "#FFFFFF" : "#808080",
               fontSize: width * 0.04,
               fontWeight: "600",
             }}
