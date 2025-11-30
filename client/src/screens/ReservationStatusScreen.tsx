@@ -20,7 +20,11 @@ import OrderPolicyScreen from "./OrderPolicyScreen";
 import { useReservationStore } from "../stores/useReservationStore";
 import { updateToken } from "../services/token";
 import { useOrderStore } from "../stores/useOrderStore";
-import { rulesAndConditions } from "../data/rulesAndCondition";
+import {
+  orderTermsAndConditions,
+  reservationRulesAndConditions,
+  reservationTermsAndConditions,
+} from "../data/rulesAndCondition";
 type ReservationStatusScreenRouteProp = RouteProp<
   RootStackParamLists,
   "ReservationStatusScreen"
@@ -316,33 +320,50 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
                   fontFamily: "Poppins",
                 }}
               >
-                Terms and Conditions
+                Terms and Condition
               </Text>
               <View>
-                {rulesAndConditions.map((item, index) => (
-                  <View key={index} style={{ marginBottom: height * 0.008 }}>
+                {orderTermsAndConditions.map((policy, index) => (
+                  <View key={index} style={{ marginBottom: height * 0.013 }}>
                     <Text
                       style={{
-                        color: "#FFF",
+                        color: "#FFFFFF",
                         fontSize: width * 0.032,
-                        fontWeight: "700",
-                        marginBottom: 2,
-                        fontFamily: "Poppins",
+                        fontWeight: "600",
+                        marginBottom: height * 0.004,
                       }}
                     >
-                      {item.title}
+                      {policy.title}
                     </Text>
-                    <Text
-                      style={{
-                        color: "rgba(255, 255, 255, 0.9)",
-                        fontSize: width * 0.028,
-                        fontWeight: "400",
-                        lineHeight: width * 0.04,
-                        fontFamily: "Poppins",
-                      }}
-                    >
-                      {item.content}
-                    </Text>
+                    {policy.items.map((item, itemIndex) => (
+                      <View
+                        key={itemIndex}
+                        style={{
+                          flexDirection: "row",
+                          marginLeft: width * 0.05,
+                          paddingBottom: width * 0.005,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color: "#dddddd",
+                            fontSize: width * 0.032,
+                            paddingRight: width * 0.01,
+                          }}
+                        >
+                          •
+                        </Text>
+                        <Text
+                          style={{
+                            color: "#dddddd",
+                            fontSize: width * 0.032,
+                            flex: 1,
+                          }}
+                        >
+                          {item}
+                        </Text>
+                      </View>
+                    ))}
                   </View>
                 ))}
               </View>

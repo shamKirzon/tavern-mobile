@@ -12,6 +12,7 @@ import { RouteProp } from "@react-navigation/native";
 import { RootStackParamLists } from "../types/rootStackParamLists";
 import { height, paddingTop, width } from "../utils/dimensions";
 import { formatReadableDate } from "../utils/date";
+import { reservationTermsAndConditions } from "../data/rulesAndCondition";
 
 type BookingSummaryScreenNavigationProps = NativeStackNavigationProp<
   RootStackParamLists,
@@ -86,7 +87,10 @@ const BookingSummaryScreen: React.FC<Props> = ({ navigation, route }) => {
           </Text>
         </View>
 
-        <ScrollView contentContainerStyle={{ paddingBottom: height * 0.15 }}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: height * 0.15 }}
+        >
           {/* Reservation Details */}
           <View
             style={{
@@ -222,111 +226,50 @@ const BookingSummaryScreen: React.FC<Props> = ({ navigation, route }) => {
               Terms and Conditions
             </Text>
 
-            <View style={{ marginBottom: height * 0.03 }}>
-              <Text
-                style={{
-                  color: "#FFFFFF",
-                  fontSize: width * 0.04,
-                  fontWeight: "600",
-                  marginBottom: height * 0.008,
-                }}
-              >
-                Reservation Policy
-              </Text>
-              <Text
-                style={{
-                  color: "#dddddd",
-                  fontSize: width * 0.032,
-                  marginBottom: height * 0.01,
-                }}
-              >
-                Orders must be placed at least 2 days in advance to ensure
-                availability and preparation time.
-              </Text>
-
-              <Text
-                style={{
-                  color: "#FFFFFF",
-                  fontSize: width * 0.04,
-                  fontWeight: "600",
-                  marginBottom: height * 0.008,
-                }}
-              >
-                Cancellation Policy
-              </Text>
-              <Text
-                style={{
-                  color: "#dddddd",
-                  fontSize: width * 0.032,
-                  marginBottom: height * 0.01,
-                }}
-              >
-                Cancellations made within 24 hours of pickup/delivery will not
-                be refunded.
-              </Text>
-
-              <Text
-                style={{
-                  color: "#FFFFFF",
-                  fontSize: width * 0.04,
-                  fontWeight: "600",
-                  marginBottom: height * 0.008,
-                }}
-              >
-                Payment Policy
-              </Text>
-              <Text
-                style={{
-                  color: "#dddddd",
-                  fontSize: width * 0.032,
-                  marginBottom: height * 0.01,
-                }}
-              >
-                Full payment is required to confirm your order. Payments are
-                non-refundable once confirmed.
-              </Text>
-
-              <Text
-                style={{
-                  color: "#FFFFFF",
-                  fontSize: width * 0.04,
-                  fontWeight: "600",
-                  marginBottom: height * 0.008,
-                }}
-              >
-                Special Requests
-              </Text>
-              <Text
-                style={{
-                  color: "#dddddd",
-                  fontSize: width * 0.032,
-                  marginBottom: height * 0.01,
-                }}
-              >
-                Customizations or specific requests must be communicated upon
-                ordering.
-              </Text>
-
-              <Text
-                style={{
-                  color: "#FFFFFF",
-                  fontSize: width * 0.04,
-                  fontWeight: "600",
-                  marginBottom: height * 0.008,
-                }}
-              >
-                Privacy Policy
-              </Text>
-              <Text
-                style={{
-                  color: "#dddddd",
-                  fontSize: width * 0.032,
-                  marginBottom: height * 0.01,
-                }}
-              >
-                Customer information is kept confidential and used solely for
-                processing your order.
-              </Text>
+            <View>
+              {reservationTermsAndConditions.map((policy, index) => (
+                <View key={index} style={{ marginBottom: height * 0.013 }}>
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontSize: width * 0.032,
+                      fontWeight: "600",
+                      marginBottom: height * 0.004,
+                    }}
+                  >
+                    {policy.title}
+                  </Text>
+                  {policy.items.map((item, itemIndex) => (
+                    <View
+                      key={itemIndex}
+                      style={{
+                        flexDirection: "row",
+                        marginLeft: width * 0.05,
+                        paddingBottom: width * 0.005,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: "#dddddd",
+                          fontSize: width * 0.032,
+                          paddingRight: width * 0.01,
+                        }}
+                      >
+                        •
+                      </Text>
+                      <Text
+                        style={{
+                          color: "#dddddd",
+                          fontSize: width * 0.032,
+                          flex: 1,
+                        }}
+                      >
+                        {item}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              ))}
             </View>
           </View>
 
@@ -371,7 +314,7 @@ const BookingSummaryScreen: React.FC<Props> = ({ navigation, route }) => {
             <Text
               style={{
                 color: "white",
-                fontSize: width * 0.034,
+                fontSize: width * 0.033,
                 flexShrink: 1,
               }}
             >

@@ -50,6 +50,7 @@ interface Props {
 }
 
 const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
+  const VAT_PERCENTAGE = 0.12;
   const { orders } = useOrderStore();
   const { qrResult, isValid, additionalOrder } = route.params;
   const [modalVisible, setModalVisible] = useState(false);
@@ -603,6 +604,21 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
 
       return formatCurrency(calculatedAmount);
     };
+    const calculatedVAT = () => {
+      const baseTotal = orderData.total + (additionalOrder?.total ?? 0);
+      const calculatedAmount = baseTotal * VAT_PERCENTAGE;
+
+      return formatCurrency(calculatedAmount);
+    };
+
+    const calculatedVATable = () => {
+      const baseTotal = orderData.total + (additionalOrder?.total ?? 0);
+      const calculatedVAT = baseTotal * VAT_PERCENTAGE;
+
+      const VATable = baseTotal - calculatedVAT;
+
+      return formatCurrency(VATable);
+    };
 
     return (
       <View style={{ flex: 1 }}>
@@ -981,7 +997,6 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                   </Text>
                 </View>
 
-                {/* total: */}
                 <View
                   style={{
                     marginTop: height * 0.012,
@@ -1014,17 +1029,6 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                   </Text>
                 </View>
 
-                {/* divider solid line */}
-                <View
-                  style={{
-                    height: width * 0.001,
-                    alignSelf: "center",
-                    backgroundColor: "rgba(150,150,150,0.6)",
-                    width: "100%",
-                    marginVertical: 10,
-                  }}
-                />
-
                 {/* payable*/}
                 <View
                   style={{
@@ -1042,7 +1046,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                       flexWrap: "wrap",
                     }}
                   >
-                    Payable
+                    Customer Payable
                   </Text>
 
                   <Text
@@ -1054,6 +1058,79 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                     }}
                   >
                     {calculatedPayable()}
+                  </Text>
+                </View>
+
+                {/* divider solid line */}
+                <View
+                  style={{
+                    height: width * 0.001,
+                    alignSelf: "center",
+                    backgroundColor: "rgba(150,150,150,0.6)",
+                    width: "100%",
+                    marginVertical: 10,
+                  }}
+                />
+
+                {/* VATable */}
+                <View
+                  style={{
+                    flexDirection: "row",
+                    marginBottom: 6,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontWeight: "700",
+                      fontSize: width * 0.047,
+                      flex: 1,
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    VATable
+                  </Text>
+
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontWeight: "700",
+                      fontSize: width * 0.047,
+                      marginLeft: 10,
+                    }}
+                  >
+                    {calculatedVATable()}
+                  </Text>
+                </View>
+
+                {/* VAT*/}
+                <View
+                  style={{
+                    flexDirection: "row",
+                    marginBottom: 6,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontWeight: "700",
+                      fontSize: width * 0.047,
+                      flex: 1,
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    VAT
+                  </Text>
+
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontWeight: "700",
+                      fontSize: width * 0.047,
+                      marginLeft: 10,
+                    }}
+                  >
+                    {calculatedVAT()}
                   </Text>
                 </View>
               </View>
