@@ -3,8 +3,8 @@ import { Animated, View, StyleSheet, Easing } from "react-native";
 
 const NUM_DOTS = 8;
 const SPINNER_SIZE = 50;
-const DOT_WIDTH = 4; // narrower
-const DOT_HEIGHT = 12; // taller for elongated look
+const DOT_WIDTH = 4;
+const DOT_HEIGHT = 12;
 
 const CircleSpinner = (): React.JSX.Element => {
   const rotateAnim = useRef(new Animated.Value(0)).current;
@@ -13,7 +13,7 @@ const CircleSpinner = (): React.JSX.Element => {
     Animated.loop(
       Animated.timing(rotateAnim, {
         toValue: 1,
-        duration: 2000, // slower rotation
+        duration: 2000,
         useNativeDriver: true,
         easing: Easing.linear,
       })
@@ -64,8 +64,8 @@ const styles = StyleSheet.create({
   },
   dot: {
     position: "absolute",
-    borderRadius: 2, // slightly rounded edges
-    backgroundColor: "#FFFF", // yellowish for beer
+    borderRadius: 2,
+    backgroundColor: "#FFFF",
   },
 });
 

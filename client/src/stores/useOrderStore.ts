@@ -38,12 +38,6 @@ export const useOrderStore = create<orderStore>((set) => ({
         item.orderName === name ? { ...item, ...updatedData } : item
       );
 
-      console.log("\n");
-      console.log("previous order data: ", updatedData);
-      console.log("\n");
-      console.log("current order data: ", updatedItems);
-      console.log("\n");
-
       return {
         orders: {
           orderItems: updatedItems,

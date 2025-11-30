@@ -2,23 +2,17 @@ import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
-  TextInput,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
   Image,
-  LayoutChangeEvent,
   Keyboard,
 } from "react-native";
-import { width, height } from "../utils/dimensions";
+import { width, height, paddingTop } from "../utils/dimensions";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamLists } from "../types/rootStackParamLists";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { useAuthStore } from "../stores/useAuthStore";
 import MainBackground from "../assets/backgrounds/main-background.svg";
-import SearchIcon from "../assets/images/search.svg";
-import Promo1 from "../assets/images/promo1.svg";
-import Promo2 from "../assets/images/promo2.svg";
 import Appetizer from "../assets/images/appetizer.svg";
 import MainCourse from "../assets/images/main-course.svg";
 import Dessert from "../assets/images/dessert.svg";
@@ -75,7 +69,7 @@ const AdditionalOrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
     )
       return "Drinks";
 
-    return null; // not found
+    return null;
   };
 
   function isOrderExisting(name: string): boolean {
@@ -126,6 +120,51 @@ const AdditionalOrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
         preserveAspectRatio="none"
         style={styles.bg}
       />
+
+      {/* HEADER */}
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          marginTop: paddingTop,
+          marginBottom: height * 0.02,
+          paddingHorizontal: width * 0.05,
+        }}
+      >
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("StaffQRResultScreen", { isValid, qrResult })
+          }
+          style={{
+            width: width * 0.09,
+            height: width * 0.09,
+            justifyContent: "center",
+            alignItems: "center",
+            marginRight: width * 0.025,
+          }}
+        >
+          <View
+            style={{
+              width: width * 0.035,
+              height: width * 0.035,
+              borderLeftWidth: width * 0.008,
+              borderBottomWidth: width * 0.008,
+              borderColor: "#fff",
+              transform: [{ rotate: "45deg" }],
+            }}
+          />
+        </TouchableOpacity>
+        <Text
+          style={{
+            color: "#FFF",
+            fontSize: width * 0.07,
+            fontWeight: "700",
+          }}
+        >
+          Back
+        </Text>
+      </View>
+
       <ScrollView
         ref={scrollViewRef}
         style={{ width: "100%" }}
@@ -133,103 +172,7 @@ const AdditionalOrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
         keyboardShouldPersistTaps="handled" // para maclick muna yung content nang di umaalis sa keyboard
         contentContainerStyle={{ alignItems: "center", paddingBottom: 100 }}
       >
-        {/* HEADER */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginTop: height * 0.08,
-            marginBottom: height * 0.02,
-            paddingHorizontal: width * 0.05,
-            width: "100%",
-          }}
-        >
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate("StaffQRResultScreen", { isValid, qrResult })
-            }
-            style={{ marginRight: width * 0.03, padding: width * 0.01 }}
-          >
-            <Text style={{ color: "#FFF", fontSize: width * 0.08 }}>‹</Text>
-          </TouchableOpacity>
-          <Text
-            style={{
-              color: "#FFF",
-              fontSize: width * 0.065,
-              fontWeight: "700",
-            }}
-          >
-            Back
-          </Text>
-        </View>
-
         <View style={styles.content}>
-          {/* <Text style={styles.menuTitle}>Welcome to Tavern Asia!</Text> */}
-          {/* search bar */}
-          {/* <View style={styles.searchContainer}>
-            <SearchIcon width={22} height={22} style={{ marginRight: 1 }} />
-            <TextInput
-              placeholder="What food do you crave?"
-              placeholderTextColor="#999"
-              onChangeText={handleSearch}
-              style={[
-                styles.input,
-                {
-                  flex: 1,
-                  marginBottom: 0,
-                  backgroundColor: "transparent",
-                  color: "#000",
-                },
-              ]}
-            />
-          </View> */}
-
-          {/* search results */}
-          {/* {query.trim() !== "" && (
-            <View style={styles.dropdownContainer}>
-              {filteredData.length > 0 ? (
-                filteredData.map((item, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => onSearchResultPress(item)}
-                    style={styles.dropdownItem}
-                    activeOpacity={0.8}
-                  >
-                    <SearchIcon
-                      width={22}
-                      height={22}
-                      style={{ marginRight: 10 }}
-                    />
-                    <Text style={styles.dropdownText}>{item.name}</Text>
-                  </TouchableOpacity>
-                ))
-              ) : (
-                <Text style={styles.noResult}>No results found</Text>
-              )}
-            </View>
-          )} */}
-
-          {/* special promos */}
-          {/* <Text style={styles.menuTitle}>Special Promos</Text>
-          <View style={{ width: "100%", height: 147, marginBottom: 25 }}>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              // keyboardShouldPersistTaps="handled" // or "always" - di ko alam kung gumagana ba to
-              pagingEnabled
-              snapToAlignment="center"
-              decelerationRate="fast"
-              contentContainerStyle={{ paddingHorizontal: 10 }}
-            >
-              <View style={styles.promoCard}>
-                <Promo1 width="100%" height="100%" />
-              </View>
-              <View style={styles.promoCard}>
-                <Promo2 width="100%" height="100%" />
-              </View>
-            </ScrollView>
-          </View> */}
-          {/* Category Icons */}
           <View style={styles.categoryContainer}>
             <TouchableOpacity
               style={[
@@ -446,7 +389,6 @@ const AdditionalOrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
         </View>
       </ScrollView>
 
-      {/* 🟢 Fixed Basket Bar at bottom */}
       <TouchableOpacity
         style={styles.basketBar}
         onPress={() =>
@@ -474,7 +416,6 @@ const styles = StyleSheet.create({
     width,
     height,
     justifyContent: "flex-start",
-    alignItems: "center",
   },
   bg: {
     position: "absolute",
@@ -579,12 +520,12 @@ const styles = StyleSheet.create({
   },
   plusButton: {
     position: "absolute",
-    bottom: 10,
-    left: 115,
+    bottom: height * 0.0125,
+    left: width * 0.3,
     backgroundColor: "#4A0A0A",
-    width: 35,
-    height: 35,
-    borderRadius: 20,
+    width: width * 0.0875,
+    height: width * 0.0875,
+    borderRadius: width * 0.05,
     justifyContent: "center",
     alignItems: "center",
   },

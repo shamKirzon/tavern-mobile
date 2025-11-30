@@ -67,7 +67,6 @@ const StaffHomeScreen: React.FC<Props> = ({ navigation }) => {
 
         setEmployeeRole(role);
 
-        // Navigate after role is set
         if (role) {
           navigation.navigate("StaffQRScannerScreen");
         }
@@ -81,7 +80,6 @@ const StaffHomeScreen: React.FC<Props> = ({ navigation }) => {
     initialize();
   }, []);
 
-  // functions:
   const showPINError = () => {
     setIsPinError(true);
 
@@ -121,18 +119,6 @@ const StaffHomeScreen: React.FC<Props> = ({ navigation }) => {
 
       const res = await validatePin(code, selectedRole);
 
-      // results example:
-      const myResData = {
-        employee_id: "25273ea9-4cce-40a1-a02a-adecd1a8c6d9",
-        employee_role: "cashier",
-        full_name: "Dummy Cashier",
-        image_url: null,
-        pin: "12345",
-        shift_day: "Tuesday, Wednesday, Friday",
-        shift_end: "4:00",
-        shift_start: "8:00",
-      };
-
       if (res) {
         navigation.navigate("StaffQRScannerScreen");
         setEmployeeRole(selectedRole);
@@ -146,7 +132,7 @@ const StaffHomeScreen: React.FC<Props> = ({ navigation }) => {
         inputRefs.current[0]?.focus();
       }
     } catch (error) {
-      console.error("error in validating pin ", error);
+      console.error("Error in validating pin:", error);
     } finally {
       setIsLoading(false);
     }
@@ -167,7 +153,14 @@ const StaffHomeScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* Main background */}
         <MainBackground
-          style={{ position: "absolute", width: "100%", height: "100%" }}
+          width={width}
+          height={height}
+          preserveAspectRatio="none"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+          }}
         />
 
         {/* Main content */}
@@ -207,10 +200,9 @@ const StaffHomeScreen: React.FC<Props> = ({ navigation }) => {
             {/* Welcome text */}
             <Text
               style={{
-                fontSize: width * 0.08,
+                fontSize: width * 0.09,
                 fontWeight: "bold",
                 color: "#fff",
-                fontFamily: "Poppins-ExtraBoldItalic",
               }}
             >
               Welcome!
@@ -322,6 +314,7 @@ const StaffHomeScreen: React.FC<Props> = ({ navigation }) => {
                   <View style={{ flexDirection: "row", gap: width * 0.03 }}>
                     {Array.from({ length: 5 }).map((_, index) => (
                       <TextInput
+                        secureTextEntry
                         key={index}
                         ref={(ref: any) => (inputRefs.current[index] = ref)}
                         value={digitValues[index]}

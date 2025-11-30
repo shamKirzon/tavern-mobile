@@ -5,9 +5,10 @@ import {
   TextInput,
   TouchableOpacity,
   ImageBackground,
-  StyleSheet,
   Animated,
-  ActivityIndicator,
+  Platform,
+  KeyboardAvoidingView,
+  ScrollView,
 } from "react-native";
 import { width, height } from "../utils/dimensions";
 import { RouteProp } from "@react-navigation/native";
@@ -62,10 +63,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [reservationStatus, setReservationStatus] =
     useState<ReservationStatus>("none");
 
-  // done = orderstatusScreen
   const fadeAnim = useRef(new Animated.Value(0)).current;
-
-  // complete reservation and order, reset:
 
   useEffect(() => {
     const resetSystem = async () => {
@@ -81,13 +79,10 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
         if (reservationStatus === "done" && orderStatus === "done") {
           await updateToken({ orderId: null });
-
           await updateToken({ reservationId: null });
-
-          console.log("buratski");
         }
       } catch (error) {
-        console.error("error in reseting the system. ");
+        console.error("Can't perform reset system.");
       } finally {
         setIsLoadings(false);
       }
@@ -96,7 +91,6 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     resetSystem();
   }, []);
 
-  // toaster anim.
   useEffect(() => {
     if (showToaster) {
       Animated.timing(fadeAnim, {
@@ -117,12 +111,10 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     }
   }, [showToaster]);
 
-  // email verified toggle"
   useEffect(() => {
     if (showEmailVerifiedToggle) {
       setShowToaster(true);
     }
-
     setShowEmailVerifiedToggle(false);
   }, [showEmailVerifiedToggle]);
 
@@ -140,12 +132,12 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     fetchData();
   }, []);
 
-  // handle status with basis
+  // handle reservation status
   useEffect(() => {
     handleStatus();
   }, [hasEmail, hasReservation, hasOrder]);
 
-  // reservation
+  // get reservation amount
   useEffect(() => {
     const getTotal = async () => {
       if (!hasReservation) return;
@@ -153,14 +145,8 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       setReservationAmount(amount);
       setSpendLimit(amount);
     };
-
     getTotal();
   }, [hasReservation]);
-
-  // testing:
-  useEffect(() => {
-    console.log("Reservation Amount:", reservationAmount);
-  }, [reservationAmount]);
 
   const handleStatus = async () => {
     if (hasEmail && hasReservation && hasOrder) {
@@ -170,16 +156,14 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         setIsLoadings(true);
         const res = await getReservationStatus(hasReservation);
         if (!res) return;
-
-        console.log("Reservation Status: ", res);
         setReservationStatus(res);
       } catch (error) {
-        console.error("Error: ", error);
+        console.error("Error in handleStatus(): ", error);
       } finally {
         setIsLoadings(false);
       }
     } else if (hasEmail) {
-      // book now button
+      // show book now
     } else {
       setReservationStatus("none");
     }
@@ -194,16 +178,16 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       navigation.navigate("ReservationStatusScreen", { reservationStatus });
     }
   };
+
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
-
     return emailRegex.test(email.trim());
   };
 
   const handleBookNow = () => {
     navigation.navigate("ReservationScreen");
   };
-  // verify email:
+
   const handleContinue = async () => {
     if (!validateEmail(email)) {
       setIsEmailInvalid(true);
@@ -219,43 +203,18 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const renderToaster = (): JSX.Element | null => {
     if (!showToaster) return null;
 
-    // Only one toaster at a time
-    if (isEmailInvalid) {
-      return (
-        <Animated.View
-          style={{
-            opacity: fadeAnim,
-            backgroundColor: "#D32F2F",
-            paddingVertical: 12,
-            paddingHorizontal: 20,
-            borderRadius: 10,
-            marginBottom: 15,
-            width: "100%",
-            alignItems: "center",
-          }}
-        >
-          <Text
-            style={{
-              color: "white",
-              fontWeight: "bold",
-              fontSize: width * 0.04,
-            }}
-          >
-            Invalid Email. Please enter a valid email address.
-          </Text>
-        </Animated.View>
-      );
-    }
-
     return (
       <Animated.View
         style={{
           opacity: fadeAnim,
-          backgroundColor: "#4CAF50",
-          paddingVertical: 12,
-          paddingHorizontal: 20,
-          borderRadius: 10,
-          marginBottom: 15,
+          backgroundColor: isEmailInvalid
+            ? "rgba(211, 47, 47, 0.8)"
+            : "rgba(76, 175, 80, 0.8)",
+
+          paddingVertical: height * 0.01,
+          paddingHorizontal: width * 0.05,
+          borderRadius: width * 0.03,
+          marginBottom: height * 0.02,
           width: "100%",
           alignItems: "center",
         }}
@@ -263,72 +222,155 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         <Text
           style={{
             color: "white",
-            fontWeight: "bold",
+            fontWeight: "medium",
             fontSize: width * 0.04,
+            textAlign: "center",
+            fontFamily: "Poppins-Regular",
           }}
         >
-          Email Verified.
+          {isEmailInvalid ? "Invalid Email" : "Email Verified."}
         </Text>
       </Animated.View>
     );
   };
 
   const renderReservationLabel = (): JSX.Element | null => {
+    let bgColor = "";
+    let borderColor = "";
+    let text = "";
+
     switch (reservationStatus) {
       case "pending":
-        return (
-          <Text style={[styles.label, { backgroundColor: "#A88A00" }]}>
-            Pending Reservation Approval
-          </Text>
-        );
+        borderColor = "#A88A00";
+        bgColor = "rgba(255, 217, 102, 0.25)";
+        text = "Pending Reservation Approval";
+        break;
+
       case "accepted":
-        return (
-          <Text style={[styles.label, { backgroundColor: "#4CAF50" }]}>
-            Reservation Approved
-          </Text>
-        );
+        bgColor = "rgb(35, 135, 35)";
+        borderColor = "rgb(35, 135, 35)";
+        text = "Reservation Approved";
+        break;
+
       case "rejected":
-        return (
-          <Text style={[styles.label, { backgroundColor: "#E05002" }]}>
-            Your Reservation has been Rejected.
-          </Text>
-        );
+        borderColor = "#E05002";
+        bgColor = "rgba(224, 80, 2, 0.25)";
+        text = "Your Reservation has been Rejected.";
+        break;
+
       case "done":
-        return (
-          <Text style={[styles.label, { backgroundColor: "#C6A300" }]}>
-            Review Order Summary.
-          </Text>
-        );
+        borderColor = "#C6A300";
+        bgColor = "rgba(198, 163, 0, 0.25)";
+        text = "Review Order Summary.";
+        break;
+
+      case "cancelled":
+        borderColor = "#FFA500";
+        bgColor = "rgba(255, 165, 0, 0.25)";
+        text = "Reservation has been Cancelled.";
+        break;
+
       default:
-        return null;
+        return <></>;
     }
+
+    return (
+      <Text
+        style={{
+          color: "white",
+          fontSize: width * 0.04,
+          fontWeight: "500",
+          paddingVertical: height * 0.01,
+          paddingHorizontal: width * 0.05,
+          borderRadius: width * 0.03,
+          textAlign: "center",
+          width: "100%",
+          marginBottom: height * 0.02,
+          backgroundColor: bgColor,
+          borderWidth: 1,
+          borderColor: borderColor,
+        }}
+      >
+        {text}
+      </Text>
+    );
   };
 
   const reservationSection = (): JSX.Element | null => {
     if (reservationStatus === "none") return null;
 
     return (
-      <View style={{ width: "100%", alignItems: "center", marginBottom: 20 }}>
+      <View
+        style={{
+          width: "100%",
+          alignItems: "center",
+          marginBottom: height * 0.025,
+        }}
+      >
         {renderReservationLabel()}
         <TouchableOpacity
           onPress={() => handleViewStatus()}
-          style={styles.statusButton}
+          style={{
+            backgroundColor: "#8B0001",
+            paddingVertical: height * 0.02,
+            borderRadius: width * 0.03,
+            width: "100%",
+            alignItems: "center",
+          }}
         >
-          <Text style={styles.statusText}>View Status</Text>
+          <Text
+            style={{
+              color: "#FFFFFF",
+              fontWeight: "bold",
+              fontSize: width * 0.045,
+            }}
+          >
+            View Status
+          </Text>
         </TouchableOpacity>
+        {/* labelTesting(pending) */}
       </View>
     );
   };
 
   const menu = (): JSX.Element => (
-    <View style={{ width: "100%", marginTop: 30 }}>
-      <Text style={styles.menuTitle}>Our Menu</Text>
+    <View
+      style={{
+        width: "100%",
+        marginTop: height * 0.03,
+      }}
+    >
+      <Text
+        style={{
+          color: "white",
+          fontSize: width * 0.075,
+          fontWeight: "bold",
+          marginBottom: height * 0.02,
+          textAlign: "left",
+          paddingHorizontal: width * 0.025,
+        }}
+      >
+        Our Menu
+      </Text>
 
-      <View style={styles.menuContainer}>
+      <View
+        style={{
+          flexDirection: "row",
+          flexWrap: "wrap",
+          justifyContent: "space-between",
+          paddingHorizontal: width * 0.025,
+        }}
+      >
         {Object.values(category).map((item, index) => (
           <TouchableOpacity
             key={index}
-            style={styles.menuCard}
+            style={{
+              width: "48%",
+              marginBottom: height * 0.02,
+              borderRadius: width * 0.05,
+              overflow: "hidden",
+              height: height * 0.25,
+            }}
             onPress={() =>
               navigation.navigate("MenuViewingScreen", {
                 category: item.header,
@@ -337,12 +379,49 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
           >
             <ImageBackground
               source={item.imagePath}
-              style={styles.menuImage}
-              imageStyle={styles.menuImageStyle}
+              style={{
+                flex: 1,
+                justifyContent: "flex-end",
+                padding: width * 0.05,
+              }}
+              imageStyle={{
+                borderRadius: width * 0.05,
+                resizeMode: "cover",
+              }}
             >
-              <View style={styles.menuOverlay} />
-              <Text style={styles.menuCategory}>{item.header}</Text>
-              <Text style={styles.menuDescription}>{item.description}</Text>
+              <View
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  backgroundColor: "rgba(0, 0, 0, 0.5)",
+                  borderRadius: width * 0.05,
+                }}
+              />
+
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: width * 0.055,
+                  fontWeight: "bold",
+                  marginBottom: height * 0.01,
+                  zIndex: 1,
+                }}
+              >
+                {item.header}
+              </Text>
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: width * 0.035,
+                  lineHeight: height * 0.018,
+                  zIndex: 1,
+                }}
+              >
+                {item.description}
+              </Text>
             </ImageBackground>
           </TouchableOpacity>
         ))}
@@ -353,191 +432,143 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <>
       {isLoading && Loading()}
-      <View style={styles.mainContainer}>
+
+      <KeyboardAvoidingView
+        style={{
+          flex: 1,
+          width,
+        }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={0}
+      >
         <MainBackground
           width={width}
           height={height}
           preserveAspectRatio="none"
-          style={styles.bg}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+          }}
         />
 
-        <View style={styles.content}>
-          <Text style={styles.title}>Book a Reservation.</Text>
-          <Text style={styles.subtitle}>
-            Great food, great drinks, top notch service and a warm inviting
-            ambiance.
-          </Text>
+        <ScrollView
+          contentContainerStyle={{
+            paddingTop: Platform.OS === "ios" ? height * 0.06 : height * 0.02,
+            flexGrow: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+            paddingHorizontal: width * 0.05,
+            paddingVertical: height * 0.02,
+          }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={{ width: "100%", alignItems: "center" }}>
+            <Text
+              style={{
+                color: "white",
+                fontSize: width * 0.08,
+                fontWeight: "bold",
+                marginBottom: height * 0.015,
+                textAlign: "left",
+                width: "100%",
+              }}
+            >
+              Book a Reservation.
+            </Text>
+            <Text
+              style={{
+                color: "white",
+                fontSize: width * 0.04,
+                marginBottom: height * 0.03,
+                textAlign: "left",
+                width: "100%",
+                lineHeight: height * 0.022,
+              }}
+            >
+              Great food, great drinks, top notch service and a warm inviting
+              ambiance.
+            </Text>
 
-          {renderToaster()}
+            {renderToaster()}
 
-          {reservationStatus === "none" && (
-            <>
-              {!hasEmail && (
-                <TextInput
-                  placeholder="email@example.com"
-                  placeholderTextColor="#999"
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  style={styles.input}
-                />
-              )}
+            {reservationStatus === "none" && (
+              <>
+                {!hasEmail && (
+                  <TextInput
+                    placeholder="email@example.com"
+                    placeholderTextColor="#999"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    style={{
+                      width: "100%",
+                      backgroundColor: "white",
+                      color: "#333",
+                      padding: height * 0.02,
+                      borderRadius: width * 0.03,
+                      marginBottom: height * 0.025,
+                      fontSize: width * 0.04,
+                    }}
+                  />
+                )}
 
-              {hasEmail ? (
-                <TouchableOpacity
-                  onPress={handleBookNow}
-                  style={[styles.verifyBtn]}
-                >
-                  <Text style={styles.verifyText}>Book Now</Text>
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  onPress={handleContinue}
-                  style={[
-                    styles.verifyBtn,
-                    !email && { opacity: 0.5 }, // fade when disabled
-                  ]}
-                  disabled={!email}
-                >
-                  <Text style={styles.verifyText}>Verify Email</Text>
-                </TouchableOpacity>
-              )}
-            </>
-          )}
+                {hasEmail ? (
+                  <TouchableOpacity
+                    onPress={handleBookNow}
+                    style={{
+                      backgroundColor: "#8B0001",
+                      paddingVertical: height * 0.02,
+                      borderRadius: width * 0.03,
+                      width: "100%",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "#FFFFFF",
+                        fontWeight: "bold",
+                        fontSize: width * 0.045,
+                      }}
+                    >
+                      Book Now
+                    </Text>
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    onPress={handleContinue}
+                    style={{
+                      backgroundColor: "#8B0001",
+                      paddingVertical: height * 0.02,
+                      borderRadius: width * 0.03,
+                      width: "100%",
+                      alignItems: "center",
+                      opacity: !email ? 0.5 : 1,
+                    }}
+                    disabled={!email}
+                  >
+                    <Text
+                      style={{
+                        color: "#FFFFFF",
+                        fontWeight: "bold",
+                        fontSize: width * 0.045,
+                      }}
+                    >
+                      Verify Email
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </>
+            )}
 
-          {reservationSection()}
-          {menu()}
-        </View>
-      </View>
+            {reservationSection()}
+            {menu()}
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </>
   );
 };
-
-const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    width,
-    height,
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
-  bg: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-  },
-  content: {
-    width: "90%",
-    alignItems: "center",
-    marginBottom: height * 0.02, // lowers everything
-  },
-  title: {
-    color: "white",
-    fontSize: width * 0.08,
-    fontWeight: "bold",
-    marginBottom: 10,
-    textAlign: "left",
-    width: "100%",
-  },
-  subtitle: {
-    color: "white",
-    fontSize: width * 0.04,
-    marginBottom: 30,
-    textAlign: "left",
-    width: "100%",
-    lineHeight: 22,
-  },
-  input: {
-    width: "100%",
-    backgroundColor: "white",
-    color: "#333",
-    padding: 16,
-    borderRadius: 10,
-    marginBottom: 20,
-    fontSize: width * 0.04,
-  },
-  verifyBtn: {
-    backgroundColor: "#8B0001",
-    paddingVertical: 16,
-    borderRadius: 10,
-    width: "100%",
-    alignItems: "center",
-  },
-  verifyText: {
-    color: "#FFFFFF",
-    fontWeight: "bold",
-    fontSize: width * 0.045,
-  },
-  label: {
-    color: "white",
-    fontWeight: "bold",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    textAlign: "center",
-    width: "100%",
-    marginBottom: 15,
-  },
-  statusButton: {
-    backgroundColor: "#8B0001",
-    paddingVertical: 16,
-    borderRadius: 10,
-    width: "100%",
-    alignItems: "center",
-  },
-  statusText: {
-    color: "#FFFFFF",
-    fontWeight: "bold",
-    fontSize: width * 0.045,
-  },
-  menuTitle: {
-    color: "white",
-    fontSize: width * 0.075,
-    fontWeight: "bold",
-    marginBottom: 15,
-    textAlign: "left",
-    paddingHorizontal: 10,
-  },
-  menuContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    paddingHorizontal: 10,
-  },
-  menuCard: {
-    width: "48%",
-    marginBottom: 16,
-    borderRadius: 20,
-    overflow: "hidden",
-    height: 200,
-  },
-  menuImage: {
-    flex: 1,
-    justifyContent: "flex-end",
-    padding: 20,
-  },
-  menuImageStyle: {
-    borderRadius: 20,
-    resizeMode: "cover",
-  },
-  menuOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    borderRadius: 20,
-  },
-  menuCategory: {
-    color: "white",
-    fontSize: width * 0.055,
-    fontWeight: "bold",
-    marginBottom: 8,
-    zIndex: 1,
-  },
-  menuDescription: {
-    color: "white",
-    fontSize: width * 0.035,
-    lineHeight: 18,
-    zIndex: 1,
-  },
-});
 
 export default HomeScreen;

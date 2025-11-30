@@ -7,7 +7,6 @@ export type ordersData = {
     };
     quantity: number;
     note: string;
-    image: any;
     price: number;
     description: string[];
     total: number;
@@ -20,7 +19,7 @@ export interface orderStore {
   spendLimit: string;
   setSpendLimit: (data: number) => void;
   addOrders: (data: Partial<ordersData>) => void;
-  removeOrders: (id: string) => void; // remove by unique id
+  removeOrders: (id: string) => void;
   updateOrder: (
     name: string,
     updatedData: Partial<ordersData["orderItems"][number]>
@@ -29,3 +28,4 @@ export interface orderStore {
 }
 
 export type OrderStatus = "pending" | "cancelled" | "done";
+export type Servings = "Solo" | "Regular" | "To Share";

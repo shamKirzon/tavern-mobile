@@ -23,7 +23,6 @@ class EmployeeController {
         return res.status(400).json({ message: "it must have an employee id" });
 
       const role = await employeeService.getEmployeeRole(employeeId);
-      console.log("EMPLOYEE ROLE", role);
 
       res.status(200).json(role?.employee_role);
     } catch (error: any) {
@@ -35,14 +34,12 @@ class EmployeeController {
     try {
       const { encryptedQr } = req.body;
 
-      console.log("encrypted qr: ", encryptedQr);
       if (!encryptedQr)
         return res
           .status(400)
           .json({ message: "it must have an encrypted Qr" });
 
       const decryptedQr = await employeeService.decryptQr(encryptedQr);
-      console.log("decrypted qr;", decryptedQr);
 
       res.status(200).json(decryptedQr);
     } catch (error: any) {

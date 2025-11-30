@@ -9,15 +9,11 @@ class AuthController {
       if (!oldToken)
         return res.status(400).json({ message: "it must have an old token" });
 
-      console.log("oldtoken:", oldToken);
-      console.log("update", update);
-
       const updatedToken = await authService.updateToken(oldToken, update);
-      console.log("updatedToken Result: ", updatedToken);
 
       res.status(201).json({ token: updatedToken });
     } catch (error: any) {
-      console.error("authController/updateToken:", error.message);
+      console.error(" Error in authController/updateToken():", error.message);
     }
   }
 
@@ -42,6 +38,8 @@ class AuthController {
 
       const otp = await authService.generateOtp(email);
 
+      console.log("OTP: ", otp);
+
       await sendMail(email, otp);
       return res.status(200).json({ message: "otp sent", otp });
     } catch (error: any) {
@@ -60,7 +58,7 @@ class AuthController {
 
       if (validatedResult.isExpired == true && validatedResult.isValid == false)
         return res.status(200).json({
-          message: "otp already expired. generate a new otp",
+          message: "otp already Expired. Generate a new otp",
           isValidOtp: false,
         });
       else if (

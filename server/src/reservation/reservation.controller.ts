@@ -11,22 +11,19 @@ class ReservationController {
     try {
       const { data } = req.body;
 
-      console.log("from frontend data: ", data);
       if (!data) return res.status(400).json({ message: "no data fetched" });
 
       const result = await reservationService.createReservation(data);
 
       return res.status(201).json(result.reservation_id);
     } catch (error: any) {
-      console.error("error from createReservation(): ", error);
+      console.error("Error in createReservation(): ", error);
       return res.status(400).json({ message: "can't create reservation" });
     }
   }
   async getReservationData(req: Request, res: Response) {
     try {
       const { reservationId } = req.params;
-
-      console.log("reservation id: ", reservationId);
 
       if (!reservationId)
         return res.status(400).json({ message: "must have reservation id " });
@@ -42,7 +39,7 @@ class ReservationController {
         .status(200)
         .json({ message: "Reservation Created Successfully! ", result });
     } catch (error: any) {
-      console.error("error from createReservation(): ", error);
+      console.error("Error in createReservation(): ", error);
       return res.status(400).json({ message: "can't create reservation" });
     }
   }
@@ -64,7 +61,10 @@ class ReservationController {
 
       return res.status(200).json({ status });
     } catch (error: any) {
-      console.error("reservationController/createReservation(): ", error);
+      console.error(
+        "Error in reservationController/createReservation(): ",
+        error
+      );
       return res.status(400).json({ message: "can't get reservation status" });
     }
   }
@@ -87,7 +87,10 @@ class ReservationController {
 
       return res.status(200).json({ amount });
     } catch (error: any) {
-      console.error("reservationController/getReservationTotal(): ", error);
+      console.error(
+        "Error in reservationController/getReservationTotal(): ",
+        error
+      );
       return res.status(400).json({ message: "can't get reservation total" });
     }
   }
@@ -102,12 +105,11 @@ class ReservationController {
 
       const imageUrl = await uploadImageWithUrl({ localFile, type });
 
-      console.log("image url: ", imageUrl);
       return res
         .status(200)
         .json({ message: "image uploaded successfully", imageUrl });
     } catch (error: any) {
-      console.error("error from uploadImage(): ", error);
+      console.error("Error in uploadImage(): ", error);
       return res.status(400).json({ message: "can't upload image" });
     }
   }

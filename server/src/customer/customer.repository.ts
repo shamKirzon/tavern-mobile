@@ -10,13 +10,16 @@ class CustomerRepository {
         .single();
 
       if (error) {
-        console.log("data query failed in getting customer email ", error);
+        console.error("Data query failed in getting customer email.", error);
         return null;
       }
 
       return data;
     } catch (error: any) {
-      console.error("customerRepository/getCustomerByEmail() ", error.message);
+      console.error(
+        "Error in customerRepository/getCustomerByEmail() ",
+        error.message
+      );
     }
   }
 
@@ -29,13 +32,16 @@ class CustomerRepository {
         .single();
 
       if (error) {
-        console.log("data query failed in inserting customer email ", error);
+        console.error("Data query failed in inserting customer email ", error);
         return null;
       }
 
       return data;
     } catch (error: any) {
-      console.error("Error from addCustomer(): ", error.message);
+      console.error(
+        "Error in customerRepository/addCustomer(): ",
+        error.message
+      );
     }
   }
 
@@ -49,8 +55,6 @@ class CustomerRepository {
         .eq("email", email)
         .single();
 
-      console.log("customerId: ", customerId.data?.customer_id);
-
       const { data, error } = await supabase
         .from("customers")
         .update({ is_active: isActive })
@@ -59,8 +63,8 @@ class CustomerRepository {
         .single();
 
       if (error) {
-        console.log(
-          "data query failed setting customer status to inactive ",
+        console.error(
+          "Data query failed setting customer status to inactive ",
           error
         );
         return null;
@@ -68,7 +72,10 @@ class CustomerRepository {
 
       return data;
     } catch (error: any) {
-      console.error("Error from addCustomer(): ", error.message);
+      console.error(
+        "Error in customerRepository/addCustomer(): ",
+        error.message
+      );
     }
   }
 }

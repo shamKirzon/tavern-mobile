@@ -12,7 +12,7 @@ export const createOrder = async (order: ordersData) => {
       email,
       reservationId,
     });
-    if (!res) return console.error("can't create a reservation");
+    if (!res) return console.log("Can't create a reservation.");
 
     await updateToken({ orderId: res.data.orderId });
 
@@ -25,7 +25,7 @@ export const createOrder = async (order: ordersData) => {
 export const getOrderData = async (orderId: string) => {
   try {
     const res = await axiosInstance.get(`/order/get-order-data/${orderId}`);
-    if (!res) return console.error("can't create a reservation");
+    if (!res) return console.log("Can't create a reservation");
 
     return res.data.result;
   } catch (error) {
@@ -39,11 +39,7 @@ export const updateOrderItems = async (orderId: string, updatedOrders: any) => {
       orderId,
       updatedOrders,
     });
-    if (!res) throw new Error("can't update order items");
-    console.log(
-      "ITO NA ANG RESULT GALING DB PARE",
-      JSON.stringify(res.data.result)
-    );
+    if (!res) throw new Error("Can't update order items");
 
     return res.data.result;
   } catch (error) {
@@ -58,11 +54,14 @@ export const assignCashierId = async (employeeId: string, orderId: string) => {
       orderId,
     });
     if (!res)
-      return console.error("error in service/reservation/assignCashierId");
+      return console.error("Error in service/reservation/assignCashierId");
 
     return res.data.result;
   } catch (error) {
-    console.error("services/reservation/assignCashierId(). Error: ", error);
+    console.error(
+      "Error in services/reservation/assignCashierId(). Error: ",
+      error
+    );
   }
 };
 
@@ -72,12 +71,13 @@ export const completeOrder = async (orderId: string) => {
       orderId,
     });
     if (!res)
-      return console.error("error in service/reservation/completeOrder");
-
-    console.log({ message: res.data.message });
+      return console.error("Error in service/reservation/completeOrder");
 
     return res.data.message;
   } catch (error) {
-    console.error("services/reservation/completeOrder(). Error: ", error);
+    console.error(
+      "Error in services/reservation/completeOrder(). Error: ",
+      error
+    );
   }
 };

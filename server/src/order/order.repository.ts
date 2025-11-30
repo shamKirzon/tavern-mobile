@@ -32,7 +32,7 @@ class OrderRepository {
 
       return orders.order_id;
     } catch (error: any) {
-      console.error("error in createOrder: ", error);
+      console.error("Error in orderRepository/createOrder()", error);
     }
   }
   async getOrderData(orderId: string) {
@@ -43,12 +43,11 @@ class OrderRepository {
         .eq("order_id", orderId)
         .single();
 
-      if (error)
-        return console.error("supabase error in getOrderData()", error);
+      if (error) return console.error("Query failed in  getOrderData()", error);
 
       return data;
     } catch (error) {
-      console.error("error in getting order information: ", error);
+      console.error("Error in  getting order information: ", error);
     }
   }
 
@@ -63,9 +62,9 @@ class OrderRepository {
         ])
         .eq("order_id", orderId);
 
-      if (error) return console.error("supabase error in insertQrUrl()", error);
+      if (error) return console.error("Query failed in insertQrUrl()", error);
     } catch (error) {
-      console.error("error repository/insertQrUrl ", error);
+      console.error("Error in  repository/insertQrUrl ", error);
     }
   }
 
@@ -83,11 +82,11 @@ class OrderRepository {
         .single();
 
       if (error)
-        return console.error("supabase error in updateOrderItems()", error);
+        return console.error("Query failed in updateOrderItems()", error);
 
       return data.order_items;
     } catch (error) {
-      console.error("error repository/updateOrderItems() ", error);
+      console.error("Error in repository/updateOrderItems() ", error);
     }
   }
 
@@ -104,7 +103,7 @@ class OrderRepository {
 
       return data;
     } catch (error) {
-      console.error("reservationRepository/assignnCashierId ", error);
+      console.error("Error in reservationRepository/assignnCashierId ", error);
     }
   }
   async completeOrder(orderId: string) {
@@ -138,7 +137,7 @@ class OrderRepository {
 
       return { orderData, reservationData };
     } catch (error) {
-      console.error("reservationRepository/assignnCashierId ", error);
+      console.error("Error in reservationRepository/assignnCashierId ", error);
     }
   }
 }

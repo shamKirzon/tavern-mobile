@@ -26,13 +26,12 @@ class OrderService {
         email
       );
 
-      console.log("QR URL: ", qrUrl);
       // inserting qr url
       await orderRepository.insertQrUrl(qrUrl!, orderId);
 
       return orderId;
     } catch (error) {
-      console.error("order.service - error in  createOrder(): ", error);
+      console.error("Error in ordeService/createOrder(): ", error);
     }
   }
 
@@ -40,7 +39,7 @@ class OrderService {
     try {
       return await orderRepository.getOrderData(orderId);
     } catch (error: any) {
-      console.error("error in getting the order information: ", error);
+      console.error("Error in  getting the order information: ", error);
     }
   }
 
@@ -48,7 +47,7 @@ class OrderService {
     try {
       return await orderRepository.updateOrderItems(orderId, updatedOrders);
     } catch (error: any) {
-      console.error("error in updating order items  ", error);
+      console.error("Error in  updating order items  ", error);
     }
   }
 

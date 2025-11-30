@@ -7,27 +7,19 @@ import {
   ScrollView,
   Animated,
   Alert,
-  ActivityIndicator,
 } from "react-native";
 
-import * as FileSystem from "expo-file-system";
-import * as MediaLibrary from "expo-media-library";
-
 import Loading from "./ui/Loading";
-import { width, height } from "../utils/dimensions";
+import { width, height, paddingTop } from "../utils/dimensions";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamLists } from "../types/rootStackParamLists";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import MainBackground from "../assets/backgrounds/main-background.svg";
 import { getOrderData } from "../services/order";
-import {
-  getEmailByToken,
-  getOrderIdByToken,
-  getReservationIdByToken,
-} from "../services/token";
+import { getOrderIdByToken, getReservationIdByToken } from "../services/token";
 import { ReservationData } from "../types/reservation";
 import { getReservationData } from "../services/reservation";
-import { formatReadableDate } from "../utils/formatReadableDate";
+import { formatReadableDate } from "../utils/date";
 import DottedDivider from "./ui/DottedDivider";
 type OrderStatusScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamLists,
@@ -65,7 +57,6 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
     reservationAmount: 30000,
   });
 
-  // main useEffect:
   useEffect(() => {
     const load = async () => {
       setIsLoading(true);
@@ -120,7 +111,6 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
     load();
   }, []);
 
-  // anim
   useEffect(() => {
     Animated.timing(fadeAnim, {
       toValue: 1,
@@ -135,51 +125,10 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
     }).start();
   }, []);
 
-  // Download function
-  // const downloadImage = async () => {
-  //   try {
-  //     setIsDownloading(true);
-  //     // Step 1: Get email for filename
-  //     const email = await getEmailByToken();
-  //     const emailName = email.split("@")[0];
-  //     const fileName = `QRCode-${emailName}-${Date.now()}.jpg`;
-  //     // Step 2: Use the cacheDirectory constant properly
-  //     const cacheDir = FileSystem.cacheDirectory;
-  //     if (!cacheDir) {
-  //       throw new Error("Cache directory not available");
-  //     }
-  //     const localPath = cacheDir + fileName;
-  //     // Step 3: Download the image from URL to local storage
-  //     const downloadResult = await FileSystem.downloadAsync(
-  //       orderData.QRCodeUrl,
-  //       localPath
-  //     );
-  //     // Step 4: Request media library permissions
-  //     const permission = await MediaLibrary.requestPermissionsAsync();
-  //     if (!permission.granted) {
-  //       Alert.alert(
-  //         "Permission Required",
-  //         "Please allow access to your photo library to save the QR code."
-  //       );
-  //       setIsDownloading(false);
-  //       return;
-  //     }
-  //     // Step 5: Save to photo library
-  //     await MediaLibrary.saveToLibraryAsync(downloadResult.uri);
-  //     Alert.alert("Success!", "QR code has been saved to your photo library.");
-  //     console.log("File saved to:", downloadResult.uri);
-  //   } catch (error) {
-  //     console.log("Download error:", error);
-  //     Alert.alert("Error", "Failed to download QR code. Please try again.");
-  //   } finally {
-  //     setIsDownloading(false);
-  //   }
-  // };
-
   return (
     <>
       {isLoading && Loading("")}
-      <View style={{ width, height, flex: 1, paddingTop: height * 0.06 }}>
+      <View style={{ width, height, flex: 1 }}>
         <MainBackground
           width={width}
           height={height}
@@ -187,34 +136,20 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
           style={{ position: "absolute", top: 0, left: 0 }}
         />
 
-        {/* Header */}
-        <View style={{ paddingHorizontal: width * 0.05, paddingBottom: 15 }}>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-              style={{
-                width: 35,
-                height: 35,
-                justifyContent: "center",
-                alignItems: "center",
-                marginRight: 10,
-              }}
-            >
-              <Text
-                style={{
-                  color: "white",
-                  fontSize: width * 0.09,
-                  fontWeight: "600",
-                }}
-              >
-                ←
-              </Text>
-            </TouchableOpacity>
-
+        <View style={{ paddingHorizontal: width * 0.05 }}>
+          {/* Header */}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              paddingTop: paddingTop,
+              marginBottom: height * 0.03,
+            }}
+          >
             <Text
               style={{
-                color: "white",
-                fontSize: width * 0.08,
+                color: "#FFFFFF",
+                fontSize: width * 0.07,
                 fontWeight: "bold",
               }}
             >
@@ -258,34 +193,6 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
                 }}
                 resizeMode="contain"
               />
-
-              {/* <TouchableOpacity
-                onPress={downloadImage}
-                disabled={isDownloading}
-                style={{
-                  backgroundColor: isDownloading ? "#cccccc" : "white",
-                  paddingVertical: 12,
-                  paddingHorizontal: 40,
-                  borderRadius: 25,
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                {isDownloading ? (
-                  <ActivityIndicator size="small" color="black" />
-                ) : (
-                  <Text
-                    style={{
-                      color: "black",
-                      fontSize: width * 0.04,
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Download QR
-                  </Text>
-                )}
-              </TouchableOpacity> */}
             </View>
           </View>
 
@@ -294,7 +201,7 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
             <Text
               style={{
                 color: "white",
-                fontSize: width * 0.065,
+                fontSize: width * 0.06,
                 fontWeight: "bold",
                 marginBottom: 20,
                 textAlign: "center",
@@ -457,6 +364,7 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
               >
                 <Text
                   style={{
+                    maxWidth: width * 0.7,
                     color: "white",
                     fontSize: width * 0.04,
                     opacity: 0.9,
@@ -477,6 +385,8 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
               </View>
             ))}
 
+            {DottedDivider()}
+
             {/* Total */}
             <View
               style={{
@@ -488,7 +398,7 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
               <Text
                 style={{
                   color: "white",
-                  fontSize: width * 0.045,
+                  fontSize: width * 0.05,
                   fontWeight: "bold",
                 }}
               >
@@ -502,6 +412,61 @@ const OrderStatusScreen: React.FC<Props> = ({ navigation, route }) => {
                 }}
               >
                 ₱ {orderData.total.toFixed(2)}
+              </Text>
+            </View>
+
+            {/* Already Covered */}
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginVertical: 10,
+              }}
+            >
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: width * 0.05,
+                  fontWeight: "bold",
+                }}
+              >
+                Already Covered:
+              </Text>
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: width * 0.045,
+                  fontWeight: "bold",
+                }}
+              >
+                - ₱ {(reservationData.reservationAmount! / 2).toFixed(2)}
+              </Text>
+            </View>
+
+            {/* Payable */}
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: width * 0.05,
+                  fontWeight: "bold",
+                }}
+              >
+                Payable:
+              </Text>
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: width * 0.045,
+                  fontWeight: "bold",
+                }}
+              >
+                ₱ {orderData.total - reservationData.reservationAmount! / 2}
               </Text>
             </View>
           </View>

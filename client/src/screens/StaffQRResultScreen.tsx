@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { width, height } from "../utils/dimensions";
+import { width, height, paddingTop } from "../utils/dimensions";
 
 import AdditionalOrders from "../assets/icons/additional-order.svg";
 import ModalAdditionalOrderIcon from "../assets/icons/modal-additional-order-icon.svg";
@@ -28,7 +28,7 @@ import {
   updateOrderItems,
 } from "../services/order";
 import { assignSecurityId, getReservationData } from "../services/reservation";
-import { formatReadableDate } from "../utils/formatReadableDate";
+import { formatReadableDate } from "../utils/date";
 import Loading from "./ui/Loading";
 import { OrderStatus } from "../types/orders";
 import DottedDivider from "./ui/DottedDivider";
@@ -50,6 +50,7 @@ interface Props {
 }
 
 const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
+  const VAT_PERCENTAGE = 0.12;
   const { orders } = useOrderStore();
   const { qrResult, isValid, additionalOrder } = route.params;
   const [modalVisible, setModalVisible] = useState(false);
@@ -86,7 +87,6 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
 
     const fetchData = async () => {
       try {
-        // example:
         setIsLoading(true);
 
         if (qrIdKey === "reservationId") {
@@ -133,7 +133,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
           throw new Error("Can't insert corresponding data in states");
         }
       } catch (error) {
-        console.log("error in fetching data: ", error);
+        console.log("Can't get the QR data:", error);
       } finally {
         setIsLoading(false);
       }
@@ -159,18 +159,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   }, [qrResult]);
 
-  useEffect(() => {
-    console.log("_______________________________________");
-    console.log("Old Orders:", rawOrderData);
-    console.log("_______________________________________");
-    console.log("Additional Orders:", additionalOrder);
-    console.log("_______________________________________");
-  }, [additionalOrder, orderData]);
-
-  // if it has an additional order:
-
   // functions:
-
   const handleAdditionalOrder = () => {
     setModalVisible(false);
     setIsAddiOrderClicked(false);
@@ -210,14 +199,12 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
       }
       navigation.navigate("StaffQRScannerScreen");
     } catch (error) {
-      console.error("error in handleDone: ", error);
+      console.error("error in handleDone():", error);
     } finally {
       setIsLoading(false);
       setModalVisible(false);
     }
   };
-
-  //
 
   function addAdditionalOrders(originalOrders: any, newOrders: any) {
     const total = originalOrders.total + newOrders.total;
@@ -249,7 +236,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
     const timeOptions: Intl.DateTimeFormatOptions = {
       hour: "2-digit",
       minute: "2-digit",
-      hour12: true, // 12-hour format with AM/PM
+      hour12: true,
     };
 
     const date = now.toLocaleDateString("en-US", dateOptions);
@@ -617,16 +604,31 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
 
       return formatCurrency(calculatedAmount);
     };
+    const calculatedVAT = () => {
+      const baseTotal = orderData.total + (additionalOrder?.total ?? 0);
+      const calculatedAmount = baseTotal * VAT_PERCENTAGE;
+
+      return formatCurrency(calculatedAmount);
+    };
+
+    const calculatedVATable = () => {
+      const baseTotal = orderData.total + (additionalOrder?.total ?? 0);
+      const calculatedVAT = baseTotal * VAT_PERCENTAGE;
+
+      const VATable = baseTotal - calculatedVAT;
+
+      return formatCurrency(VATable);
+    };
 
     return (
       <View style={{ flex: 1 }}>
         {/* Scrollable main content */}
         <ScrollView
           contentContainerStyle={{
-            marginTop: height * 0.1,
+            paddingTop: paddingTop,
             alignItems: "center",
             paddingHorizontal: width * 0.07,
-            paddingBottom: 120,
+            paddingBottom: 15,
           }}
           showsVerticalScrollIndicator={false}
         >
@@ -962,7 +964,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                     paddingBottom: height * 0.02,
                   }}
                 >
-                  Summmary
+                  Summary
                 </Text>
                 {/* total: */}
                 <View
@@ -995,7 +997,6 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                   </Text>
                 </View>
 
-                {/* total: */}
                 <View
                   style={{
                     marginTop: height * 0.012,
@@ -1024,27 +1025,9 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                       marginLeft: 10,
                     }}
                   >
-                    {/* {(reservationData.reservationAmount / 2).toLocaleString(
-                      undefined,
-                      {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      }
-                    )} */}
                     - {formatCurrency(reservationData.reservationAmount / 2)}
                   </Text>
                 </View>
-
-                {/* divider solid line */}
-                <View
-                  style={{
-                    height: width * 0.001, // thickness of the line
-                    alignSelf: "center",
-                    backgroundColor: "rgba(150,150,150,0.6)", // grey with some transparency
-                    width: "100%", // full width
-                    marginVertical: 10, // optional spacing above and below
-                  }}
-                />
 
                 {/* payable*/}
                 <View
@@ -1063,7 +1046,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                       flexWrap: "wrap",
                     }}
                   >
-                    Payable
+                    Customer Payable
                   </Text>
 
                   <Text
@@ -1077,6 +1060,79 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                     {calculatedPayable()}
                   </Text>
                 </View>
+
+                {/* divider solid line */}
+                <View
+                  style={{
+                    height: width * 0.001,
+                    alignSelf: "center",
+                    backgroundColor: "rgba(150,150,150,0.6)",
+                    width: "100%",
+                    marginVertical: 10,
+                  }}
+                />
+
+                {/* VATable */}
+                <View
+                  style={{
+                    flexDirection: "row",
+                    marginBottom: 6,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontWeight: "700",
+                      fontSize: width * 0.047,
+                      flex: 1,
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    VATable
+                  </Text>
+
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontWeight: "700",
+                      fontSize: width * 0.047,
+                      marginLeft: 10,
+                    }}
+                  >
+                    {calculatedVATable()}
+                  </Text>
+                </View>
+
+                {/* VAT*/}
+                <View
+                  style={{
+                    flexDirection: "row",
+                    marginBottom: 6,
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontWeight: "700",
+                      fontSize: width * 0.047,
+                      flex: 1,
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    VAT
+                  </Text>
+
+                  <Text
+                    style={{
+                      color: "#FFFFFF",
+                      fontWeight: "700",
+                      fontSize: width * 0.047,
+                      marginLeft: 10,
+                    }}
+                  >
+                    {calculatedVAT()}
+                  </Text>
+                </View>
               </View>
             </>
           )}
@@ -1085,12 +1141,11 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
         {/* additional order, done  */}
         <View
           style={{
+            paddingTop: 20,
+            paddingBottom: height * 0.03,
             flexDirection: "row",
             paddingHorizontal: height * 0.02,
-            position: "absolute",
-            bottom: height * 0.035,
-            left: width * 0.04,
-            right: width * 0.04,
+
             gap: 12,
           }}
         >
@@ -1137,12 +1192,10 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
     );
   };
 
-  // main jsx return:
   return (
     <>
       {isLoading && Loading("")}
 
-      {/* order handle done modal */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -1208,6 +1261,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
 
               <Text
                 style={{
+                  textAlign: "center",
                   paddingTop: height * 0.02,
                   color: "#fff",
                   fontSize: width * 0.06,
@@ -1219,15 +1273,14 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                   : "Proceed Finalyze Payment"}
               </Text>
 
-              {/* subtext:  */}
               <Text
                 style={{
-                  paddingTop: height * 0.008,
+                  paddingTop: height * 0.01,
                   textAlign: "center",
                   color: "#fff",
                   fontSize: width * 0.04,
                   fontWeight: "200",
-                  marginBottom: height * 0.03,
+                  marginBottom: height * 0.06,
                 }}
               >
                 {isAddiOrderClicked
@@ -1235,7 +1288,6 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
                   : "This action will mark the order as paid and cannot be undone. "}
               </Text>
 
-              {/* Buttons */}
               <View style={{ flexDirection: "row", gap: width * 0.04 }}>
                 {["Cancel", "Yes, Proceed"].map((item, index) => (
                   <Pressable
@@ -1280,16 +1332,14 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
       </Modal>
 
       <View style={{ flex: 1 }}>
-        {/* Background */}
         <MainBackground
-          style={{
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-          }}
+          width={width}
+          height={height}
+          preserveAspectRatio="none"
+          style={{ position: "absolute", top: 0, left: 0 }}
         />
 
-        {isReservationStatusInvalid || isValid == false // para makuha niya yung invalid galinlg sa scanner
+        {isReservationStatusInvalid || isValid == false
           ? reservationInvalid()
           : isValid && qrIdKey === "reservationId"
           ? reservationValid()

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -7,10 +7,9 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
-  LayoutChangeEvent,
   Keyboard,
 } from "react-native";
-import { width, height } from "../utils/dimensions";
+import { width, height, paddingTop } from "../utils/dimensions";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamLists } from "../types/rootStackParamLists";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -73,7 +72,7 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
     )
       return "Drinks";
 
-    return null; // not found
+    return null;
   };
 
   function isOrderExisting(name: string): boolean {
@@ -125,12 +124,12 @@ const OrderHomeScreen: React.FC<Props> = ({ navigation, route }) => {
       <ScrollView
         ref={scrollViewRef}
         style={{ width: "100%" }}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled" // para maclick muna yung content nang di umaalis sa keyboard
+        showsVerticalScrollIndicator={false} //
+        keyboardShouldPersistTaps="handled"
         contentContainerStyle={{ alignItems: "center", paddingBottom: 100 }}
       >
         <View style={styles.content}>
-          <Text style={styles.menuTitle}>Welcome to Tavern Asia!</Text>
+          <Text style={styles.headerTitle}>Welcome to Tavern Asia!</Text>
           {/* search bar */}
           <View style={styles.searchContainer}>
             <SearchIcon width={22} height={22} style={{ marginRight: 1 }} />
@@ -443,33 +442,44 @@ const styles = StyleSheet.create({
     left: 0,
   },
   content: {
+    position: "relative",
     width: "90%",
     alignItems: "center",
-    marginTop: height * 0.08,
+    marginTop: height * 0.02,
   },
   input: {
-    width: "100%",
+    width: width * 0.9,
     backgroundColor: "white",
     color: "#333",
-    padding: 16,
-    borderRadius: 10,
-    marginBottom: 20,
+    paddingVertical: height * 0.02,
+    paddingHorizontal: width * 0.04,
+    borderRadius: width * 0.025,
+    marginBottom: height * 0.025,
     fontSize: width * 0.04,
   },
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#fff",
-    borderRadius: 10,
-    paddingHorizontal: 15,
-    paddingVertical: 4,
-    marginBottom: 20,
+    borderRadius: width * 0.025,
+    paddingHorizontal: width * 0.037,
+    paddingVertical: height * 0.005,
+    marginBottom: height * 0.025,
+    width: width * 0.9,
     elevation: 5,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: height * 0.003 },
     shadowOpacity: 0.2,
-    shadowRadius: 4,
-    width: width * 0.9,
+    shadowRadius: width * 0.01,
+  },
+  headerTitle: {
+    color: "white",
+    fontSize: width * 0.08,
+    fontWeight: "bold",
+    marginBottom: 10,
+    alignSelf: "flex-start",
+    marginLeft: 5,
+    paddingTop: paddingTop,
   },
   menuTitle: {
     color: "white",
@@ -478,6 +488,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     alignSelf: "flex-start",
     marginLeft: 5,
+    // paddingTop: paddingTop,
   },
   menuTtitle: {
     color: "white",
@@ -541,12 +552,12 @@ const styles = StyleSheet.create({
   },
   plusButton: {
     position: "absolute",
-    bottom: 10,
-    left: 115,
+    bottom: height * 0.0125,
+    left: width * 0.3,
     backgroundColor: "#4A0A0A",
-    width: 35,
-    height: 35,
-    borderRadius: 20,
+    width: width * 0.0875,
+    height: width * 0.0875,
+    borderRadius: width * 0.05,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -596,21 +607,21 @@ const styles = StyleSheet.create({
     fontSize: width * 0.04,
     opacity: 0.8,
   },
-  // results:
+
   dropdownContainer: {
-    position: "absolute", // overlay other content
-    marginTop: height * 0.14, // adjust depending on search bar height
-    left: 0, // align with search bar start
+    position: "absolute",
+    marginTop: 160,
+    left: 0,
     backgroundColor: "#fff",
-    borderRadius: 10,
+    borderRadius: width * 0.025,
     elevation: 5,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: height * 0.003 },
     shadowOpacity: 0.2,
-    shadowRadius: 4,
+    shadowRadius: width * 0.01,
     zIndex: 999,
-    paddingVertical: 8,
-    paddingRight: 40,
+    paddingVertical: height * 0.0125,
+    paddingRight: width * 0.1,
     width: width * 0.9,
   },
 

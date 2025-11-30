@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamLists } from "../types/rootStackParamLists";
-import { height, width } from "../utils/dimensions";
+import { height, paddingTop, width } from "../utils/dimensions";
 import {
   View,
   Text,
@@ -14,7 +14,6 @@ import {
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import MainBackground from "../assets/backgrounds/main-background.svg";
 import { useOrderStore } from "../stores/useOrderStore";
-import { createOrder } from "../services/order";
 import Loading from "./ui/Loading";
 import { formatCurrency } from "../utils/formatCurrency";
 
@@ -122,10 +121,6 @@ const AdditionalOrderCartScreen: React.FC<Props> = ({ route, navigation }) => {
         isValid,
         qrResult,
       });
-      //   setIsLoading(true);
-      // const res = await createOrder(orders);
-      // if (!res) return;
-      //   navigation.navigate("StaffHomeScreen");/
     } catch (error) {
     } finally {
       setIsLoading(false);
@@ -217,7 +212,7 @@ const AdditionalOrderCartScreen: React.FC<Props> = ({ route, navigation }) => {
               bottom: 0,
               flexDirection: "row",
               alignItems: "flex-start",
-              paddingTop: height * 0.08,
+              paddingTop: paddingTop,
               paddingHorizontal: width * 0.05,
             }}
           >

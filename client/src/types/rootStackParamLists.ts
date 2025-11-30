@@ -26,7 +26,6 @@ export type RootStackParamLists = {
   OrderStatusScreen: undefined;
   CartScreen: undefined;
 
-  // staff:
   StaffQRScannerScreen: undefined;
   StaffHomeScreen: undefined;
   StaffQRResultScreen: {

@@ -12,8 +12,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Modal,
+  Pressable,
 } from "react-native";
-import { width, height } from "../utils/dimensions";
+import { width, height, paddingTop } from "../utils/dimensions";
 import MainBackground from "../assets/backgrounds/main-background.svg";
 import { RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -45,6 +47,7 @@ const PRICE_PER_PAX_INCLUSIVE = 1000;
 const PRICE_PER_PAX_EXCLUSIVE = 2000;
 
 const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
+  const [modalVisible, setModalVisible] = useState(false);
   const [isGuestInvalid, setIsGuestInvalid] = useState(false);
   const { setReservationData, customerReservationData } = useReservationStore();
   const [firstName, setFirstName] = useState("");
@@ -59,16 +62,47 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
   const [startIndex, setStartIndex] = useState(0);
   const [isUploading, setIsUploading] = useState<boolean>(false);
 
+  const [errors, setErrors] = useState<{
+    firstName: boolean;
+    lastName: boolean;
+    contactNumber: boolean;
+    guests: boolean;
+    schedule: boolean;
+    validId: boolean;
+  }>({
+    firstName: false,
+    lastName: false,
+    contactNumber: false,
+    guests: false,
+    schedule: false,
+    validId: false,
+  });
+
+  const [errorMessages, setErrorMessages] = useState<{
+    firstName: string;
+    lastName: string;
+    contactNumber: string;
+    guests: string;
+    schedule: string;
+    validId: string;
+  }>({
+    firstName: "",
+    lastName: "",
+    contactNumber: "",
+    guests: "",
+    schedule: "",
+    validId: "",
+  });
+
   const today = new Date();
   const reservationTypes = ["Exclusive", "Inclusive"];
   const bookNowDisabled =
-    !firstName ||
-    !lastName ||
-    !contactNumber ||
-    !guests ||
-    !reservationType ||
-    !selectedDate ||
-    !validId;
+    errors.firstName ||
+    errors.lastName ||
+    errors.contactNumber ||
+    errors.guests ||
+    errors.schedule ||
+    errors.validId;
 
   const { maxGuests, minGuests, pricePerPax } = useMemo(() => {
     if (reservationType === "Exclusive") {
@@ -93,6 +127,22 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
     }
   }, [reservationType]);
 
+  useEffect(() => {
+    setGuests(minGuests);
+    setIsGuestInvalid(false);
+    setErrorMessages((prev) => ({ ...prev, guests: "" }));
+
+    if (guests < minGuests) {
+      setGuests(minGuests);
+      setIsGuestInvalid(false);
+      setErrorMessages((prev) => ({ ...prev, guests: "" }));
+    } else if (guests > maxGuests) {
+      setGuests(maxGuests);
+      setIsGuestInvalid(false);
+      setErrorMessages((prev) => ({ ...prev, guests: "" }));
+    }
+  }, [minGuests, maxGuests]);
+
   const totalFee = guests * pricePerPax;
 
   const allDays = Array.from({ length: 14 }, (_, i) => {
@@ -113,7 +163,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
       });
 
       if (result.canceled) {
-        console.log("User cancelled image picking");
         return;
       }
 
@@ -121,7 +170,11 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
 
       const validIdUrl = await uploadImage(imageUri, "validId");
       if (validIdUrl) {
-        console.log("valid id url successfully:", validIdUrl);
+        console.log("Valid id uploaded successfully.");
+        setErrorMessages((prev) => ({
+          ...prev,
+          validId: "",
+        }));
         setValidId(validIdUrl);
         setReservationData({ validIdUrl });
       }
@@ -157,44 +210,106 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
     const monthIndex = months[month.toLowerCase()];
 
     if (monthIndex === undefined) {
-      console.error("Invalid month name:", month);
       return new Date(NaN); // invalid date
     }
 
     const date = new Date(year, monthIndex, day);
-    console.log("CREATE DATE RESULTS:", date);
     return date;
   };
 
-  const handleBookNow = async () => {
-    const email = await getEmailByToken();
+  const validateInputs = () => {
+    let isValid = true;
 
-    const date = createDate(selectedDate!, currentMonth, 2025);
-
-    // container:
-    const reservationData: ReservationData = {
-      email,
-      firstName: capitalizeWords(firstName),
-      lastName: capitalizeWords(lastName),
-      mobileNumber: contactNumber.trim(),
-      reservationType: reservationType.toLowerCase(),
-      date,
-      pax: guests,
-      reservationAmount: totalFee,
+    const newErrorMessages = {
+      firstName: "",
+      lastName: "",
+      contactNumber: "",
+      guests: "",
+      schedule: "",
+      validId: "",
     };
 
-    setReservationData(reservationData);
+    const newErrors = {
+      firstName: false,
+      lastName: false,
+      contactNumber: false,
+      guests: false,
+      schedule: false,
+      validId: false,
+    };
 
-    // navigation:
-    navigation.navigate("BookingSummaryScreen", {
-      name: `${reservationData.firstName}${reservationData.lastName}`,
-      date: reservationData.date?.toISOString()!,
-      guests: reservationData.pax!,
-      reservationType:
-        reservationData.reservationType?.charAt(0).toUpperCase()! +
-        reservationData.reservationType?.slice(1),
-      reservationFee: reservationData.reservationAmount?.toString()!,
-    });
+    if (!firstName.trim()) {
+      newErrorMessages.firstName = "First name cannot be empty";
+      newErrors.firstName = true;
+      isValid = false;
+    }
+
+    if (!lastName.trim()) {
+      newErrorMessages.lastName = "Last name cannot be empty";
+      newErrors.lastName = true;
+      isValid = false;
+    }
+
+    if (!contactNumber || contactNumber.length !== 11) {
+      newErrorMessages.contactNumber = "Enter a valid contact number";
+      newErrors.contactNumber = true;
+      isValid = false;
+    }
+
+    if (!guests || guests < minGuests || guests > maxGuests) {
+      newErrorMessages.guests = `Guests must be between ${minGuests} and ${maxGuests}`;
+      newErrors.guests = true;
+      isValid = false;
+    }
+
+    if (!selectedDate) {
+      newErrorMessages.schedule = "Please select a schedule";
+      newErrors.schedule = true;
+      isValid = false;
+    }
+
+    if (!validId) {
+      newErrorMessages.validId = "Please upload a valid ID";
+      newErrors.validId = true;
+      isValid = false;
+    }
+
+    setErrorMessages(newErrorMessages);
+    setErrors(newErrors);
+
+    return isValid;
+  };
+
+  const handleBookNow = async () => {
+    if (validateInputs()) {
+      const email = await getEmailByToken();
+
+      const date = createDate(selectedDate!, currentMonth, 2025);
+
+      const reservationData: ReservationData = {
+        email,
+        firstName: capitalizeWords(firstName).trimEnd(),
+        lastName: capitalizeWords(lastName).trimStart(),
+        mobileNumber: contactNumber.trim(),
+        reservationType: reservationType.toLowerCase(),
+        date,
+        pax: guests,
+        reservationAmount: totalFee,
+      };
+
+      setReservationData(reservationData);
+
+      navigation.navigate("BookingSummaryScreen", {
+        name: `${reservationData.firstName} ${reservationData.lastName}`,
+        date: reservationData.date?.toISOString()!,
+        guests: reservationData.pax!,
+        reservationType:
+          reservationData.reservationType?.charAt(0).toUpperCase()! +
+          reservationData.reservationType?.slice(1),
+        reservationFee: reservationData.reservationAmount?.toString()!,
+      });
+    } else {
+    }
   };
 
   const handleSelectReservationType = (type: string) => {
@@ -206,8 +321,122 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
     <>
       {isUploading && Loading("Uploading file...")}
 
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Pressable
+            onPress={() => Keyboard.dismiss()}
+            style={{
+              flex: 1,
+              width: "100%",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              justifyContent: "center",
+              alignItems: "center",
+              paddingHorizontal: width * 0.08,
+            }}
+          >
+            <Pressable
+              onPress={() => {}}
+              style={{
+                backgroundColor: "#171717",
+                padding: width * 0.06,
+                borderRadius: width * 0.06,
+                width: "100%",
+                alignItems: "center",
+                paddingBottom: height * 0.04,
+                borderWidth: 1,
+                borderColor: "rgba(255, 255, 255, 0.08)",
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 8 },
+                shadowOpacity: 0.4,
+                shadowRadius: 24,
+                elevation: 16,
+              }}
+            >
+              <Text
+                style={{
+                  textAlign: "center",
+                  paddingTop: height * 0.02,
+                  color: "#fff",
+                  fontSize: width * 0.06,
+                  fontWeight: "bold",
+                  alignSelf: "center",
+                }}
+              >
+                Are you sure you want to exit?
+              </Text>
+
+              <Text
+                style={{
+                  paddingTop: height * 0.02,
+                  textAlign: "center",
+                  color: "#fff",
+                  fontSize: width * 0.04,
+                  fontWeight: "200",
+                  marginBottom: height * 0.07,
+                }}
+              >
+                You have unsaved changes. Exiting now will lose all your
+                progress.
+              </Text>
+
+              <View style={{ flexDirection: "row", gap: width * 0.04 }}>
+                {["Cancel", "Exit"].map((item, index) => (
+                  <Pressable
+                    key={index}
+                    style={({ pressed }) => ({
+                      backgroundColor: index === 0 ? "#FFFF" : "#8A1717",
+                      paddingVertical: height * 0.02,
+                      borderRadius: width * 0.03,
+                      alignItems: "center",
+                      width: width * 0.34,
+                      opacity: pressed ? 0.7 : 1,
+                      transform: [{ scale: pressed ? 0.97 : 1 }],
+                    })}
+                    onPress={() => {
+                      {
+                        if (index === 0) {
+                          setModalVisible(false);
+                        } else if (index === 1) {
+                          setModalVisible(false);
+                          navigation.navigate("HomeScreen");
+                        }
+                      }
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: index === 0 ? "#8A1717" : "#FFFF",
+                        fontSize: width * 0.04,
+                        fontWeight: "600",
+                      }}
+                    >
+                      {item}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            </Pressable>
+          </Pressable>
+        </View>
+      </Modal>
+
       <KeyboardAvoidingView
-        style={{ width, height, flex: 1 }}
+        style={{
+          width,
+          height,
+          flex: 1,
+        }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={0}
       >
@@ -218,42 +447,42 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
           style={{ position: "absolute", top: 0, left: 0 }}
         />
 
-        {/* Header */}
         <View
           style={{
+            paddingHorizontal: width * 0.05,
             flexDirection: "row",
             alignItems: "center",
-            paddingHorizontal: width * 0.05,
-            paddingTop: height * 0.06,
-            paddingBottom: 20,
-            zIndex: 1,
+            paddingTop: paddingTop,
+            marginBottom: height * 0.01,
           }}
         >
           <TouchableOpacity
-            onPress={() => navigation.goBack()}
             style={{
-              width: 35,
-              height: 35,
+              width: width * 0.09,
+              height: width * 0.09,
               justifyContent: "center",
               alignItems: "center",
-              marginRight: 10,
+              marginRight: width * 0.025,
             }}
+            onPress={() => setModalVisible(true)}
           >
-            <Text
+            <View
               style={{
-                color: "white",
-                fontSize: width * 0.09,
-                fontWeight: "600",
+                width: width * 0.035,
+                height: width * 0.035,
+                borderLeftWidth: width * 0.008,
+                borderBottomWidth: width * 0.008,
+                borderColor: "#fff",
+                transform: [{ rotate: "45deg" }],
               }}
-            >
-              ←
-            </Text>
+            />
           </TouchableOpacity>
+
           <Text
             style={{
-              fontSize: width * 0.08,
+              color: "#FFFFFF",
+              fontSize: width * 0.07,
               fontWeight: "bold",
-              color: "white",
             }}
           >
             Reservation
@@ -282,49 +511,138 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
               Enter Your Information
             </Text>
 
-            {/* Input Fields */}
             <View style={{ flexDirection: "row", gap: 12 }}>
-              <TextInput
-                placeholder="First Name"
-                value={firstName}
-                onChangeText={(text) =>
-                  setFirstName(text.replace(/[^a-zA-Z\s]/g, ""))
-                }
-                placeholderTextColor="#999"
-                style={{
-                  flex: 1,
-                  backgroundColor: "white",
-                  borderRadius: 12,
-                  paddingVertical: 16,
-                  paddingHorizontal: 18,
-                  fontSize: width * 0.04,
-                  color: "#000",
-                }}
-              />
-              <TextInput
-                placeholder="Last Name"
-                value={lastName}
-                onChangeText={(text) =>
-                  setLastName(text.replace(/[^a-zA-Z\s]/g, ""))
-                }
-                placeholderTextColor="#999"
-                style={{
-                  flex: 1,
-                  backgroundColor: "white",
-                  borderRadius: 12,
-                  paddingVertical: 16,
-                  paddingHorizontal: 18,
-                  fontSize: width * 0.04,
-                  color: "#000",
-                }}
-              />
+              <View style={{ flex: 1 }}>
+                <TextInput
+                  placeholder="First Name"
+                  value={firstName}
+                  onChangeText={(text) => {
+                    if (text)
+                      setErrorMessages((prev) => ({
+                        ...prev,
+                        firstName: "",
+                      }));
+
+                    if (!text)
+                      setErrorMessages((prev) => ({
+                        ...prev,
+                        firstName: "First name cannot be empty",
+                      }));
+
+                    const cleanedText = text.replace(/[^a-zA-Z\s]/g, "");
+                    setFirstName(cleanedText);
+
+                    setErrors((prev) => ({
+                      ...prev,
+                      firstName: cleanedText.trim() === "",
+                    }));
+                  }}
+                  placeholderTextColor="#999"
+                  style={{
+                    backgroundColor: "white",
+                    borderRadius: 12,
+                    paddingVertical: 16,
+                    paddingHorizontal: 18,
+                    fontSize: width * 0.04,
+                    color: "#000",
+                    borderWidth: errors.firstName ? 2 : 0,
+                    borderColor: errors.firstName ? "red" : "transparent",
+                  }}
+                />
+                {errorMessages.firstName !== "" && (
+                  <Text
+                    style={{
+                      color: "red",
+                      marginTop: 4,
+                      fontSize: width * 0.03,
+                    }}
+                  >
+                    {errorMessages.firstName}
+                  </Text>
+                )}
+              </View>
+
+              <View style={{ flex: 1 }}>
+                <TextInput
+                  placeholder="Last Name"
+                  value={lastName}
+                  onChangeText={(text) => {
+                    if (text)
+                      setErrorMessages((prev) => ({
+                        ...prev,
+                        lastName: "",
+                      }));
+
+                    if (!text)
+                      setErrorMessages((prev) => ({
+                        ...prev,
+                        lastName: "Last name cannot be empty",
+                      }));
+
+                    const cleanedText = text.replace(/[^a-zA-Z\s]/g, "");
+                    setLastName(cleanedText);
+
+                    setErrors((prev) => ({
+                      ...prev,
+                      lastName: cleanedText.trim() === "",
+                    }));
+                  }}
+                  placeholderTextColor="#999"
+                  style={{
+                    backgroundColor: "white",
+                    borderRadius: 12,
+                    paddingVertical: 16,
+                    paddingHorizontal: 18,
+                    fontSize: width * 0.04,
+                    color: "#000",
+                    borderWidth: errors.lastName ? 2 : 0,
+                    borderColor: errors.lastName ? "red" : "transparent",
+                  }}
+                />
+                {errorMessages.lastName !== "" && (
+                  <Text
+                    style={{
+                      color: "red",
+                      marginTop: 4,
+                      fontSize: width * 0.03,
+                    }}
+                  >
+                    {errorMessages.lastName}
+                  </Text>
+                )}
+              </View>
             </View>
 
-            {/* Contact Number */}
             <TextInput
               placeholder="Contact Number"
               value={contactNumber}
-              onChangeText={setContactNumber}
+              onChangeText={(text) => {
+                let numericText = text.replace(/[^0-9]/g, "");
+
+                if (!numericText.startsWith("09")) numericText = "09";
+
+                if (numericText.length > 11)
+                  numericText = numericText.slice(0, 11);
+
+                setContactNumber(numericText);
+
+                let errorMessage = "";
+                let isError = false;
+
+                if (!numericText || numericText === "09") {
+                  errorMessage = "Enter a valid contact number";
+                  isError = true;
+                } else if (numericText.length !== 11) {
+                  errorMessage = "Contact number must be 11 digits";
+                  isError = true;
+                }
+
+                setErrorMessages((prev) => ({
+                  ...prev,
+                  contactNumber: errorMessage,
+                }));
+                setErrors((prev) => ({ ...prev, contactNumber: isError }));
+              }}
               placeholderTextColor="#999"
               keyboardType="phone-pad"
               style={{
@@ -334,10 +652,16 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                 paddingHorizontal: 18,
                 fontSize: width * 0.04,
                 color: "#000",
+                borderWidth: errors.contactNumber ? 2 : 0,
+                borderColor: errors.contactNumber ? "red" : "transparent",
               }}
             />
+            {errorMessages.contactNumber !== "" && (
+              <Text style={{ color: "red", fontSize: width * 0.03 }}>
+                {errorMessages.contactNumber}
+              </Text>
+            )}
 
-            {/* Schedule Picker */}
             <View>
               <Text
                 style={{
@@ -354,8 +678,10 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                   backgroundColor: "rgba(255, 255, 255, 0.1)",
                   borderRadius: 16,
                   padding: 20,
-                  borderWidth: 1,
-                  borderColor: "rgba(255, 255, 255, 0.15)",
+                  borderWidth: errors.schedule ? 1 : 0,
+                  borderColor: errors.schedule
+                    ? "red"
+                    : "rgba(255, 255, 255, 0.15)",
                 }}
               >
                 <View
@@ -375,7 +701,7 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                   >
                     Pick a Schedule
                   </Text>
-                  <TouchableOpacity
+                  <View
                     style={{
                       backgroundColor: "rgba(255, 255, 255, 0.15)",
                       paddingVertical: 8,
@@ -394,10 +720,9 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                     >
                       {currentMonth}
                     </Text>
-                  </TouchableOpacity>
+                  </View>
                 </View>
 
-                {/* Days Carousel */}
                 <View
                   style={{
                     flexDirection: "row",
@@ -430,7 +755,14 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                       .map((day, index) => (
                         <TouchableOpacity
                           key={day.date + index}
-                          onPress={() => setSelectedDate(day.date)}
+                          onPress={() => {
+                            setErrors((prev) => ({ ...prev, schedule: false }));
+                            setErrorMessages((prev) => ({
+                              ...prev,
+                              schedule: "",
+                            }));
+                            setSelectedDate(day.date);
+                          }}
                           style={{
                             flex: 1,
                             alignItems: "center",
@@ -478,15 +810,26 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                   </TouchableOpacity>
                 </View>
               </View>
+
+              {errorMessages.schedule !== "" && (
+                <Text
+                  style={{
+                    color: "red",
+                    marginTop: 4,
+                    fontSize: width * 0.03,
+                  }}
+                >
+                  {errorMessages.schedule}
+                </Text>
+              )}
             </View>
 
-            {/* Reservation Type and Guests */}
             <View style={{ flexDirection: "row", gap: 12 }}>
               <View style={{ flex: 1, zIndex: showDropdown ? 100 : 1 }}>
                 <Text
                   style={{
                     color: "white",
-                    fontSize: width * 0.038,
+                    fontSize: width * 0.035,
                     fontWeight: "500",
                     marginBottom: 8,
                   }}
@@ -526,7 +869,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                   </Text>
                 </TouchableOpacity>
 
-                {/* Overlay behind dropdown */}
                 {showDropdown && (
                   <TouchableOpacity
                     style={{
@@ -543,7 +885,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                   />
                 )}
 
-                {/* Dropdown List */}
                 {showDropdown && (
                   <View
                     style={{
@@ -595,12 +936,11 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                 )}
               </View>
 
-              {/* Guests */}
               <View style={{ flex: 1 }}>
                 <Text
                   style={{
                     color: "white",
-                    fontSize: width * 0.038,
+                    fontSize: width * 0.035,
                     fontWeight: "500",
                     marginBottom: 8,
                   }}
@@ -609,22 +949,42 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                 </Text>
 
                 <TextInput
-                  value={guests.toString()}
+                  value={guests.toString() || minGuests.toString()}
                   onChangeText={(text) => {
+                    if (!text) setGuests(minGuests);
                     const numericValue = text.replace(/[^0-9]/g, "");
+
                     if (numericValue === "") {
                       setGuests(0);
                       setIsGuestInvalid(true);
+                      setErrorMessages((prev) => ({
+                        ...prev,
+                        guests: "Guests cannot be empty",
+                      }));
                       return;
                     }
 
                     const newGuests = parseInt(numericValue);
                     setGuests(newGuests);
 
-                    if (newGuests < minGuests || newGuests > maxGuests) {
+                    if (newGuests < minGuests) {
                       setIsGuestInvalid(true);
+                      setErrorMessages((prev) => ({
+                        ...prev,
+                        guests: `Minimum guests is ${minGuests}`,
+                      }));
+                    } else if (newGuests > maxGuests) {
+                      setIsGuestInvalid(true);
+                      setErrorMessages((prev) => ({
+                        ...prev,
+                        guests: `Maximum guests is ${maxGuests}`,
+                      }));
                     } else {
                       setIsGuestInvalid(false);
+                      setErrorMessages((prev) => ({
+                        ...prev,
+                        guests: "",
+                      }));
                     }
                   }}
                   keyboardType="numeric"
@@ -639,15 +999,26 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                       ? "red"
                       : "rgba(255, 255, 255, 0.2)",
                     color: "white",
-                    fontSize: width * 0.045,
+                    fontSize: width * 0.038,
                     fontWeight: "600",
                     textAlign: "center",
                   }}
                 />
+
+                {errorMessages.guests !== "" && (
+                  <Text
+                    style={{
+                      color: "red",
+                      marginTop: 4,
+                      fontSize: width * 0.03,
+                    }}
+                  >
+                    {errorMessages.guests}
+                  </Text>
+                )}
               </View>
             </View>
 
-            {/* Reservation Fee */}
             <View
               style={{
                 flexDirection: "row",
@@ -681,7 +1052,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
               </Text>
             </View>
 
-            {/* Upload Section */}
             <View
               style={{
                 flexDirection: "row",
@@ -700,38 +1070,56 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                   Upload One (1) Valid ID
                 </Text>
               </View>
-              <TouchableOpacity
-                onPress={handleUpload}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  backgroundColor: validId
-                    ? "rgba(0, 200, 100, 0.2)"
-                    : "rgba(255, 255, 255, 0.1)",
-                  borderRadius: 12,
-                  paddingVertical: 12,
-                  paddingHorizontal: width * 0.06,
-                  borderWidth: 1,
-                  borderColor: validId
-                    ? "rgba(0, 255, 100, 0.4)"
-                    : "rgba(255, 255, 255, 0.2)",
-                }}
-              >
-                <Text
+
+              <View style={{ flex: 1 }}>
+                <TouchableOpacity
+                  onPress={() => {
+                    handleUpload();
+                    setErrors((prev) => ({ ...prev, validId: false }));
+                  }}
                   style={{
-                    color: "white",
-                    fontSize: width * 0.038,
-                    fontWeight: "500",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: validId
+                      ? "rgba(0, 200, 100, 0.2)"
+                      : "rgba(255, 255, 255, 0.1)",
+                    borderRadius: 12,
+                    paddingVertical: 12,
+                    paddingHorizontal: width * 0.06,
+                    borderWidth: errors.validId ? 1 : 0,
+                    borderColor: errors.validId
+                      ? "red"
+                      : validId
+                      ? "rgba(0, 200, 100, 0.2)"
+                      : "transparent",
                   }}
                 >
-                  {validId ? "File Uploaded" : "Browse File"}
-                </Text>
-              </TouchableOpacity>
+                  <Text
+                    style={{
+                      color: "white",
+                      fontSize: width * 0.038,
+                      fontWeight: "500",
+                    }}
+                  >
+                    {validId ? "File Uploaded" : "Browse File"}
+                  </Text>
+                </TouchableOpacity>
+                {errorMessages.validId !== "" && (
+                  <Text
+                    style={{
+                      color: "red",
+                      marginTop: 4,
+                      fontSize: width * 0.03,
+                    }}
+                  >
+                    {errorMessages.validId}
+                  </Text>
+                )}
+              </View>
             </View>
 
-            {/* Book Now */}
             <TouchableOpacity
-              disabled={bookNowDisabled}
               onPress={handleBookNow}
               style={[
                 {
@@ -741,7 +1129,6 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                   alignItems: "center",
                   marginTop: 20,
                 },
-                bookNowDisabled && { opacity: 0.5 },
               ]}
             >
               <Text

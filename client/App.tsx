@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import { Platform, View } from "react-native";
+
 import HomeScreen from "./src/screens/HomeScreen";
 import ReservationScreen from "./src/screens/ReservationScreen";
 import ReservationPaymentScreen from "./src/screens/ReservationPaymentScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { RootStackParamLists } from "./src/types/rootStackParamLists";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { navigationRef } from "./navigationRef";
 import WelcomeScreen from "./src/screens/WelcomeScreen";
@@ -16,9 +18,8 @@ import CustomizationScreen from "./src/screens/CustomizationScreen";
 import OrderHomeScreen from "./src/screens/OrderHomeScreen";
 import OrderStatusScreen from "./src/screens/OrderStatusScreen";
 import CartScreen from "./src/screens/CartScreen";
-import { checkToken, updateToken } from "./src/services/token";
+import { checkToken } from "./src/services/token";
 import { useFonts } from "expo-font";
-import { deleteToken, getToken, getTokenInformation } from "./src/utils/token";
 import ReservationStatusScreen from "./src/screens/ReservationStatusScreen";
 import StaffHomeScreen from "./src/screens/StaffHomeScreen";
 import StaffQRScannerScreen from "./src/screens/StaffQRScannerScreen";
@@ -26,6 +27,8 @@ import StaffQRResultScreen from "./src/screens/StaffQRResultScreen";
 import AdditionalOrderHomeScreen from "./src/screens/AdditionalOrderHomeScreen";
 import AdditionalOrderCustomizationScreen from "./src/screens/AdditionalOrderCustomizationScreen";
 import AdditionalOrderCartScreen from "./src/screens/AdditionalOrderCartScreen";
+import { StatusBar } from "react-native";
+import { deleteToken } from "./src/utils/token";
 
 const App = () => {
   const [fontsLoaded] = useFonts({
@@ -34,111 +37,123 @@ const App = () => {
     Poppins: require("./src/assets/fonts/Poppins-Regular.ttf"),
     "Poppins-Bold": require("./src/assets/fonts/Poppins-Bold.ttf"),
     "Poppins-ExtraBoldItalic": require("./src/assets/fonts/Poppins-ExtraBoldItalic.ttf"),
-
     "Poppins-Italic": require("./src/assets/fonts/Poppins-Italic.ttf"),
   });
 
   useEffect(() => {
     const verifyToken = async () => {
       // await deleteToken();
-      // await updateToken({ orderId: "752a6f8a-1c7f-4294-8649-b8a2b8bce249" });
-      // await updateToken({
-      //   reservationId: "469df6cd-d3f4-4e74-9655-2aa1aeffa3a2",
-      // });
-      // await updateToken({ orderId: null });
       await checkToken();
     };
-
     verifyToken();
   }, []);
 
   const Stack = createNativeStackNavigator<RootStackParamLists>();
 
+  // to avoid the status bar in androind ONLY
+  const AppWrapper: React.FC<{ children: React.ReactNode }> = ({
+    children,
+  }) => {
+    return (
+      <View
+        style={{
+          flex: 1,
+          paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+        }}
+      >
+        {children}
+      </View>
+    );
+  };
+
   return (
     <SafeAreaProvider>
-      <NavigationContainer ref={navigationRef}>
-        <Stack.Navigator
-          initialRouteName="WelcomeScreen"
-          screenOptions={{ headerShown: false, animation: "none" }}
-        >
-          <Stack.Screen
-            name="CustomizationScreen"
-            component={CustomizationScreen}
-          />
-          <Stack.Screen
-            name="MenuViewingScreen"
-            component={MenuViewingScreen}
-          />
+      <AppWrapper>
+        <StatusBar translucent barStyle="light-content" />
 
-          <Stack.Screen name="HomeScreen" component={HomeScreen} />
+        <NavigationContainer ref={navigationRef}>
+          <Stack.Navigator
+            initialRouteName="WelcomeScreen"
+            screenOptions={{ headerShown: false, animation: "none" }}
+          >
+            <Stack.Screen
+              name="CustomizationScreen"
+              component={CustomizationScreen}
+            />
+            <Stack.Screen
+              name="MenuViewingScreen"
+              component={MenuViewingScreen}
+            />
 
-          <Stack.Screen
-            name="ReservationScreen"
-            component={ReservationScreen}
-          />
-          <Stack.Screen
-            name="ReservationPaymentScreen"
-            component={ReservationPaymentScreen}
-          />
-          <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
+            <Stack.Screen name="HomeScreen" component={HomeScreen} />
 
-          <Stack.Screen
-            name="EmailVerificationScreen"
-            component={EmailVerificationScreen}
-          />
+            <Stack.Screen
+              name="ReservationScreen"
+              component={ReservationScreen}
+            />
+            <Stack.Screen
+              name="ReservationPaymentScreen"
+              component={ReservationPaymentScreen}
+            />
+            <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
 
-          <Stack.Screen
-            name="OrderPolicyScreen"
-            component={OrderPolicyScreen}
-          />
+            <Stack.Screen
+              name="EmailVerificationScreen"
+              component={EmailVerificationScreen}
+            />
 
-          <Stack.Screen name="CartScreen" component={CartScreen} />
+            <Stack.Screen
+              name="OrderPolicyScreen"
+              component={OrderPolicyScreen}
+            />
 
-          <Stack.Screen name="OrderHomeScreen" component={OrderHomeScreen} />
+            <Stack.Screen name="CartScreen" component={CartScreen} />
 
-          <Stack.Screen
-            name="ReservationStatusScreen"
-            component={ReservationStatusScreen}
-          />
+            <Stack.Screen name="OrderHomeScreen" component={OrderHomeScreen} />
 
-          <Stack.Screen
-            name="BookingSummaryScreen"
-            component={BookingSummaryScreen}
-          />
+            <Stack.Screen
+              name="ReservationStatusScreen"
+              component={ReservationStatusScreen}
+            />
 
-          <Stack.Screen
-            name="OrderStatusScreen"
-            component={OrderStatusScreen}
-          />
+            <Stack.Screen
+              name="BookingSummaryScreen"
+              component={BookingSummaryScreen}
+            />
 
-          {/* Staff Screens */}
+            <Stack.Screen
+              name="OrderStatusScreen"
+              component={OrderStatusScreen}
+            />
 
-          <Stack.Screen name="StaffHomeScreen" component={StaffHomeScreen} />
-          <Stack.Screen
-            name="StaffQRScannerScreen"
-            component={StaffQRScannerScreen}
-          />
-          <Stack.Screen
-            name="StaffQRResultScreen"
-            component={StaffQRResultScreen}
-          />
+            {/* Staff Screens */}
+            <Stack.Screen name="StaffHomeScreen" component={StaffHomeScreen} />
+            <Stack.Screen
+              name="StaffQRScannerScreen"
+              component={StaffQRScannerScreen}
+            />
+            <Stack.Screen
+              name="StaffQRResultScreen"
+              component={StaffQRResultScreen}
+            />
 
-          <Stack.Screen
-            name="AdditionalOrderHomeScreen"
-            component={AdditionalOrderHomeScreen}
-          />
+            <Stack.Screen
+              name="AdditionalOrderHomeScreen"
+              component={AdditionalOrderHomeScreen}
+            />
 
-          <Stack.Screen
-            name="AdditionalOrderCustomizationScreen"
-            component={AdditionalOrderCustomizationScreen}
-          />
+            <Stack.Screen
+              name="AdditionalOrderCustomizationScreen"
+              component={AdditionalOrderCustomizationScreen}
+            />
 
-          <Stack.Screen
-            name="AdditionalOrderCartScreen"
-            component={AdditionalOrderCartScreen}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
+            <Stack.Screen
+              name="AdditionalOrderCartScreen"
+              component={AdditionalOrderCartScreen}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </AppWrapper>
     </SafeAreaProvider>
   );
 };

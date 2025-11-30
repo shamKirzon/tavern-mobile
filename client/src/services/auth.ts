@@ -5,12 +5,11 @@ export const registerEmail = async (email: string) => {
   try {
     const res = await axiosInstance.post("/customer/register-email", { email });
 
-    if (!res) return console.log("no created token");
-    console.log("Email Successfully Verified");
+    if (!res) return console.log("Can't register email");
     await saveToken(res.data);
     return res.data;
   } catch (error: any) {
-    console.log("registerEmail error: ", error);
+    console.log("Error in registerEmail():", error);
   }
 };
 
@@ -19,7 +18,7 @@ export const generateOtp = async (email: string) => {
     const res = await axiosInstance.post("/auth/otp/send-otp", {
       email,
     });
-    console.log("GENERATED OTP FROM BACKEND: ", res.data.otp);
+    console.log("Generated OTP:", res.data.otp);
   } catch (error) {
     console.error("services/auth.ts/generateOtp: ", error);
   }

@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamLists } from "../types/rootStackParamLists";
-import { height, width } from "../utils/dimensions";
+import { height, paddingTop, width } from "../utils/dimensions";
 import {
   View,
   Text,
@@ -181,6 +181,7 @@ const CartScreen: React.FC<Props> = ({ route, navigation }) => {
           <Animated.View
             style={[s.headerDarkOverlay, { opacity: headerBackgroundOpacity }]}
           />
+
           <View style={s.headerOverlay}>
             <TouchableOpacity
               style={s.backButton}
@@ -355,7 +356,7 @@ const s = StyleSheet.create({
     bottom: 0,
     flexDirection: "row",
     alignItems: "flex-start",
-    paddingTop: 60,
+    paddingTop: paddingTop,
     paddingHorizontal: 20,
   },
   backButton: { marginRight: 15 },
