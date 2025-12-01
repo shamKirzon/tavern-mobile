@@ -419,7 +419,7 @@ const AdditionalOrderCartScreen: React.FC<Props> = ({ route, navigation }) => {
                           <Text
                             style={{ fontSize: width * 0.03, color: "#fff" }}
                           >
-                            🗑
+                            Delete
                           </Text>
                         </TouchableOpacity>
                       </View>
@@ -431,6 +431,7 @@ const AdditionalOrderCartScreen: React.FC<Props> = ({ route, navigation }) => {
                     >
                       <Text
                         style={{
+                          paddingLeft: width * 0.05,
                           fontSize: width * 0.04,
                           fontWeight: "600",
                           color: "#fff",

@@ -246,7 +246,7 @@ const CartScreen: React.FC<Props> = ({ route, navigation }) => {
                           style={s.deleteButton}
                           onPress={() => removeItem(item.orderName)}
                         >
-                          <Text style={s.buttonText}>🗑</Text>
+                          <Text style={s.buttonText}>Delete</Text>
                         </TouchableOpacity>
                       </View>
                     </View>
