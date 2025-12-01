@@ -10,7 +10,7 @@ import {
   Platform,
   StatusBar,
 } from "react-native";
-import { width, height } from "../utils/dimensions";
+import { width, height, paddingTop } from "../utils/dimensions";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamLists } from "../types/rootStackParamLists";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -118,7 +118,6 @@ const MenuViewingScreen: React.FC<Props> = ({ navigation, route }) => {
         width,
         height,
         flex: 1,
-        paddingTop: Platform.OS === "ios" ? height * 0.06 : 0,
       }}
     >
       <MainBackground
@@ -135,58 +134,44 @@ const MenuViewingScreen: React.FC<Props> = ({ navigation, route }) => {
       {/* Header */}
       <View
         style={{
+          flexDirection: "row",
+          alignItems: "center",
+          paddingTop: paddingTop,
+          marginBottom: height * 0.01,
           paddingHorizontal: width * 0.05,
-          paddingBottom: height * 0.025,
         }}
       >
-        <View
+        <TouchableOpacity
           style={{
-            flexDirection: "row",
+            width: width * 0.09,
+            height: width * 0.09,
+            justifyContent: "center",
             alignItems: "center",
+            marginRight: width * 0.025,
+          }}
+          onPress={() => navigation?.goBack?.()}
+        >
+          <View
+            style={{
+              width: width * 0.035,
+              height: width * 0.035,
+              borderLeftWidth: width * 0.008,
+              borderBottomWidth: width * 0.008,
+              borderColor: "#fff",
+              transform: [{ rotate: "45deg" }],
+            }}
+          />
+        </TouchableOpacity>
+
+        <Text
+          style={{
+            color: "#FFFFFF",
+            fontSize: width * 0.07,
+            fontWeight: "bold",
           }}
         >
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={{
-              width: width * 0.09,
-              height: width * 0.09,
-              justifyContent: "center",
-              alignItems: "center",
-              marginRight: width * 0.025,
-            }}
-          >
-            <Text
-              style={{
-                color: "white",
-                fontSize: width * 0.08,
-                fontWeight: "600",
-                textAlign: "center",
-              }}
-            >
-              ←
-            </Text>
-          </TouchableOpacity>
-
-          <Text
-            style={{
-              color: "white",
-              fontSize: width * 0.08,
-              fontWeight: "bold",
-            }}
-          >
-            {category}
-          </Text>
-        </View>
-
-        {/* Line divider under header */}
-        <View
-          style={{
-            height: width * 0.002,
-            backgroundColor: "white",
-            opacity: 0.3,
-            marginTop: height * 0.04,
-          }}
-        />
+          {category}
+        </Text>
       </View>
 
       {category === "Drinks" ? (
