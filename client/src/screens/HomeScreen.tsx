@@ -132,7 +132,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     fetchData();
   }, []);
 
-  // handle reservation status
+  // handles reservation status
   useEffect(() => {
     handleStatus();
   }, [hasEmail, hasReservation, hasOrder]);

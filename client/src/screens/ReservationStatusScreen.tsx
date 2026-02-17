@@ -457,7 +457,9 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
   return (
     <>
       {reservationStatus === "accepted" && displayOrderPolicy()}
-      {reservationStatus !== "accepted" && (
+
+      {/* Status -  | Rejected | Done | Cancelled  */}
+      {reservationStatus !== "accepted" && reservationStatus !== "pending" && (
         <View style={{ width, height, flex: 1 }}>
           <MainBackground
             width={width}
@@ -592,6 +594,61 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
                 Back to home
               </Text>
             </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
+      {/* Status - Pending */}
+      {reservationStatus == "pending" && (
+        <View style={{ width, height, flex: 1 }}>
+          <MainBackground
+            width={width}
+            height={height}
+            preserveAspectRatio="none"
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+            }}
+          />
+
+          <View
+            style={{
+              flex: 1,
+              padding: width * 0.05,
+              paddingTop: paddingTop,
+              justifyContent: "space-between",
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: height * 0.01,
+              }}
+            >
+              <Text
+                style={{
+                  paddingLeft: width * 0.035,
+                  color: "#FFFFFF",
+                  fontSize: width * 0.07,
+                  fontWeight: "bold",
+                }}
+              >
+                Reservation Status
+              </Text>
+
+              <Text
+                style={{
+                  paddingLeft: width * 0.035,
+                  color: "#FFFFFF",
+                  fontSize: width * 0.07,
+                  fontWeight: "bold",
+                }}
+              >
+                Pending ito nyahhah
+              </Text>
+            </View>
           </View>
         </View>
       )}

@@ -21,7 +21,7 @@ class AuthController {
     try {
       const { decodedToken } = req.body;
       if (!decodedToken)
-        return res.status(400).json({ message: "it must have a content " });
+        return res.status(400).json({ message: "It must have a content " });
 
       const token = await authService.generateToken(decodedToken);
       res.status(200).json({ token });
