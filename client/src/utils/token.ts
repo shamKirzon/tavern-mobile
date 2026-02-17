@@ -67,10 +67,10 @@ export const refreshToken = async () => {
 
     console.info("\n");
     console.info("Token Refreshed Succesfully");
-    console.info("Current Email:", decodedToken.email);
-    console.info("Current Reservation Id:", decodedToken.reservationId);
-    console.info("Current Order Id:", decodedToken.orderId);
-    console.info("Current Employee Id:", decodedToken.employeeId);
+    // console.info("Current Email:", decodedToken.email);
+    // console.info("Current Reservation Id:", decodedToken.reservationId);
+    // console.info("Current Order Id:", decodedToken.orderId);
+    // console.info("Current Employee Id:", decodedToken.employeeId);
 
     const res = await axiosInstance.post("/auth/token/refresh", {
       decodedToken,
