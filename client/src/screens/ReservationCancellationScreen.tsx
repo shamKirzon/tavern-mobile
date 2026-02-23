@@ -15,6 +15,11 @@ import InfoIcon from "../assets/images/info.svg";
 import { reservationCancellationTermsAndConditions } from "../data/rulesAndCondition";
 import CollapsibleDropdown from "./ui/CollapsibleDropdown";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { createCancellation } from "../services/cancellation";
+import { getReservationIdByToken, updateToken } from "../services/token";
+import { getToken, getTokenInformation } from "../utils/token";
+import { getReservationData } from "../services/reservation";
+import { formatReadableDate } from "../utils/date";
 
 type ReservationCancellationScreenRouteProp = RouteProp<
   RootStackParamLists,
@@ -31,6 +36,15 @@ interface Props {
   navigation: ReservationCancellationScreenNavigationProp;
 }
 
+type ReservationInfo = {
+  name: string;
+  reservationAmount: string;
+  reservationType: string;
+  reservationStatus: string;
+  pax: number;
+  date: string;
+};
+
 const ReservationCancellationScreen: React.FC<Props> = ({
   navigation,
   route,
@@ -45,10 +59,17 @@ const ReservationCancellationScreen: React.FC<Props> = ({
 
   const [isRead, setIsRead] = useState<boolean>();
   const [isConfirmed, setIsConfirmed] = useState<boolean>();
-  const [otherReasonNote, setOtherReasonNote] = useState<string>();
+  const [otherReasonNote, setOtherReasonNote] = useState<string>("");
   const [notes, setNotes] = useState<string>();
-
   const [selectedReason, setSelectedReason] = useState<string>();
+  const [reservationInfo, setReservationInfo] = useState<ReservationInfo>({
+    name: "",
+    reservationAmount: "",
+    reservationType: "",
+    reservationStatus: "",
+    pax: 0,
+    date: "",
+  });
 
   const checkCompleted = isRead && isConfirmed;
 
@@ -57,15 +78,60 @@ const ReservationCancellationScreen: React.FC<Props> = ({
     setOtherReasonNote("");
   }, [selectedReason]);
 
-  // Functions:
-  const handleCancellation = () => {
-    const data = {
-      reason: selectedReason,
-      otherReasonNote,
-      notes,
+  // fetch reservation information.
+  useEffect(() => {
+    const fetchData = async () => {
+      const reservationId = await getReservationIdByToken();
+
+      if (!reservationId) return;
+
+      const reservationData = await getReservationData(reservationId);
+
+      if (!reservationData || reservationData.length === 0) return;
+
+      const {
+        first_name: firstName,
+        last_name: lastName,
+        reservation_amount: reservationAmount,
+        reservation_type: reservationType,
+        reservation_status: reservationStatus,
+        pax,
+        date,
+      } = reservationData[0];
+
+      setReservationInfo({
+        name: `${firstName} ${lastName}`,
+        reservationAmount: `${reservationAmount.toLocaleString()} PHP`,
+        reservationType:
+          reservationType.charAt(0).toUpperCase() + reservationType.slice(1),
+        reservationStatus: reservationStatus,
+        pax,
+        date: formatReadableDate(date),
+      });
     };
 
-    console.info(data);
+    fetchData();
+  }, []);
+
+  // Functions:
+  const handleCancellation = async () => {
+    const finalReason =
+      selectedReason === "Other"
+        ? otherReasonNote.trim() || "Other"
+        : selectedReason;
+
+    const cancellationData = {
+      reservationId: await getReservationIdByToken(),
+      reason: finalReason,
+      notes: notes?.trim(),
+    };
+
+    const reservationCancellationId =
+      await createCancellation(cancellationData);
+    if (!reservationCancellationId) return;
+
+    await updateToken({ reservationCancellationId });
+    // navigation.navigate("HomeScreen");
   };
   return (
     <View style={{ flex: 1 }}>
@@ -156,7 +222,7 @@ const ReservationCancellationScreen: React.FC<Props> = ({
                     fontWeight: "700",
                   }}
                 >
-                  Shams
+                  {reservationInfo.name}
                 </Text>
               </View>
 
@@ -177,7 +243,7 @@ const ReservationCancellationScreen: React.FC<Props> = ({
                     fontWeight: "700",
                   }}
                 >
-                  Basta Date ito
+                  {reservationInfo.date}
                 </Text>
               </View>
 
@@ -198,7 +264,7 @@ const ReservationCancellationScreen: React.FC<Props> = ({
                     fontWeight: "700",
                   }}
                 >
-                  Inclusive Kunwari
+                  {reservationInfo.reservationType}
                 </Text>
               </View>
 
@@ -219,7 +285,7 @@ const ReservationCancellationScreen: React.FC<Props> = ({
                     fontWeight: "700",
                   }}
                 >
-                  sampu
+                  {reservationInfo.pax}
                 </Text>
               </View>
 
@@ -240,7 +306,7 @@ const ReservationCancellationScreen: React.FC<Props> = ({
                     fontWeight: "700",
                   }}
                 >
-                  10000 PHP
+                  {reservationInfo.reservationAmount}
                 </Text>
               </View>
             </View>

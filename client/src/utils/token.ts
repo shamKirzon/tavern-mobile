@@ -5,6 +5,7 @@ import { jwtDecode } from "jwt-decode";
 import { TOKEN_SECRET_KEY } from "@env";
 import { axiosInstance } from "../api/axiosInstance";
 import { TokenPayLoad } from "../types/token";
+import { reservationCancellationTermsAndConditions } from "../data/rulesAndCondition";
 
 export const saveToken = async (token: any) => {
   try {
@@ -36,6 +37,7 @@ export const getTokenInformation = async () => {
     reservationId: decodedToken.reservationId,
     orderId: decodedToken.orderId,
     employeeId: decodedToken.employeeId,
+    reservationCancellationId: decodedToken.reservationCancellationId,
     id: decodedToken.jti,
   };
 };
