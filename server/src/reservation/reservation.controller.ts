@@ -50,9 +50,8 @@ class ReservationController {
       if (!reservationId)
         return res.status(400).json({ message: "must have reservation id" });
 
-      const status = await reservationService.getReservationStatus(
-        reservationId
-      );
+      const status =
+        await reservationService.getReservationStatus(reservationId);
 
       if (!status)
         return res
@@ -63,7 +62,7 @@ class ReservationController {
     } catch (error: any) {
       console.log(
         "Error in reservationController/createReservation(): ",
-        error
+        error,
       );
       return res.status(400).json({ message: "can't get reservation status" });
     }
@@ -76,9 +75,8 @@ class ReservationController {
       if (!reservationId)
         return res.status(400).json({ message: "must have reservation id" });
 
-      const amount = await reservationService.getReservationAmount(
-        reservationId
-      );
+      const amount =
+        await reservationService.getReservationAmount(reservationId);
 
       if (!amount)
         return res
@@ -89,7 +87,7 @@ class ReservationController {
     } catch (error: any) {
       console.log(
         "Error in reservationController/getReservationTotal(): ",
-        error
+        error,
       );
       return res.status(400).json({ message: "can't get reservation total" });
     }
@@ -123,7 +121,7 @@ class ReservationController {
 
       const result = await reservationService.assignSecurityId(
         employeeId,
-        reservationId
+        reservationId,
       );
 
       if (!result)
@@ -134,6 +132,36 @@ class ReservationController {
       return res
         .status(200)
         .json({ message: "assigned employee id successfully!", result });
+    } catch (error: any) {
+      console.log("reservationController/getReservationTotal(): ", error);
+      return res
+        .status(400)
+        .json({ message: "can't perform assigning employee id " });
+    }
+  }
+
+  async createCancellation(req: Request, res: Response) {
+    try {
+      const { reservationId, reason, notes } = req.body;
+
+      if (!reservationId || !reason || !notes)
+        return res.status(400).json({ message: "Incomplete data." });
+
+      const result = await reservationService.createCancellation(
+        reservationId,
+        reason,
+        notes,
+      );
+
+      if (!result) {
+        return res
+          .status(400)
+          .json({ message: "Failed to create cancellation" });
+      }
+
+      return res
+        .status(201)
+        .json({ message: "Created Cancellation Successfully", result });
     } catch (error: any) {
       console.log("reservationController/getReservationTotal(): ", error);
       return res

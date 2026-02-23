@@ -73,7 +73,7 @@ const App = () => {
 
         <NavigationContainer ref={navigationRef}>
           <Stack.Navigator
-            initialRouteName="ReservationCancellationScreen"
+            initialRouteName="HomeScreen"
             screenOptions={{ headerShown: false, animation: "none" }}
           >
             <Stack.Screen
@@ -84,6 +84,7 @@ const App = () => {
               name="MenuViewingScreen"
               component={MenuViewingScreen}
             />
+
             <Stack.Screen
               name="ReservationCancellationScreen"
               component={ReservationCancellationScreen}

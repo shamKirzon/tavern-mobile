@@ -49,7 +49,7 @@ class ReservationRepository {
       if (error)
         return console.log(
           "Query failed in reservationRepository/createReservation()",
-          error
+          error,
         );
 
       return data;
@@ -118,6 +118,33 @@ class ReservationRepository {
       return data;
     } catch (error) {
       console.log("Error in reservationRepository/assignSecurityId ", error);
+    }
+  }
+
+  async createCancellation(
+    reservationId: string,
+    reason: string,
+    notes: string,
+  ) {
+    try {
+      const { data, error } = await supabase
+        .from("reservation_cancellations")
+        .insert([{ reservation_id: reservationId, reason, notes }])
+        .select()
+        .single();
+
+      if (error)
+        return console.log(
+          "Query failed in reservationRepository/createCancellation()",
+          error,
+        );
+
+      return data;
+    } catch (error) {
+      console.log(
+        "Error in reservationRepository/createCancellation() ",
+        error,
+      );
     }
   }
 }

@@ -20,29 +20,43 @@ class ReservationService {
 
   async getReservationStatus(reservationId: string): Promise<any> {
     try {
-      const status = await reservationRepository.getReservationStatus(
-        reservationId
-      );
+      const status =
+        await reservationRepository.getReservationStatus(reservationId);
       return status?.reservation_status;
     } catch (error) {}
   }
   async getReservationAmount(reservationId: string): Promise<any> {
     try {
-      const amount = await reservationRepository.getReservationAmount(
-        reservationId
-      );
+      const amount =
+        await reservationRepository.getReservationAmount(reservationId);
       return amount?.reservation_amount;
     } catch (error) {}
   }
 
   async assignSecurityId(
     employeeId: string,
-    reservationId: string
+    reservationId: string,
   ): Promise<any> {
     try {
       const result = await reservationRepository.assignSecurityId(
         employeeId,
-        reservationId
+        reservationId,
+      );
+
+      return result;
+    } catch (error) {}
+  }
+
+  async createCancellation(
+    reservationId: string,
+    reason: string,
+    notes: string,
+  ): Promise<any> {
+    try {
+      const result = await reservationRepository.createCancellation(
+        reservationId,
+        reason,
+        notes,
       );
 
       return result;

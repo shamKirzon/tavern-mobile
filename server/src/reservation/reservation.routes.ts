@@ -6,34 +6,39 @@ const reservationRoutes = Router();
 
 reservationRoutes.post(
   "/create-reservation",
-  reservationController.createReservation
+  reservationController.createReservation,
 );
 
 reservationRoutes.get(
   "/get-reservation-data/:reservationId",
-  reservationController.getReservationData
+  reservationController.getReservationData,
 );
 
 reservationRoutes.get(
   "/get-reservation-status/:reservationId",
-  reservationController.getReservationStatus
+  reservationController.getReservationStatus,
 );
 
 reservationRoutes.get(
   "/get-reservation-amount/:reservationId",
-  reservationController.getReservationAmount
+  reservationController.getReservationAmount,
 );
 
 reservationRoutes.post(
   "/assign-security-id",
-  reservationController.assignSecurityId
+  reservationController.assignSecurityId,
 );
 
 // for contentType: multipart/form-data
 reservationRoutes.post(
   "/upload-image",
   uploadMiddleware,
-  reservationController.uploadImage
+  reservationController.uploadImage,
+);
+
+reservationRoutes.post(
+  "/cancellation/create-cancellation",
+  reservationController.createCancellation,
 );
 
 export default reservationRoutes;
