@@ -29,6 +29,7 @@ import AdditionalOrderCustomizationScreen from "./src/screens/AdditionalOrderCus
 import AdditionalOrderCartScreen from "./src/screens/AdditionalOrderCartScreen";
 import { StatusBar } from "react-native";
 import { deleteToken } from "./src/utils/token";
+import ReservationCancellationScreen from "./src/screens/ReservationCancellationScreen";
 
 const App = () => {
   const [fontsLoaded] = useFonts({
@@ -72,7 +73,7 @@ const App = () => {
 
         <NavigationContainer ref={navigationRef}>
           <Stack.Navigator
-            initialRouteName="WelcomeScreen"
+            initialRouteName="ReservationCancellationScreen"
             screenOptions={{ headerShown: false, animation: "none" }}
           >
             <Stack.Screen
@@ -82,6 +83,10 @@ const App = () => {
             <Stack.Screen
               name="MenuViewingScreen"
               component={MenuViewingScreen}
+            />
+            <Stack.Screen
+              name="ReservationCancellationScreen"
+              component={ReservationCancellationScreen}
             />
 
             <Stack.Screen name="HomeScreen" component={HomeScreen} />
