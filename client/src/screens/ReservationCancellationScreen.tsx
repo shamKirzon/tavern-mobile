@@ -131,7 +131,7 @@ const ReservationCancellationScreen: React.FC<Props> = ({
     if (!reservationCancellationId) return;
 
     await updateToken({ reservationCancellationId });
-    // navigation.navigate("HomeScreen");
+    navigation.navigate("HomeScreen");
   };
   return (
     <View style={{ flex: 1 }}>

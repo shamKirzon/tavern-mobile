@@ -589,7 +589,9 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
             {/* Cancel Button*/}
             {reservationStatus == "pending" && (
               <TouchableOpacity
-                onPress={handleStatusAction}
+                onPress={() =>
+                  navigation.navigate("ReservationCancellationScreen")
+                }
                 style={{
                   backgroundColor: "#520000",
                   paddingVertical: 11,

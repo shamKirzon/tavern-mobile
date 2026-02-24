@@ -24,3 +24,16 @@ export const createCancellation = async ({
     console.log("services/cancellation/createCancellation() error:", error);
   }
 };
+
+export const getCancellationData = async (
+  reservationCancellationId: string,
+) => {
+  try {
+    const res = await axiosInstance.get(
+      `/reservation/cancellation/get-cancellation-data/${reservationCancellationId}`,
+    );
+    return res.data.result[0].status;
+  } catch (error: any) {
+    console.log("services/cancellation/getCancellationData() error:", error);
+  }
+};

@@ -21,6 +21,7 @@ import { generateOtp } from "../services/auth";
 import {
   getEmailByToken,
   getOrderIdByToken,
+  getReservationCancellationIdByToken,
   getReservationIdByToken,
   updateToken,
 } from "../services/token";
@@ -33,6 +34,8 @@ import { useReservationStore } from "../stores/useReservationStore";
 import { useOrderStore } from "../stores/useOrderStore";
 import { ReservationStatus } from "../types/reservation";
 import { getOrderData } from "../services/order";
+import { getCancellationData } from "../services/cancellation";
+import { getToken, getTokenInformation } from "../utils/token";
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamLists,
@@ -50,6 +53,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [hasEmail, setHasEmail] = useState<string | null>(null);
   const [hasReservation, setHasReservation] = useState<string | null>(null);
   const [hasOrder, setHasOrder] = useState<string | null>(null);
+  const [hasCancellation, setHasCancellation] = useState<string | null>(null);
 
   const { showEmailVerifiedToggle, setShowEmailVerifiedToggle } =
     useAuthStore();
@@ -59,12 +63,14 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const [isEmailInvalid, setIsEmailInvalid] = useState<boolean>(false);
   const [showToaster, setShowToaster] = useState(false);
   const [isLoading, setIsLoadings] = useState<boolean>(false);
+  const [cancellationStatus, setCancellationStatus] = useState<any>();
 
   const [reservationStatus, setReservationStatus] =
     useState<ReservationStatus>("none");
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
+  // Reset System
   useEffect(() => {
     const resetSystem = async () => {
       try {
@@ -91,6 +97,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     resetSystem();
   }, []);
 
+  // Toaster Animation and Duration
   useEffect(() => {
     if (showToaster) {
       Animated.timing(fadeAnim, {
@@ -111,6 +118,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     }
   }, [showToaster]);
 
+  // Email Verified Toggle
   useEffect(() => {
     if (showEmailVerifiedToggle) {
       setShowToaster(true);
@@ -118,26 +126,41 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     setShowEmailVerifiedToggle(false);
   }, [showEmailVerifiedToggle]);
 
-  // check auth
+  // Check Authentication
   useEffect(() => {
     const fetchData = async () => {
       const email = await getEmailByToken();
       const reservation = await getReservationIdByToken();
       const order = await getOrderIdByToken();
+      const cancellation = await getReservationCancellationIdByToken();
 
       setHasEmail(email);
       setHasReservation(reservation);
       setHasOrder(order);
+      setHasCancellation(cancellation);
     };
     fetchData();
   }, []);
 
-  // handles reservation status
+  // Handle Reservation Status
   useEffect(() => {
     handleStatus();
   }, [hasEmail, hasReservation, hasOrder]);
 
-  // get reservation amount
+  // Handle Cancellation Status
+  useEffect(() => {
+    const getCancellationStatus = async () => {
+      const cancellationId = await getReservationCancellationIdByToken();
+      if (!cancellationId) return;
+      const status = await getCancellationData(cancellationId);
+
+      setCancellationStatus(status);
+    };
+
+    getCancellationStatus();
+  }, []);
+
+  // Get Reservation Amount
   useEffect(() => {
     const getTotal = async () => {
       if (!hasReservation) return;
@@ -163,7 +186,6 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         setIsLoadings(false);
       }
     } else if (hasEmail) {
-      // show book now
     } else {
       setReservationStatus("none");
     }
@@ -172,7 +194,9 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const handleViewStatus = async () => {
     if (!hasReservation) return;
 
-    if (hasOrder) {
+    if (hasCancellation) {
+      navigation.navigate("ReservationCancellationStatusScreen");
+    } else if (hasOrder) {
       navigation.navigate("OrderStatusScreen");
     } else if (hasReservation) {
       navigation.navigate("ReservationStatusScreen", { reservationStatus });
@@ -182,10 +206,6 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
     return emailRegex.test(email.trim());
-  };
-
-  const handleBookNow = () => {
-    navigation.navigate("ReservationScreen");
   };
 
   const handleContinue = async () => {
@@ -239,39 +259,63 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     let borderColor = "";
     let text = "";
 
-    switch (reservationStatus) {
-      case "pending":
-        borderColor = "#A88A00";
-        bgColor = "rgba(255, 217, 102, 0.25)";
-        text = "Pending Reservation Approval";
-        break;
+    if (hasCancellation) {
+      switch (cancellationStatus) {
+        case "pending":
+          borderColor = "#A88A00";
+          bgColor = "rgba(255, 217, 102, 0.25)";
+          text = "Pending Cancellation Approval";
+          break;
 
-      case "accepted":
-        bgColor = "rgb(35, 135, 35)";
-        borderColor = "rgb(35, 135, 35)";
-        text = "Reservation Approved";
-        break;
+        case "accepted":
+          bgColor = "rgb(35, 135, 35)";
+          borderColor = "rgb(35, 135, 35)";
+          text = "Cancellation Approved";
+          break;
 
-      case "rejected":
-        borderColor = "#E05002";
-        bgColor = "rgba(224, 80, 2, 0.25)";
-        text = "Your Reservation has been Rejected.";
-        break;
+        case "rejected":
+          borderColor = "#E05002";
+          bgColor = "rgba(224, 80, 2, 0.25)";
+          text = "Your Cancellation has been Rejected.";
+          break;
+        default:
+          return <></>;
+      }
+    } else {
+      switch (reservationStatus) {
+        case "pending":
+          borderColor = "#A88A00";
+          bgColor = "rgba(255, 217, 102, 0.25)";
+          text = "Pending Reservation Approval";
+          break;
 
-      case "done":
-        borderColor = "#C6A300";
-        bgColor = "rgba(198, 163, 0, 0.25)";
-        text = "Review Order Summary.";
-        break;
+        case "accepted":
+          bgColor = "rgb(35, 135, 35)";
+          borderColor = "rgb(35, 135, 35)";
+          text = "Reservation Approved";
+          break;
 
-      case "cancelled":
-        borderColor = "#FFA500";
-        bgColor = "rgba(255, 165, 0, 0.25)";
-        text = "Reservation has been Cancelled.";
-        break;
+        case "rejected":
+          borderColor = "#E05002";
+          bgColor = "rgba(224, 80, 2, 0.25)";
+          text = "Your Reservation has been Rejected.";
+          break;
 
-      default:
-        return <></>;
+        case "done":
+          borderColor = "#C6A300";
+          bgColor = "rgba(198, 163, 0, 0.25)";
+          text = "Review Order Summary.";
+          break;
+
+        case "cancelled":
+          borderColor = "#FFA500";
+          bgColor = "rgba(255, 165, 0, 0.25)";
+          text = "Reservation has been Cancelled.";
+          break;
+
+        default:
+          return <></>;
+      }
     }
 
     return (
@@ -328,7 +372,6 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
             View Status
           </Text>
         </TouchableOpacity>
-        {/* labelTesting(pending) */}
       </View>
     );
   };
@@ -516,7 +559,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
                 {hasEmail ? (
                   <TouchableOpacity
-                    onPress={handleBookNow}
+                    onPress={() => navigation.navigate("ReservationScreen")}
                     style={{
                       backgroundColor: "#8B0001",
                       paddingVertical: height * 0.02,
