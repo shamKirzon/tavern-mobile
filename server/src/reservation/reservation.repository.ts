@@ -147,6 +147,28 @@ class ReservationRepository {
       );
     }
   }
+
+  async getCancellationData(reservationCancellationId: string) {
+    try {
+      const { data, error } = await supabase
+        .from("reservation_cancellations")
+        .select("*")
+        .eq("reservation_cancellation_id", reservationCancellationId);
+
+      if (error)
+        return console.log(
+          "Query failed in reservationRepository/getCancellationData()",
+          error,
+        );
+
+      return data;
+    } catch (error) {
+      console.log(
+        "Error in reservationRepository/createCancellation() ",
+        error,
+      );
+    }
+  }
 }
 
 export const reservationRepository = new ReservationRepository();

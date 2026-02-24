@@ -169,6 +169,34 @@ class ReservationController {
         .json({ message: "can't perform assigning employee id " });
     }
   }
+
+  async getCancellationData(req: Request, res: Response) {
+    try {
+      const { reservationCancellationId } = req.params;
+
+      if (!reservationCancellationId)
+        return res
+          .status(400)
+          .json({ message: "Must have a reservationCancellationId" });
+
+      const result = await reservationService.getCancellationData(
+        reservationCancellationId,
+      );
+
+      if (!result) {
+        return res.status(400).json({ message: "Failed to get cancellation" });
+      }
+
+      return res
+        .status(200)
+        .json({ message: "Fetched Cancellation Data Successfully", result });
+    } catch (error: any) {
+      console.log("reservationController/getCancellationData(): ", error);
+      return res
+        .status(400)
+        .json({ message: "can't perform get cancellation data" });
+    }
+  }
 }
 
 export const reservationController = new ReservationController();

@@ -62,6 +62,16 @@ class ReservationService {
       return result;
     } catch (error) {}
   }
+
+  async getCancellationData(reservationCancellationId: string): Promise<any> {
+    try {
+      const result = await reservationRepository.getCancellationData(
+        reservationCancellationId,
+      );
+
+      return result;
+    } catch (error) {}
+  }
 }
 
 export const reservationService = new ReservationService();

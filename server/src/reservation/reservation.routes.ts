@@ -24,6 +24,7 @@ reservationRoutes.get(
   reservationController.getReservationAmount,
 );
 
+// reservation-employee
 reservationRoutes.post(
   "/assign-security-id",
   reservationController.assignSecurityId,
@@ -36,9 +37,15 @@ reservationRoutes.post(
   reservationController.uploadImage,
 );
 
+// reservation-cancellation
 reservationRoutes.post(
   "/cancellation/create-cancellation",
   reservationController.createCancellation,
+);
+
+reservationRoutes.get(
+  "/cancellation/get-cancellation-data/:reservationCancellationId",
+  reservationController.getCancellationData,
 );
 
 export default reservationRoutes;
