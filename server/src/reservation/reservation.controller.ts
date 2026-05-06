@@ -144,7 +144,7 @@ class ReservationController {
     try {
       const { reservationId, reason, notes } = req.body;
 
-      if (!reservationId || !reason || !notes)
+      if (!reservationId || !reason)
         return res.status(400).json({ message: "Incomplete data." });
 
       const result = await reservationService.createCancellation(

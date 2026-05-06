@@ -19,6 +19,8 @@ const rateLimiter: RateLimitRequestHandler = rateLimit({
 });
 
 const app = express();
+//trust the X-Forwarded-For header from Ngrok
+app.set("trust proxy", 1);
 app.use(cors());
 app.use(express.json());
 app.use(rateLimiter);

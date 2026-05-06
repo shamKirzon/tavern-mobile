@@ -132,10 +132,12 @@ class ReservationRepository {
         .select()
         .single();
 
+      await this.updateReservationStatus(reservationId, "cancelled");
+
       if (error)
         return console.log(
           "Query failed in reservationRepository/createCancellation()",
-          error,
+          error.cause,
         );
 
       return data;
@@ -181,6 +183,75 @@ class ReservationRepository {
       return data;
     } catch (error) {
       console.log("Error in getting reserved dates ", error);
+    }
+  }
+
+  // if naaccept na ng admin ang reservation
+  async updateReservationStatus(reservationId: string, status: string) {
+    try {
+      const { data, error } = await supabase
+        .from("reservations")
+        .update([{ reservation_status: status }])
+        .eq("reservation_id", reservationId);
+
+      if (error) throw error;
+
+      // if (status === "cancelled") {
+      //   const resData = await this.getReservationById(reservationId);
+      //   if (resData && resData.length > 0) {
+      //     const res = resData[0];
+      //     await this.updateBookedSlots(res.date, res.pax);
+      //   }
+      // }
+
+      return { message: "Reservation status updated successfully." };
+    } catch (error) {
+      console.error("Error in repository/updateReservationStatus():", error);
+    }
+  }
+  async getReservationById(reservationId: string) {
+    try {
+      const { data, error } = await supabase
+        .from("reservations")
+        .select("*")
+        .eq("reservation_id", reservationId);
+
+      if (error) throw error;
+
+      return data;
+    } catch (error) {
+      console.error("Error in repository/getReservationById():", error);
+      return null;
+    }
+  }
+
+  // minus book slot when the reservation is cancelled
+  async updateBookedSlots(date: string, pax: number) {
+    try {
+      const formattedDate = date?.split("T")[0];
+
+      const { data: currentData, error: fetchError } = await supabase
+        .from("booking_days")
+        .select("booked_slots")
+        .eq("date", formattedDate)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      const newSlots = (currentData?.booked_slots || 0) + pax;
+
+      const { data, error } = await supabase
+        .from("booking_days")
+        .update({ booked_slots: newSlots })
+        .eq("date", formattedDate)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      return data;
+    } catch (error) {
+      console.log("Error in reservationRepository/updateBookedSlots ", error);
     }
   }
 }
