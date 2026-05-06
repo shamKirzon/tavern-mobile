@@ -24,7 +24,7 @@ export const createReservation = async (data: ReservationData) => {
 export const getReservationStatus = async (reservationId: string) => {
   try {
     const res = await axiosInstance.get(
-      `/reservation/get-reservation-status/${reservationId}`
+      `/reservation/get-reservation-status/${reservationId}`,
     );
     if (!res) return console.log("Can't get reservation status.");
 
@@ -32,7 +32,7 @@ export const getReservationStatus = async (reservationId: string) => {
   } catch (error) {
     console.log(
       "Error in services/reservation/getReservationStatus(): ",
-      error
+      error,
     );
   }
 };
@@ -40,7 +40,7 @@ export const getReservationStatus = async (reservationId: string) => {
 export const getReservationAmount = async (reservationId: string) => {
   try {
     const res = await axiosInstance.get(
-      `/reservation/get-reservation-amount/${reservationId}`
+      `/reservation/get-reservation-amount/${reservationId}`,
     );
     if (!res) return console.log("Can't get reservation status");
 
@@ -53,7 +53,7 @@ export const getReservationAmount = async (reservationId: string) => {
 export const getReservationData = async (reservationId: string) => {
   try {
     const res = await axiosInstance.get(
-      `/reservation/get-reservation-data/${reservationId}`
+      `/reservation/get-reservation-data/${reservationId}`,
     );
     if (!res) return console.log("Can't get reservation data ");
 
@@ -63,9 +63,20 @@ export const getReservationData = async (reservationId: string) => {
   }
 };
 
+export const getBookingDays = async () => {
+  try {
+    const res = await axiosInstance.get("/reservation/get-booking-days");
+    if (!res) return console.log("Can't fetch reserved dates");
+
+    return res.data.result;
+  } catch (error) {
+    console.log("Error in services/reservation/getBookingDays()", error);
+  }
+};
+
 export const uploadImage = async (
   imageUri: string,
-  type: ReservationImageType
+  type: ReservationImageType,
 ) => {
   try {
     if (!imageUri) return console.log("It must have an imageUri");
@@ -88,7 +99,7 @@ export const uploadImage = async (
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
 
     if (!res) return console.log("Can't upload image");
@@ -101,7 +112,7 @@ export const uploadImage = async (
 
 export const assignSecurityId = async (
   employeeId: string,
-  reservationId: string
+  reservationId: string,
 ) => {
   try {
     const res = await axiosInstance.post("/reservation/assign-security-id", {

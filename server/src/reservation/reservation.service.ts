@@ -72,6 +72,13 @@ class ReservationService {
       return result;
     } catch (error) {}
   }
+
+  async getBookingDays(): Promise<any> {
+    try {
+      const result = await reservationRepository.getBookingDays();
+      return result;
+    } catch (error) {}
+  }
 }
 
 export const reservationService = new ReservationService();

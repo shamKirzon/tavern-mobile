@@ -48,4 +48,9 @@ reservationRoutes.get(
   reservationController.getCancellationData,
 );
 
+reservationRoutes.get(
+  "/get-booking-days",
+  reservationController.getBookingDays,
+);
+
 export default reservationRoutes;

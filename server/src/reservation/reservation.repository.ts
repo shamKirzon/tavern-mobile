@@ -169,6 +169,21 @@ class ReservationRepository {
       );
     }
   }
+
+  async getBookingDays() {
+    try {
+      const { data, error } = await supabase
+        .from("booking_days")
+        .eq("status", "open")
+        .select("date");
+
+      if (error) throw error;
+
+      return data;
+    } catch (error) {
+      console.log("Error in getting reserved dates ", error);
+    }
+  }
 }
 
 export const reservationRepository = new ReservationRepository();

@@ -197,6 +197,25 @@ class ReservationController {
         .json({ message: "can't perform get cancellation data" });
     }
   }
+
+  async getBookingDays(req: Request, res: Response) {
+    try {
+      const result = await reservationService.getBookingDays();
+
+      if (!result) {
+        return res
+          .status(400)
+          .json({ message: "Failed to fetch reserved dates" });
+      }
+
+      return res
+        .status(200)
+        .json({ message: "Fetched Reserved Dates Successfully", result });
+    } catch (error: any) {
+      console.log("reservationController/getBookingDays(): ", error);
+      return res.status(400).json({ message: "can't fetch reserved dates" });
+    }
+  }
 }
 
 export const reservationController = new ReservationController();
