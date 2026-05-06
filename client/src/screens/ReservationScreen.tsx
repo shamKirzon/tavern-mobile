@@ -105,9 +105,15 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
     const fetchBookingDays = async () => {
       const data = await getBookingDays();
       if (data && data.length > 0) {
-        setBookingDays(data);
-        const firstDate = new Date(data[0].date);
-        setCurrentMonth(firstDate.toLocaleDateString("en-US", { month: "long" }));
+        // Sort dates chronologically
+        const sortedData = [...data].sort(
+          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+        );
+        setBookingDays(sortedData);
+        const firstDate = new Date(sortedData[0].date);
+        setCurrentMonth(
+          firstDate.toLocaleDateString("en-US", { month: "long" })
+        );
       }
     };
     fetchBookingDays();
@@ -288,6 +294,15 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
       newErrorMessages.schedule = "Please select a schedule";
       newErrors.schedule = true;
       isValid = false;
+    }
+
+    if (selectedDate && guests) {
+      const selectedDayData = allDays.find((day) => day.date === selectedDate);
+      if (selectedDayData && guests > selectedDayData.availableSlots) {
+        newErrorMessages.guests = `Only ${selectedDayData.availableSlots} slots available for this day`;
+        newErrors.guests = true;
+        isValid = false;
+      }
     }
 
     if (!validId) {
