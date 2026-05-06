@@ -45,7 +45,6 @@ class ReservationRepository {
         ])
         .select()
         .single();
-
       if (error)
         return console.log(
           "Query failed in reservationRepository/createReservation()",

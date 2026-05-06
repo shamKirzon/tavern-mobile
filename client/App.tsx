@@ -74,7 +74,7 @@ const App = () => {
 
         <NavigationContainer ref={navigationRef}>
           <Stack.Navigator
-            initialRouteName="ReservationScreen"
+            initialRouteName="HomeScreen"
             screenOptions={{ headerShown: false, animation: "none" }}
           >
             <Stack.Screen
