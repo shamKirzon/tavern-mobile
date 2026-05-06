@@ -174,8 +174,8 @@ class ReservationRepository {
     try {
       const { data, error } = await supabase
         .from("booking_days")
-        .eq("status", "open")
-        .select("date");
+        .select("date, booked_slots")
+        .eq("status", "available");
 
       if (error) throw error;
 
