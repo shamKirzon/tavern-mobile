@@ -4,31 +4,21 @@
 
 ---
 
-## 🌐 Web Dashboard — `tavern-website`
+## 📱 Mobile App — `tavern-mobile`
 
-The web application is used by the **admin**, **cashier**, and **security** staff to manage the full day-to-day operation of the restobar.
+The mobile application is used by **customers** to make reservations, browse the menu, place orders, and receive a QR code for entry and cashier verification.
 
 ---
 
 ### Features
 
-#### 🛡️ Admin
-- **Manage Reservations** — View reservation history and full reservation lists; control available schedules shown to customers on the mobile app
-- **Approve / Decline Payments** — Review customer-submitted deposit screenshots and manually confirm or reject each reservation
-- **Manage Employees** — Create, read, update, and delete employee records; assign roles (admin, cashier, security) and manage shift schedules
-- **Track Orders** — Monitor all active and past orders placed by customers in real time
-- **Reports & Analytics** — View daily, monthly, and yearly graphs of reservations and sales; export PDF and Excel reports for orders, reservations, and sales
-
-#### 🔒 Security
-- **PIN Authentication** — Log in to the security station using a personal PIN
-- **QR Code Scanner** — Scan and validate customer QR codes at the entrance; displays instant success or failure feedback
-- **Logout** — Securely end the active PIN session
-
-#### 🧾 Cashier
-- **PIN Authentication** — Log in to the cashier station using a personal PIN
-- **QR Code Scanner** — Scan order QR codes at the counter to update order status (Pending, Cancelled, Done) in real time
-- **Add Additional Orders** — Append new items to an existing customer order; total bill updates automatically
-- **Logout** — Securely end the active PIN session
+- **Email OTP Verification** — Customers verify their identity via a one-time passcode sent to their email before proceeding
+- **Make a Reservation** — Select reservation type, preferred date, number of pax, and enter personal details (name, contact number, valid ID)
+- **Browse Menu** — View food and drink items organized by category with prices and availability
+- **Place Orders** — Add or remove items from cart, view running totals, and confirm an order summary before submitting
+- **Payment Submission** — Upload a screenshot of the reservation deposit as proof; admin reviews and approves or declines manually
+- **Reservation Status Tracking** — Real-time status updates: Pending, Confirmed, Declined, or Cancelled
+- **QR Code Generation** — Receive a unique encrypted QR code after reservation and order confirmation, used for entry and cashier processing
 
 ---
 
@@ -36,12 +26,11 @@ The web application is used by the **admin**, **cashier**, and **security** staf
 
 | Tool | Purpose |
 |---|---|
-| Node.js | Server runtime |
-| PostgreSQL | Primary relational database |
-| Supabase | Backend services (auth, realtime, storage) |
-| TypeScript | Type-safe codebase |
-| Figma | UI/UX design and prototyping |
-| VS Code | Development environment |
+| React Native | Core mobile framework |
+| Expo | Development and build tooling |
+| Expo Go | Live preview during development |
+| TypeScript | Type-safe JavaScript |
+| Supabase | Auth, database, storage, and realtime |
 | Postman | API testing |
 
 ---
@@ -50,37 +39,30 @@ The web application is used by the **admin**, **cashier**, and **security** staf
 
 ```bash
 # Clone the repo
-git clone https://github.com/shamKirzon/tavern-website.git
-cd tavern-website
+git clone https://github.com/shamKirzon/tavern-mobile.git
+cd tavern-mobile
 
 # Install dependencies
 npm install
 
-# Run the development server
-npm run dev
+# Start the development server
+npx expo start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser to access the dashboard.
+Scan the QR code in the terminal using **Expo Go** on your iOS or Android device.
+
 
 ---
-
-
 
 ## 🗂️ System Overview
 
 ```
-Admin (Web Dashboard)
-  └── Approve / Decline Reservations
-  └── Manage Employees & Schedules
-  └── View Reports & Analytics
-
-Security (Web Dashboard)
-  └── Scan QR at Entrance → Verify Customer
-
-Cashier (Web Dashboard)
-  └── Scan QR at Counter → Update Order Status
-  └── Add Additional Orders
+Customer (Mobile App)
+  └── Register / Verify Email
+  └── Make Reservation → Upload Payment Proof
+  └── Place Order → Receive QR Code
+  └── Present QR at Entrance & Cashier Counter
 ```
 
----
 
+This project was developed as an academic requirement. All rights reserved by the authors and Tavern Asia Resto Bar.
