@@ -105,15 +105,31 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
     const fetchBookingDays = async () => {
       const data = await getBookingDays();
       if (data && data.length > 0) {
-        // Sort dates chronologically
-        const sortedData = [...data].sort(
-          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-        );
-        setBookingDays(sortedData);
-        const firstDate = new Date(sortedData[0].date);
-        setCurrentMonth(
-          firstDate.toLocaleDateString("en-US", { month: "long" })
-        );
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Filter out past dates and sort chronologically
+        const filteredAndSortedData = data
+          .filter((item: { date: string; booked_slots: number }) => {
+            const itemDate = new Date(item.date);
+            itemDate.setHours(0, 0, 0, 0);
+            return itemDate >= today;
+          })
+          .sort(
+            (
+              a: { date: string; booked_slots: number },
+              b: { date: string; booked_slots: number }
+            ) => new Date(a.date).getTime() - new Date(b.date).getTime()
+          );
+
+        setBookingDays(filteredAndSortedData);
+
+        if (filteredAndSortedData.length > 0) {
+          const firstDate = new Date(filteredAndSortedData[0].date);
+          setCurrentMonth(
+            firstDate.toLocaleDateString("en-US", { month: "long" }),
+          );
+        }
       }
     };
     fetchBookingDays();
@@ -847,7 +863,7 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                   <TouchableOpacity
                     onPress={() =>
                       setStartIndex((prev) =>
-                        Math.min(prev + 6, Math.max(0, allDays.length - 6))
+                        Math.min(prev + 6, Math.max(0, allDays.length - 6)),
                       )
                     }
                     disabled={startIndex >= allDays.length - 6}
@@ -1143,8 +1159,8 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                     borderColor: errors.validId
                       ? "red"
                       : validId
-                      ? "rgba(0, 200, 100, 0.2)"
-                      : "transparent",
+                        ? "rgba(0, 200, 100, 0.2)"
+                        : "transparent",
                   }}
                 >
                   <Text
