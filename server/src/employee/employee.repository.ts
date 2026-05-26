@@ -15,7 +15,7 @@ class EmployeeRepository {
 
       return data;
     } catch (err) {
-      console.error("Error in employeeRepository/validatePin()", err);
+      console.log("Error in employeeRepository/validatePin()", err);
       return null;
     }
   }
@@ -31,7 +31,7 @@ class EmployeeRepository {
 
       return data;
     } catch (err) {
-      console.error("Error in employeeRepository/validatePin()", err);
+      console.log("Error in employeeRepository/validatePin()", err);
       return null;
     }
   }

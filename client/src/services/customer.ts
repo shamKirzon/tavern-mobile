@@ -5,7 +5,7 @@ export const setCustomerInactive = async (email: string) => {
     const res = await axiosInstance.post("/customer/set-inactive", { email });
     if (!res) return console.log("Can't set status to inactive.");
   } catch (error: any) {
-    console.error("services/customers/setCustomerInactive() error:", error);
+    console.log("services/customers/setCustomerInactive() error:", error);
   }
 };
 export const setCustomerActive = async (email: string) => {
@@ -15,6 +15,6 @@ export const setCustomerActive = async (email: string) => {
     });
     if (!res) return console.log("Can't perform setting status to inactive");
   } catch (error: any) {
-    console.error("services/customers/setCustomerActive() error:", error);
+    console.log("services/customers/setCustomerActive() error:", error);
   }
 };

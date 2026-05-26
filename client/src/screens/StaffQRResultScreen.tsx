@@ -199,7 +199,7 @@ const StaffQRResultScreen: React.FC<Props> = ({ navigation, route }) => {
       }
       navigation.navigate("StaffQRScannerScreen");
     } catch (error) {
-      console.error("error in handleDone():", error);
+      console.log("error in handleDone():", error);
     } finally {
       setIsLoading(false);
       setModalVisible(false);

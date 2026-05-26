@@ -62,6 +62,27 @@ export const reservationTermsAndConditions = [
   },
 ];
 
+export const reservationCancellationTermsAndConditions = [
+  {
+    title: "1. Cancellation of Reservation ",
+    items: [
+      "For reservations with a status of “Waiting for Approval” or “Approved,” customers may request a cancellation at least seven (7) days prior to the scheduled reservation date.",
+    ],
+  },
+  {
+    title: "2. Refund Policy",
+    items: [
+      "Customers are eligible to receive a 100% refund of the deposit. Refunds will be processed exclusively to the original payment method used at the time of booking. Please allow 5–7 business days for the refund to be reflected in your account. If the refund is not received within this time frame, kindly contact us directly for assistance.",
+    ],
+  },
+  {
+    title: "3. Refund Decision",
+    items: [
+      "Please note that all refund requests are carefully reviewed to ensure fairness and compliance with Tavern’s Terms and Conditions. The review process may take 5–7 business days to complete.",
+    ],
+  },
+];
+
 export const orderTermsAndConditions = [
   {
     title: "1. Order Placement",

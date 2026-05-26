@@ -10,6 +10,7 @@ type TokenPayload = {
   reservationId?: string | null;
   orderId?: string | null;
   employeeId?: string | null;
+  reservationCancellationId?: string | null;
 };
 
 class AuthService {
@@ -30,7 +31,7 @@ class AuthService {
 
       return token;
     } catch (error: any) {
-      console.error(error.message || `Error in updating the token `);
+      console.log(error.message || `Error in updating the token `);
     }
   }
 
@@ -42,6 +43,7 @@ class AuthService {
       reservationId: data.reservationId,
       orderId: data.orderId,
       employeeId: data.employeeId,
+      reservationCancellationId: data.reservationCancellationId,
     };
 
     const token = jwt.sign(payload, process.env.TOKEN_SECRET_KEY!, {

@@ -52,6 +52,13 @@ export const getEmployeeIdByToken = async (): Promise<any> => {
   return tokenInfo.employeeId;
 };
 
+export const getReservationCancellationIdByToken = async (): Promise<any> => {
+  const tokenInfo = await getTokenInformation();
+  if (!tokenInfo) return null;
+
+  return tokenInfo.reservationCancellationId;
+};
+
 export const updateToken = async (update: any) => {
   try {
     const oldToken = await getToken();
@@ -76,6 +83,6 @@ export const updateToken = async (update: any) => {
       id: decodedToken.jti,
     };
   } catch (error) {
-    console.error("services/token/updatedToken(); ", error);
+    console.log("services/token/updatedToken(); ", error);
   }
 };

@@ -29,6 +29,6 @@ export const generateQR = async (data: QRData, email: string) => {
 
     return result.secure_url;
   } catch (error) {
-    console.error("Failed to generate QR", error);
+    console.log("Failed to generate QR", error);
   }
 };

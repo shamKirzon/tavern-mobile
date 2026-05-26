@@ -18,7 +18,7 @@ import CustomizationScreen from "./src/screens/CustomizationScreen";
 import OrderHomeScreen from "./src/screens/OrderHomeScreen";
 import OrderStatusScreen from "./src/screens/OrderStatusScreen";
 import CartScreen from "./src/screens/CartScreen";
-import { checkToken } from "./src/services/token";
+import { checkToken, updateToken } from "./src/services/token";
 import { useFonts } from "expo-font";
 import ReservationStatusScreen from "./src/screens/ReservationStatusScreen";
 import StaffHomeScreen from "./src/screens/StaffHomeScreen";
@@ -28,6 +28,8 @@ import AdditionalOrderHomeScreen from "./src/screens/AdditionalOrderHomeScreen";
 import AdditionalOrderCustomizationScreen from "./src/screens/AdditionalOrderCustomizationScreen";
 import AdditionalOrderCartScreen from "./src/screens/AdditionalOrderCartScreen";
 import { StatusBar } from "react-native";
+import ReservationCancellationScreen from "./src/screens/ReservationCancellationScreen";
+import ReservationCancellationStatusScreen from "./src/screens/ReservationCancellationStatusScreen";
 import { deleteToken } from "./src/utils/token";
 
 const App = () => {
@@ -50,7 +52,6 @@ const App = () => {
 
   const Stack = createNativeStackNavigator<RootStackParamLists>();
 
-  // to avoid the status bar in androind ONLY
   const AppWrapper: React.FC<{ children: React.ReactNode }> = ({
     children,
   }) => {
@@ -81,8 +82,17 @@ const App = () => {
               component={CustomizationScreen}
             />
             <Stack.Screen
+              name="ReservationCancellationStatusScreen"
+              component={ReservationCancellationStatusScreen}
+            />
+            <Stack.Screen
               name="MenuViewingScreen"
               component={MenuViewingScreen}
+            />
+
+            <Stack.Screen
+              name="ReservationCancellationScreen"
+              component={ReservationCancellationScreen}
             />
 
             <Stack.Screen name="HomeScreen" component={HomeScreen} />

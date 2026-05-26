@@ -12,7 +12,7 @@ class EmployeeController {
 
       res.status(200).json(employeeInfo);
     } catch (error: any) {
-      console.error(error.message || `Error in validating pin `);
+      console.log(error.message || `Error in validating pin `);
     }
   }
 
@@ -26,7 +26,7 @@ class EmployeeController {
 
       res.status(200).json(role?.employee_role);
     } catch (error: any) {
-      console.error(error.message || `Error in validating pin `);
+      console.log(error.message || `Error in validating pin `);
     }
   }
 
@@ -43,7 +43,7 @@ class EmployeeController {
 
       res.status(200).json(decryptedQr);
     } catch (error: any) {
-      console.error(error.message || `Error in decrypting qr  `);
+      console.log(error.message || `Error in decrypting qr  `);
     }
   }
 }

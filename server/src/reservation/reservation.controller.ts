@@ -17,7 +17,7 @@ class ReservationController {
 
       return res.status(201).json(result.reservation_id);
     } catch (error: any) {
-      console.error("Error in createReservation(): ", error);
+      console.log("Error in createReservation(): ", error);
       return res.status(400).json({ message: "can't create reservation" });
     }
   }
@@ -39,7 +39,7 @@ class ReservationController {
         .status(200)
         .json({ message: "Reservation Created Successfully! ", result });
     } catch (error: any) {
-      console.error("Error in createReservation(): ", error);
+      console.log("Error in createReservation(): ", error);
       return res.status(400).json({ message: "can't create reservation" });
     }
   }
@@ -50,9 +50,8 @@ class ReservationController {
       if (!reservationId)
         return res.status(400).json({ message: "must have reservation id" });
 
-      const status = await reservationService.getReservationStatus(
-        reservationId
-      );
+      const status =
+        await reservationService.getReservationStatus(reservationId);
 
       if (!status)
         return res
@@ -61,9 +60,9 @@ class ReservationController {
 
       return res.status(200).json({ status });
     } catch (error: any) {
-      console.error(
+      console.log(
         "Error in reservationController/createReservation(): ",
-        error
+        error,
       );
       return res.status(400).json({ message: "can't get reservation status" });
     }
@@ -76,9 +75,8 @@ class ReservationController {
       if (!reservationId)
         return res.status(400).json({ message: "must have reservation id" });
 
-      const amount = await reservationService.getReservationAmount(
-        reservationId
-      );
+      const amount =
+        await reservationService.getReservationAmount(reservationId);
 
       if (!amount)
         return res
@@ -87,9 +85,9 @@ class ReservationController {
 
       return res.status(200).json({ amount });
     } catch (error: any) {
-      console.error(
+      console.log(
         "Error in reservationController/getReservationTotal(): ",
-        error
+        error,
       );
       return res.status(400).json({ message: "can't get reservation total" });
     }
@@ -109,7 +107,7 @@ class ReservationController {
         .status(200)
         .json({ message: "image uploaded successfully", imageUrl });
     } catch (error: any) {
-      console.error("Error in uploadImage(): ", error);
+      console.log("Error in uploadImage(): ", error);
       return res.status(400).json({ message: "can't upload image" });
     }
   }
@@ -123,7 +121,7 @@ class ReservationController {
 
       const result = await reservationService.assignSecurityId(
         employeeId,
-        reservationId
+        reservationId,
       );
 
       if (!result)
@@ -135,10 +133,87 @@ class ReservationController {
         .status(200)
         .json({ message: "assigned employee id successfully!", result });
     } catch (error: any) {
-      console.error("reservationController/getReservationTotal(): ", error);
+      console.log("reservationController/getReservationTotal(): ", error);
       return res
         .status(400)
         .json({ message: "can't perform assigning employee id " });
+    }
+  }
+
+  async createCancellation(req: Request, res: Response) {
+    try {
+      const { reservationId, reason, notes } = req.body;
+
+      if (!reservationId || !reason)
+        return res.status(400).json({ message: "Incomplete data." });
+
+      const result = await reservationService.createCancellation(
+        reservationId,
+        reason,
+        notes,
+      );
+
+      if (!result) {
+        return res
+          .status(400)
+          .json({ message: "Failed to create cancellation" });
+      }
+
+      return res
+        .status(201)
+        .json({ message: "Created Cancellation Successfully", result });
+    } catch (error: any) {
+      console.log("reservationController/getReservationTotal(): ", error);
+      return res
+        .status(400)
+        .json({ message: "can't perform assigning employee id " });
+    }
+  }
+
+  async getCancellationData(req: Request, res: Response) {
+    try {
+      const { reservationCancellationId } = req.params;
+
+      if (!reservationCancellationId)
+        return res
+          .status(400)
+          .json({ message: "Must have a reservationCancellationId" });
+
+      const result = await reservationService.getCancellationData(
+        reservationCancellationId,
+      );
+
+      if (!result) {
+        return res.status(400).json({ message: "Failed to get cancellation" });
+      }
+
+      return res
+        .status(200)
+        .json({ message: "Fetched Cancellation Data Successfully", result });
+    } catch (error: any) {
+      console.log("reservationController/getCancellationData(): ", error);
+      return res
+        .status(400)
+        .json({ message: "can't perform get cancellation data" });
+    }
+  }
+
+  async getBookingDays(req: Request, res: Response) {
+    try {
+      const result = await reservationService.getBookingDays();
+
+      if (!result) {
+        return res
+          .status(400)
+          .json({ message: "Failed to fetch reserved dates" });
+      }
+
+      return res
+        .status(200)
+        .json({ message: "Fetched Reserved Dates Successfully", result });
+    } catch (error: any) {
+      console.log("reservationController/getBookingDays(): ", error);
+      return res.status(400).json({ message: "can't fetch reserved dates" });
     }
   }
 }

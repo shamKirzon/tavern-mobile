@@ -13,7 +13,7 @@ class AuthController {
 
       res.status(201).json({ token: updatedToken });
     } catch (error: any) {
-      console.error(" Error in authController/updateToken():", error.message);
+      console.log(" Error in authController/updateToken():", error.message);
     }
   }
 
@@ -21,12 +21,12 @@ class AuthController {
     try {
       const { decodedToken } = req.body;
       if (!decodedToken)
-        return res.status(400).json({ message: "it must have a content " });
+        return res.status(400).json({ message: "It must have a content " });
 
       const token = await authService.generateToken(decodedToken);
       res.status(200).json({ token });
     } catch (error: any) {
-      console.error("authController/generateToken:", error.message);
+      console.log("authController/generateToken:", error.message);
     }
   }
 

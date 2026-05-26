@@ -10,11 +10,11 @@ export const validatePin = async (
       pin,
       role,
     });
-    if (!res) return console.error("Can't perform setting status to inactive.");
+    if (!res) return console.log("Can't perform setting status to inactive.");
 
     return res.data;
   } catch (error: any) {
-    console.error("services/employee/validatePin() error:", error);
+    console.log("services/employee/validatePin() error:", error);
   }
 };
 
@@ -23,11 +23,11 @@ export const getEmployeeRole = async (employeeId: string) => {
     const res = await axiosInstance.get(
       `/employee/get-employee-role/${employeeId}`
     );
-    if (!res) return console.error("Error in getting the employee role");
+    if (!res) return console.log("Error in getting the employee role");
 
     return res.data;
   } catch (error: any) {
-    console.error("services/employee/getEmployeeRole() error:", error);
+    console.log("services/employee/getEmployeeRole() error:", error);
   }
 };
 export const decryptQr = async (encryptedQr: string) => {
@@ -39,6 +39,6 @@ export const decryptQr = async (encryptedQr: string) => {
 
     return res.data;
   } catch (error: any) {
-    console.error("services/employee/decrypQr() error:", error);
+    console.log("services/employee/decrypQr() error:", error);
   }
 };

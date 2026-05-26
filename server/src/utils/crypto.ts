@@ -7,6 +7,7 @@ export const encrypt = (text: string): string => {
     Buffer.from(process.env.CRYPTO_SECRET_KEY!.padEnd(32)),
     iv
   );
+
   let encrypted = cipher.update(text, "utf8", "base64");
   encrypted += cipher.final("base64");
   return iv.toString("base64") + ":" + encrypted;

@@ -18,7 +18,7 @@ export const createOrder = async (order: ordersData) => {
 
     return res.data.orderId;
   } catch (error) {
-    console.error("services/orders/error in createOrder() Error: ", error);
+    console.log("services/orders/error in createOrder() Error: ", error);
   }
 };
 
@@ -29,7 +29,7 @@ export const getOrderData = async (orderId: string) => {
 
     return res.data.result;
   } catch (error) {
-    console.error("services/orders/getOrderData() Error:", error);
+    console.log("services/orders/getOrderData() Error:", error);
   }
 };
 
@@ -43,7 +43,7 @@ export const updateOrderItems = async (orderId: string, updatedOrders: any) => {
 
     return res.data.result;
   } catch (error) {
-    console.error("services/orders/updatedOrderItems() Error:", error);
+    console.log("services/orders/updatedOrderItems() Error:", error);
   }
 };
 
@@ -54,11 +54,11 @@ export const assignCashierId = async (employeeId: string, orderId: string) => {
       orderId,
     });
     if (!res)
-      return console.error("Error in service/reservation/assignCashierId");
+      return console.log("Error in service/reservation/assignCashierId");
 
     return res.data.result;
   } catch (error) {
-    console.error(
+    console.log(
       "Error in services/reservation/assignCashierId(). Error: ",
       error
     );
@@ -70,12 +70,11 @@ export const completeOrder = async (orderId: string) => {
     const res = await axiosInstance.post("/order/complete-order", {
       orderId,
     });
-    if (!res)
-      return console.error("Error in service/reservation/completeOrder");
+    if (!res) return console.log("Error in service/reservation/completeOrder");
 
     return res.data.message;
   } catch (error) {
-    console.error(
+    console.log(
       "Error in services/reservation/completeOrder(). Error: ",
       error
     );

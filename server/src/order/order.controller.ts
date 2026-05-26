@@ -23,7 +23,7 @@ class OrderController {
         .status(200)
         .json({ message: "Order Created Successfully! ", orderId });
     } catch (error: any) {
-      console.error("Error in createOrder(): ", error);
+      console.log("Error in createOrder(): ", error);
       return res.status(400).json({ message: "can't create order" });
     }
   }
@@ -43,7 +43,7 @@ class OrderController {
 
       return res.status(200).json({ message: "order data ", result });
     } catch (error: any) {
-      console.error("Error in getOrderData(): ", error);
+      console.log("Error in getOrderData(): ", error);
       return res.status(400).json({ message: "can't create order" });
     }
   }
@@ -69,7 +69,7 @@ class OrderController {
 
       return res.status(200).json({ message: "updated successfully", result });
     } catch (error: any) {
-      console.error("Error in updateOrderItems(): ", error);
+      console.log("Error in updateOrderItems(): ", error);
       return res.status(400).json({ message: "can't create order" });
     }
   }
@@ -92,10 +92,7 @@ class OrderController {
         .status(200)
         .json({ message: "assigned cashier id successfully!" });
     } catch (error: any) {
-      console.error(
-        "Error in reservationController/assignCashierId(): ",
-        error
-      );
+      console.log("Error in reservationController/assignCashierId(): ", error);
       return res
         .status(400)
         .json({ message: "can't perform assigning cashier id " });
@@ -120,7 +117,7 @@ class OrderController {
         .status(200)
         .json({ message: "completing order successfully!", result });
     } catch (error: any) {
-      console.error("Error in reservationController/completeOrder(): ", error);
+      console.log("Error in reservationController/completeOrder(): ", error);
       return res
         .status(400)
         .json({ message: "cant perform completing an order and reservation" });

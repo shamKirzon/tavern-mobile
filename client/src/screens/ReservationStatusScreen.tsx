@@ -2,29 +2,17 @@ import React, { useEffect, useState } from "react";
 import { RouteProp } from "@react-navigation/native";
 import { RootStackParamLists } from "../types/rootStackParamLists";
 import { height, paddingTop, width } from "../utils/dimensions";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  useWindowDimensions,
-  Alert,
-  ScrollView,
-} from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import MainBackground from "../assets/backgrounds/main-background.svg";
 import InfoIcon from "../assets/images/info.svg";
 import CircleSpinner from "./ui/CircleSpinner";
 import Rejected from "../assets/icons/rejected.svg";
 import Cancelled from "../assets/icons/reservation-cancelled.svg";
-import OrderPolicyScreen from "./OrderPolicyScreen";
-import { useReservationStore } from "../stores/useReservationStore";
 import { updateToken } from "../services/token";
 import { useOrderStore } from "../stores/useOrderStore";
-import {
-  orderTermsAndConditions,
-  reservationRulesAndConditions,
-  reservationTermsAndConditions,
-} from "../data/rulesAndCondition";
+import { orderTermsAndConditions } from "../data/rulesAndCondition";
+
 type ReservationStatusScreenRouteProp = RouteProp<
   RootStackParamLists,
   "ReservationStatusScreen"
@@ -376,7 +364,7 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
                 flexDirection: "row",
                 alignItems: "center",
                 marginTop: height * 0.015,
-                paddingBottom: height * 0.07,
+                paddingBottom: height * 0.05,
               }}
             >
               <TouchableOpacity
@@ -416,40 +404,70 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
               </Text>
             </View>
           </View>
-        </ScrollView>
 
-        <View
-          style={{
-            paddingHorizontal: width * 0.05,
-            paddingBottom: 30,
-            paddingTop: 15,
-          }}
-        >
-          <TouchableOpacity
-            onPress={handleContinueOrdering}
-            disabled={!isChecked}
-            style={[
-              {
-                backgroundColor: "#8B0000",
-                paddingVertical: 20,
-                borderRadius: 20,
-                alignItems: "center",
-              },
-              !isChecked && { opacity: 0.5 },
-            ]}
+          {/* Buttons */}
+          <View
+            style={{
+              paddingBottom: 30,
+            }}
           >
-            <Text
+            {/* Cancel Reservation Button */}
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("ReservationCancellationScreen")
+              }
               style={{
-                color: "#FFF",
-                fontSize: width * 0.042,
-                fontWeight: "700",
-                fontFamily: "Poppins",
+                backgroundColor: "#8B0000",
+                paddingVertical: 11,
+                borderRadius: 16,
+                alignItems: "center",
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 6,
+                elevation: 6,
+                marginBottom: height * 0.02,
               }}
             >
-              Continue Ordering
-            </Text>
-          </TouchableOpacity>
-        </View>
+              <Text
+                style={{
+                  color: "#FFF",
+                  fontSize: 16,
+                  fontWeight: "700",
+                  fontFamily: "Poppins",
+                }}
+              >
+                Cancel Reservation
+              </Text>
+            </TouchableOpacity>
+
+            {/* Continue Ordering */}
+            <TouchableOpacity
+              onPress={handleContinueOrdering}
+              disabled={!isChecked}
+              style={[
+                {
+                  backgroundColor: "#8B0000",
+                  paddingVertical: 16,
+                  borderRadius: 16,
+                  alignItems: "center",
+                },
+                !isChecked && { opacity: 0.5 },
+              ]}
+            >
+              <Text
+                style={{
+                  color: "#FFF",
+                  fontSize: width * 0.042,
+                  fontWeight: "700",
+                  fontFamily: "Poppins",
+                }}
+              >
+                Continue Ordering
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
       </View>
     );
   };
@@ -457,6 +475,8 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
   return (
     <>
       {reservationStatus === "accepted" && displayOrderPolicy()}
+
+      {/* Status -  | Rejected | Done | Cancelled  */}
       {reservationStatus !== "accepted" && (
         <View style={{ width, height, flex: 1 }}>
           <MainBackground
@@ -566,6 +586,39 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
               </View>
             </View>
 
+            {/* Cancel Button*/}
+            {reservationStatus == "pending" && (
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("ReservationCancellationScreen")
+                }
+                style={{
+                  backgroundColor: "#520000",
+                  paddingVertical: 11,
+                  borderRadius: 16,
+                  alignItems: "center",
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 6,
+                  elevation: 6,
+                  marginBottom: height * 0.02,
+                }}
+              >
+                <Text
+                  style={{
+                    color: "#FFF",
+                    fontSize: 16,
+                    fontWeight: "700",
+                    fontFamily: "Poppins",
+                  }}
+                >
+                  Cancel Reservation
+                </Text>
+              </TouchableOpacity>
+            )}
+
+            {/* Back to Home Button */}
             <TouchableOpacity
               onPress={handleStatusAction}
               style={{
@@ -589,12 +642,67 @@ const ReservationStatusScreen: React.FC<Props> = ({ navigation, route }) => {
                   fontFamily: "Poppins",
                 }}
               >
-                Back to home
+                Back to Home
               </Text>
             </TouchableOpacity>
           </View>
         </View>
       )}
+
+      {/* Status - Pending
+      {reservationStatus == "pending" && (
+        <View style={{ width, height, flex: 1 }}>
+          <MainBackground
+            width={width}
+            height={height}
+            preserveAspectRatio="none"
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+            }}
+          />
+
+          <View
+            style={{
+              flex: 1,
+              padding: width * 0.05,
+              paddingTop: paddingTop,
+              justifyContent: "space-between",
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: height * 0.01,
+              }}
+            >
+              <Text
+                style={{
+                  paddingLeft: width * 0.035,
+                  color: "#FFFFFF",
+                  fontSize: width * 0.07,
+                  fontWeight: "bold",
+                }}
+              >
+                Reservation Status
+              </Text>
+
+              <Text
+                style={{
+                  paddingLeft: width * 0.035,
+                  color: "#FFFFFF",
+                  fontSize: width * 0.07,
+                  fontWeight: "bold",
+                }}
+              >
+                Pending ito nyahhah
+              </Text>
+            </View>
+          </View>
+        </View>
+      )} */}
     </>
   );
 };

@@ -23,7 +23,11 @@ import { RootStackParamLists } from "../types/rootStackParamLists";
 import { useReservationStore } from "../stores/useReservationStore";
 import { ReservationData } from "../types/reservation";
 import { getEmailByToken } from "../services/token";
-import { createReservation, uploadImage } from "../services/reservation";
+import {
+  createReservation,
+  getBookingDays,
+  uploadImage,
+} from "../services/reservation";
 import Loading from "./ui/Loading";
 
 type ReservationScreenNavigationProp = NativeStackNavigationProp<
@@ -55,12 +59,15 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
   const [contactNumber, setContactNumber] = useState("");
   const [guests, setGuests] = useState(1);
   const [reservationType, setReservationType] = useState("Inclusive");
-  const [selectedDate, setSelectedDate] = useState<number | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [validId, setValidId] = useState<string>("");
-  const [currentMonth, setCurrentMonth] = useState("November");
+  const [currentMonth, setCurrentMonth] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [startIndex, setStartIndex] = useState(0);
   const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [bookingDays, setBookingDays] = useState<
+    { date: string; booked_slots: number }[]
+  >([]);
 
   const [errors, setErrors] = useState<{
     firstName: boolean;
@@ -93,6 +100,40 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
     schedule: "",
     validId: "",
   });
+
+  useEffect(() => {
+    const fetchBookingDays = async () => {
+      const data = await getBookingDays();
+      if (data && data.length > 0) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Filter out past dates and sort chronologically
+        const filteredAndSortedData = data
+          .filter((item: { date: string; booked_slots: number }) => {
+            const itemDate = new Date(item.date);
+            itemDate.setHours(0, 0, 0, 0);
+            return itemDate >= today;
+          })
+          .sort(
+            (
+              a: { date: string; booked_slots: number },
+              b: { date: string; booked_slots: number }
+            ) => new Date(a.date).getTime() - new Date(b.date).getTime()
+          );
+
+        setBookingDays(filteredAndSortedData);
+
+        if (filteredAndSortedData.length > 0) {
+          const firstDate = new Date(filteredAndSortedData[0].date);
+          setCurrentMonth(
+            firstDate.toLocaleDateString("en-US", { month: "long" }),
+          );
+        }
+      }
+    };
+    fetchBookingDays();
+  }, []);
 
   const today = new Date();
   const reservationTypes = ["Exclusive", "Inclusive"];
@@ -145,14 +186,17 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const totalFee = guests * pricePerPax;
 
-  const allDays = Array.from({ length: 14 }, (_, i) => {
-    const date = new Date(today);
-    date.setDate(today.getDate() + i);
-    return {
-      name: date.toLocaleDateString("en-US", { weekday: "short" }),
-      date: date.getDate(),
-    };
-  });
+  const allDays = useMemo(() => {
+    return bookingDays.map((item) => {
+      const dateObj = new Date(item.date);
+      return {
+        name: dateObj.toLocaleDateString("en-US", { weekday: "short" }),
+        date: item.date,
+        dayNum: dateObj.getDate(),
+        availableSlots: 100 - item.booked_slots,
+      };
+    });
+  }, [bookingDays]);
 
   const handleUpload = async () => {
     setIsUploading(true);
@@ -179,7 +223,7 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
         setReservationData({ validIdUrl });
       }
     } catch (error) {
-      console.error("Error picking valid ID:", error);
+      console.log("Error picking valid ID:", error);
     } finally {
       setIsUploading(false);
     }
@@ -268,6 +312,15 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
       isValid = false;
     }
 
+    if (selectedDate && guests) {
+      const selectedDayData = allDays.find((day) => day.date === selectedDate);
+      if (selectedDayData && guests > selectedDayData.availableSlots) {
+        newErrorMessages.guests = `Only ${selectedDayData.availableSlots} slots available for this day`;
+        newErrors.guests = true;
+        isValid = false;
+      }
+    }
+
     if (!validId) {
       newErrorMessages.validId = "Please upload a valid ID";
       newErrors.validId = true;
@@ -284,7 +337,7 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
     if (validateInputs()) {
       const email = await getEmailByToken();
 
-      const date = createDate(selectedDate!, currentMonth, 2025);
+      const date = new Date(selectedDate!);
 
       const reservationData: ReservationData = {
         email,
@@ -791,7 +844,17 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                               fontWeight: "600",
                             }}
                           >
-                            {day.date}
+                            {day.dayNum}
+                          </Text>
+                          <Text
+                            style={{
+                              color: "white",
+                              fontSize: width * 0.02,
+                              marginTop: 4,
+                              opacity: 0.7,
+                            }}
+                          >
+                            {day.availableSlots} slots
                           </Text>
                         </TouchableOpacity>
                       ))}
@@ -799,10 +862,15 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
 
                   <TouchableOpacity
                     onPress={() =>
-                      setStartIndex((prev) => Math.min(prev + 6, 8))
+                      setStartIndex((prev) =>
+                        Math.min(prev + 6, Math.max(0, allDays.length - 6)),
+                      )
                     }
-                    disabled={startIndex >= 8}
-                    style={{ padding: 8, opacity: startIndex >= 8 ? 0.4 : 1 }}
+                    disabled={startIndex >= allDays.length - 6}
+                    style={{
+                      padding: 8,
+                      opacity: startIndex >= allDays.length - 6 ? 0.4 : 1,
+                    }}
                   >
                     <Text style={{ color: "white", fontSize: width * 0.08 }}>
                       ›
@@ -1091,8 +1159,8 @@ const ReservationScreen: React.FC<Props> = ({ navigation, route }) => {
                     borderColor: errors.validId
                       ? "red"
                       : validId
-                      ? "rgba(0, 200, 100, 0.2)"
-                      : "transparent",
+                        ? "rgba(0, 200, 100, 0.2)"
+                        : "transparent",
                   }}
                 >
                   <Text

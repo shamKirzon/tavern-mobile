@@ -14,7 +14,7 @@ class CustomerController {
         token,
       });
     } catch (error: any) {
-      console.error(error.message || `Error registering email `);
+      console.log(error.message || `Error registering email `);
     }
   }
 
@@ -33,7 +33,7 @@ class CustomerController {
         customerStatus,
       });
     } catch (error: any) {
-      console.error(
+      console.log(
         error.message || "Can't perform setting status to inactive. "
       );
     }
@@ -54,7 +54,7 @@ class CustomerController {
         customerStatus,
       });
     } catch (error: any) {
-      console.error(
+      console.log(
         error.message || "Can't perform setting status to inactive. "
       );
     }

@@ -1,6 +1,8 @@
 import { ordersData } from "./orders";
 
 export type RootStackParamLists = {
+  ReservationCancellationStatusScreen: undefined;
+  ReservationCancellationScreen: undefined;
   ReservationReview: undefined;
   WelcomeScreen: undefined;
   ReservationPayment: undefined;

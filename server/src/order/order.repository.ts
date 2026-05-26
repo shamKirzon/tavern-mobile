@@ -32,7 +32,7 @@ class OrderRepository {
 
       return orders.order_id;
     } catch (error: any) {
-      console.error("Error in orderRepository/createOrder()", error);
+      console.log("Error in orderRepository/createOrder()", error);
     }
   }
   async getOrderData(orderId: string) {
@@ -43,11 +43,11 @@ class OrderRepository {
         .eq("order_id", orderId)
         .single();
 
-      if (error) return console.error("Query failed in  getOrderData()", error);
+      if (error) return console.log("Query failed in  getOrderData()", error);
 
       return data;
     } catch (error) {
-      console.error("Error in  getting order information: ", error);
+      console.log("Error in  getting order information: ", error);
     }
   }
 
@@ -62,9 +62,9 @@ class OrderRepository {
         ])
         .eq("order_id", orderId);
 
-      if (error) return console.error("Query failed in insertQrUrl()", error);
+      if (error) return console.log("Query failed in insertQrUrl()", error);
     } catch (error) {
-      console.error("Error in  repository/insertQrUrl ", error);
+      console.log("Error in  repository/insertQrUrl ", error);
     }
   }
 
@@ -82,11 +82,11 @@ class OrderRepository {
         .single();
 
       if (error)
-        return console.error("Query failed in updateOrderItems()", error);
+        return console.log("Query failed in updateOrderItems()", error);
 
       return data.order_items;
     } catch (error) {
-      console.error("Error in repository/updateOrderItems() ", error);
+      console.log("Error in repository/updateOrderItems() ", error);
     }
   }
 
@@ -103,7 +103,7 @@ class OrderRepository {
 
       return data;
     } catch (error) {
-      console.error("Error in reservationRepository/assignnCashierId ", error);
+      console.log("Error in reservationRepository/assignnCashierId ", error);
     }
   }
   async completeOrder(orderId: string) {
@@ -137,7 +137,7 @@ class OrderRepository {
 
       return { orderData, reservationData };
     } catch (error) {
-      console.error("Error in reservationRepository/assignnCashierId ", error);
+      console.log("Error in reservationRepository/assignnCashierId ", error);
     }
   }
 }

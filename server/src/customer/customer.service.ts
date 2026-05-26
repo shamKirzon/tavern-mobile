@@ -16,7 +16,7 @@ class CustomerService {
         orderId: null,
       });
     } catch (error: any) {
-      console.error(error.message || "Unable to register the customer ", error);
+      console.log(error.message || "Unable to register the customer ", error);
     }
   }
 
