@@ -29,7 +29,9 @@ class CustomerService {
       if (!getCustomerByEmail) return;
 
       return await customerRepository.setStatus(email, isActive);
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error in CustomerService.setStatus:", error);
+    }
   }
 }
 
