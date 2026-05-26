@@ -186,7 +186,6 @@ class ReservationRepository {
     }
   }
 
-  // if naaccept na ng admin ang reservation
   async updateReservationStatus(reservationId: string, status: string) {
     try {
       const { data, error } = await supabase
@@ -195,14 +194,6 @@ class ReservationRepository {
         .eq("reservation_id", reservationId);
 
       if (error) throw error;
-
-      // if (status === "cancelled") {
-      //   const resData = await this.getReservationById(reservationId);
-      //   if (resData && resData.length > 0) {
-      //     const res = resData[0];
-      //     await this.updateBookedSlots(res.date, res.pax);
-      //   }
-      // }
 
       return { message: "Reservation status updated successfully." };
     } catch (error) {
@@ -225,7 +216,6 @@ class ReservationRepository {
     }
   }
 
-  // minus book slot when the reservation is cancelled
   async updateBookedSlots(date: string, pax: number) {
     try {
       const formattedDate = date?.split("T")[0];

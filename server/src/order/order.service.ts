@@ -5,7 +5,7 @@ class OrderService {
   async createOrder(
     order: any,
     email: string,
-    reservationId: string
+    reservationId: string,
   ): Promise<any> {
     try {
       const orderData = {
@@ -15,7 +15,7 @@ class OrderService {
 
       const orderId = await orderRepository.createOrder(
         orderData,
-        reservationId
+        reservationId,
       );
 
       const qrUrl = await generateQR(
@@ -23,10 +23,9 @@ class OrderService {
           reservationId,
           orderId,
         },
-        email
+        email,
       );
 
-      // inserting qr url
       await orderRepository.insertQrUrl(qrUrl!, orderId);
 
       return orderId;
