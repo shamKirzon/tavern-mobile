@@ -18,7 +18,6 @@ export const generateOtp = async (email: string) => {
     const res = await axiosInstance.post("/auth/otp/send-otp", {
       email,
     });
-    console.log("Generated OTP:", res.data.otp);
   } catch (error) {
     console.log("services/auth.ts/generateOtp: ", error);
   }

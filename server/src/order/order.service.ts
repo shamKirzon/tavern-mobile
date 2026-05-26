@@ -53,13 +53,17 @@ class OrderService {
   async assignCashierId(employeeId: string, orderId: string): Promise<any> {
     try {
       return await orderRepository.assignCashierId(employeeId, orderId);
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error in OrderService:", error);
+    }
   }
 
   async completeOrder(orderId: string): Promise<any> {
     try {
       return await orderRepository.completeOrder(orderId);
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error in OrderService:", error);
+    }
   }
 }
 

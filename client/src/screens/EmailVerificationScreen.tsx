@@ -100,7 +100,6 @@ const EmailVerificationScreen: React.FC<Props> = ({ navigation, route }) => {
   const handleResendCode = async () => {
     if (!canResend) return;
     await generateOtp(email);
-    console.log("Resend OTP to:", email);
     setCountdown(55);
     setCanResend(false);
     setOtp(["", "", "", ""]);

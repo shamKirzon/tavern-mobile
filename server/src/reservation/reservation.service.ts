@@ -23,14 +23,18 @@ class ReservationService {
       const status =
         await reservationRepository.getReservationStatus(reservationId);
       return status?.reservation_status;
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error in ReservationService:", error);
+    }
   }
   async getReservationAmount(reservationId: string): Promise<any> {
     try {
       const amount =
         await reservationRepository.getReservationAmount(reservationId);
       return amount?.reservation_amount;
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error in ReservationService:", error);
+    }
   }
 
   async assignSecurityId(
@@ -44,7 +48,9 @@ class ReservationService {
       );
 
       return result;
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error in ReservationService:", error);
+    }
   }
 
   async createCancellation(
@@ -60,7 +66,9 @@ class ReservationService {
       );
 
       return result;
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error in ReservationService:", error);
+    }
   }
 
   async getCancellationData(reservationCancellationId: string): Promise<any> {
@@ -70,14 +78,18 @@ class ReservationService {
       );
 
       return result;
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error in ReservationService:", error);
+    }
   }
 
   async getBookingDays(): Promise<any> {
     try {
       const result = await reservationRepository.getBookingDays();
       return result;
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error in ReservationService:", error);
+    }
   }
 }
 
